@@ -1,5 +1,6 @@
 .env.local
 yolov8n.pt
+miniforge.sh
 .venv/
 .pytest_cache/
 __pycache__/
