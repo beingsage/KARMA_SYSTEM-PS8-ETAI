@@ -26,24 +26,56 @@ echo ""
 # ============================================================================
 echo "[1/6] Setting up Python environment..."
 
-if [ -d "/kaggle" ]; then
-    echo "Using Kaggle Python"
+ensure_compatible_venv() {
+  local preferred_python=""
+  local candidate=""
+  local version=""
 
-    PYTHON_BIN=$(which python)
-    PIP_BIN=$(which pip)
+  for candidate in python3.12 python3.11 python3.10 python3; do
+    if command -v "$candidate" >/dev/null 2>&1; then
+      version="$($candidate -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")"
+      case "$version" in
+        3.10|3.11|3.12)
+          preferred_python="$candidate"
+          break
+          ;;
+      esac
+    fi
+  done
 
-elif [ -x "$ROOT_DIR/.venv/bin/python" ]; then
-    source "$ROOT_DIR/.venv/bin/activate"
+  if [ -z "$preferred_python" ]; then
+    preferred_python="python3"
+  fi
 
-    PYTHON_BIN=$(which python)
-    PIP_BIN=$(which pip)
+  if [ -x "$ROOT_DIR/.venv/bin/python" ]; then
+    local venv_version
+    venv_version="$($ROOT_DIR/.venv/bin/python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")"
+    case "$venv_version" in
+      3.10|3.11|3.12)
+        echo "  Using existing virtual environment with Python $venv_version"
+        return 0
+        ;;
+    esac
+  fi
 
+  echo "  Creating virtual environment with $preferred_python..."
+  rm -rf "$ROOT_DIR/.venv"
+  "$preferred_python" -m venv "$ROOT_DIR/.venv"
+}
+
+if [ -x "$ROOT_DIR/.venv/bin/python" ]; then
+  source "$ROOT_DIR/.venv/bin/activate"
+  PYTHON_BIN="$(command -v python)"
+  PIP_BIN="$(command -v pip)"
+elif [ -n "${CONDA_PREFIX:-}" ]; then
+  echo "  Using active Conda environment: ${CONDA_DEFAULT_ENV:-$(basename "$CONDA_PREFIX")}"
+  PYTHON_BIN="$CONDA_PREFIX/bin/python"
+  PIP_BIN="$CONDA_PREFIX/bin/pip"
 else
-    python3 -m venv "$ROOT_DIR/.venv"
-    source "$ROOT_DIR/.venv/bin/activate"
-
-    PYTHON_BIN="$ROOT_DIR/.venv/bin/python"
-    PIP_BIN="$ROOT_DIR/.venv/bin/pip"
+  ensure_compatible_venv
+  source "$ROOT_DIR/.venv/bin/activate"
+  PYTHON_BIN="$(command -v python)"
+  PIP_BIN="$(command -v pip)"
 fi
 
 export PYTHON_BIN
