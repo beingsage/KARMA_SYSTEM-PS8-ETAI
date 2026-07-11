@@ -1,0 +1,26 @@
+Looking in indexes: https://pypi.org/simple, https://download.pytorch.org/whl/cpu
+Collecting torch==2.5.1+cpu
+  Using cached torch-2.5.1%2Bcpu-cp312-cp312-linux_x86_64.whl (174.6 MB)
+Collecting torchvision==0.20.1+cpu
+  Using cached torchvision-0.20.1%2Bcpu-cp312-cp312-linux_x86_64.whl (1.8 MB)
+Collecting pillow==10.4.0
+  Using cached pillow-10.4.0-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (9.2 kB)
+Collecting albumentations
+  Using cached albumentations-2.0.8-py3-none-any.whl.metadata (43 kB)
+Using cached pillow-10.4.0-cp312-cp312-manylinux_2_28_x86_64.whl (4.5 MB)
+Using cached albumentations-2.0.8-py3-none-any.whl (369 kB)
+Installing collected packages: torchvision, torch, pillow, albumentations
+  Attempting uninstall: torchvision
+    Found existing installation: torchvision 0.19.1
+    Uninstalling torchvision-0.19.1:
+      Successfully uninstalled torchvision-0.19.1
+  Attempting uninstall: torch
+    Found existing installation: torch 2.4.1
+    Uninstalling torch-2.4.1:
+      Successfully uninstalled torch-2.4.1
+  Attempting uninstall: pillow
+    Found existing installation: Pillow 9.5.0
+    Uninstalling Pillow-9.5.0:
+      Successfully uninstalled Pillow-9.5.0
+
+Successfully installed albumentations-2.0.8 pillow-10.4.0 torch-2.5.1+cpu torchvision-0.20.1+cpu

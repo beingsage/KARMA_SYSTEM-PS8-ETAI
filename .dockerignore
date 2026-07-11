@@ -1,0 +1,27 @@
+# Ignore virtualenv, models, large data, and local artifacts to keep build context small
+.venv/
+venv/
+env/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pyo
+*.pyd
+build/
+dist/
+*.egg-info/
+
+# Large datasets and models
+data/
+models/
+yolov8n.pt
+
+# Docker and git
+.docker/
+.git/
+
+# Editor and OS files
+.vscode/
+.idea/
+Thumbs.db
+*.swp
