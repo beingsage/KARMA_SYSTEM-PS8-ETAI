@@ -418,7 +418,9 @@ if [ "${RUN_ALL_INCLUDE_OPTIONAL:-0}" = "1" ]; then
   DEP_BOOTSTRAP_CMD+=(--include-optional)
 fi
 
+DEP_BOOTSTRAP_OK=true
 if ! "${DEP_BOOTSTRAP_CMD[@]}"; then
+  DEP_BOOTSTRAP_OK=false
   echo "  ⚠ Dependency bootstrap reported issues; continuing in best-effort mode."
 fi
 
@@ -556,7 +558,11 @@ fi
 
 echo ""
 echo "================================================================================"
-echo "✓ Industrial PDF-to-Graph Pipeline Ready!"
+if [ "${DEP_BOOTSTRAP_OK:-true}" != true ]; then
+  echo "✓ Industrial PDF-to-Graph Pipeline Ready (degraded mode)"
+else
+  echo "✓ Industrial PDF-to-Graph Pipeline Ready!"
+fi
 echo "================================================================================"
 echo ""
 echo "Backend running on:"

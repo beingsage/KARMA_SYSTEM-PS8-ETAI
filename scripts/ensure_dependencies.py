@@ -201,17 +201,24 @@ def ensure_dependencies(
 
     print(f"Installing missing dependencies: {', '.join(missing_packages)}")
 
-    subprocess.check_call(
-        [
+    failed_packages: list[str] = []
+    for package in missing_packages:
+        install_cmd = [
             python_bin,
             "-m",
             "pip",
             "install",
             "--prefer-binary",
             "--no-cache-dir",
-            *missing_packages,
+            package,
         ]
-    )
+        result = subprocess.run(install_cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            failed_packages.append(package)
+            print(f"  WARNING: failed to install {package}")
+            if result.stderr.strip():
+                print(result.stderr.strip())
+            continue
 
     # Verify directly instead of importing scripts.ensure_dependencies
     remaining = find_missing_dependencies(
@@ -220,10 +227,11 @@ def ensure_dependencies(
     )
 
     if remaining:
-        raise RuntimeError(
-            "Dependency installation did not resolve: "
+        print(
+            "  WARNING: some dependencies remain unavailable: "
             + ", ".join(remaining)
         )
+        return failed_packages
 
     return []
 
@@ -242,7 +250,18 @@ def main() -> int:
         return 0
 
     print(f"Detected missing runtime dependencies: {', '.join(missing_packages)}")
-    ensure_dependencies(args.requirements, python_executable=args.python, include_optional=args.include_optional)
+    failed_packages = ensure_dependencies(
+        args.requirements,
+        python_executable=args.python,
+        include_optional=args.include_optional,
+    )
+    if failed_packages:
+        print(
+            "⚠ Dependency install completed with failures: "
+            + ", ".join(failed_packages)
+        )
+        return 1
+
     print("✓ Runtime dependencies installed successfully")
     return 0
 
