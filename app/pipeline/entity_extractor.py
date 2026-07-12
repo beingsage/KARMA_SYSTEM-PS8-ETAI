@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import Any, Dict, List
 
+from app.pipeline.compat import allow_trusted_torch_pickle, ensure_pyarrow_compat
 from app.pipeline.document_utils import chunk_text, normalize_text
 from app.pipeline.models import canonicalize_entity_name, detect_pid_components
 from app.pipeline.runtime import select_device
@@ -30,14 +31,16 @@ class GlinerEntityExtractor:
 
     def _initialize(self) -> None:
         try:
+            ensure_pyarrow_compat()
             from gliner import GLiNER
 
-            if self.fine_tuned_model_path.exists():
-                self.model = GLiNER.from_pretrained(str(self.fine_tuned_model_path), map_location=self.device)
-                print(f"✓ GLiNER loaded from fine-tuned industrial model on {self.device}")
-            else:
-                self.model = GLiNER.from_pretrained("urchade/gliner_medium-v2.1", map_location=self.device)
-                print(f"✓ GLiNER loaded (medium-v2.1) on {self.device}")
+            with allow_trusted_torch_pickle():
+                if self.fine_tuned_model_path.exists():
+                    self.model = GLiNER.from_pretrained(str(self.fine_tuned_model_path), map_location=self.device)
+                    print(f"✓ GLiNER loaded from fine-tuned industrial model on {self.device}")
+                else:
+                    self.model = GLiNER.from_pretrained("urchade/gliner_medium-v2.1", map_location=self.device)
+                    print(f"✓ GLiNER loaded (medium-v2.1) on {self.device}")
 
             if hasattr(self.model, "eval"):
                 self.model.eval()

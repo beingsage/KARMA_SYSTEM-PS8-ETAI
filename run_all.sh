@@ -29,6 +29,13 @@ echo "[1/6] Setting up Python environment..."
 if [ -d "/kaggle" ]; then
     echo "Using Kaggle Python"
 
+    # Indicate kaggle environment and run optional setup helper
+    export KAGGLE_ENV=1
+    if [ -f "$ROOT_DIR/kaggle_setup.sh" ] && [ -z "${RUN_ALL_SKIP_KAGGLE_SETUP:-}" ]; then
+      echo "  Running $ROOT_DIR/kaggle_setup.sh (this may take a few minutes)..."
+      bash "$ROOT_DIR/kaggle_setup.sh" || echo "  WARNING: kaggle_setup.sh failed; continuing in best-effort mode."
+    fi
+
     PYTHON_BIN=$(which python)
     PIP_BIN=$(which pip)
 
@@ -48,6 +55,21 @@ fi
 
 export PYTHON_BIN
 export PIP_BIN
+
+# Configure model/cache directories for Kaggle vs local
+if [ -d "/kaggle" ]; then
+  export HF_HOME="/kaggle/working/hf_cache"
+  export TRANSFORMERS_CACHE="/kaggle/working/hf_cache"
+  export TORCH_HOME="/kaggle/working/torch_cache"
+else
+  export HF_HOME="$ROOT_DIR/models/huggingface"
+  export TRANSFORMERS_CACHE="$ROOT_DIR/models/transformers"
+  export TORCH_HOME="$ROOT_DIR/models/torch_cache"
+fi
+
+echo "  HF_HOME=$HF_HOME"
+echo "  TRANSFORMERS_CACHE=$TRANSFORMERS_CACHE"
+echo "  TORCH_HOME=$TORCH_HOME"
 
 load_env_file() {
   local env_file="$ROOT_DIR/.env.local"
@@ -237,6 +259,8 @@ start_neo4j_local() {
   local neo4j_dir="$OPEN_SOURCE_DIR/neo4j"
   local tarball="$OPEN_SOURCE_DIR/downloads/neo4j.tar.gz"
   local neo4j_version="5.15.0"
+  local neo4j_user="${NEO4J_USER:-neo4j}"
+  local neo4j_password="${NEO4J_PASSWORD:-industrial_graph_password}"
 
   if [ ! -x "$neo4j_dir/bin/neo4j" ]; then
     rm -rf "$neo4j_dir"
@@ -275,9 +299,6 @@ dbms.default_database=neo4j
 dbms.directories.data=./data
 dbms.directories.logs=./logs
 EOF
-
-  local neo4j_user="${NEO4J_USER:-neo4j}"
-  local neo4j_password="${NEO4J_PASSWORD:-industrial_graph_password}"
 
   if ! port_is_open "127.0.0.1" 7687; then
     echo "  Starting Neo4j on localhost:7687"
@@ -426,6 +447,23 @@ if ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --upgrade pip s
   echo "  WARNING: pip toolchain upgrade failed; continuing with existing environment."
 fi
 
+# Print runtime library versions for easier debugging on Kaggle/local
+echo "  Checking runtime library versions (torch, pyarrow, transformers)..."
+"$PYTHON_BIN" - <<'PY'
+import importlib, sys
+def ver(name):
+    try:
+        m=importlib.import_module(name)
+        print(f'    {name}=={getattr(m,"__version__",str(m))}')
+    except Exception:
+        print(f'    {name} not installed')
+ver('torch')
+ver('pyarrow')
+ver('transformers')
+sys.exit(0)
+PY
+
+
 if ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --no-build-isolation requests pyyaml >/dev/null 2>&1; then
   echo "  WARNING: failed to install requests/pyyaml for BLINK compatibility; continuing."
 fi
@@ -536,6 +574,8 @@ echo ""
 if port_is_open "127.0.0.1" 8001; then
   echo "  FastAPI already running on http://127.0.0.1:8001; reusing the existing server."
 else
-  NEO4J_URI=bolt://localhost:7687 NEO4J_USER=neo4j NEO4J_PASSWORD=industrial_graph_password \
+  NEO4J_URI="${NEO4J_URI:-bolt://localhost:7687}" \
+  NEO4J_USER="${NEO4J_USER:-neo4j}" \
+  NEO4J_PASSWORD="${NEO4J_PASSWORD:-industrial_graph_password}" \
     "$PYTHON_BIN" -m uvicorn app.main:app --host 0.0.0.0 --port 8001
 fi

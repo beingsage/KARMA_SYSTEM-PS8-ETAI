@@ -7,6 +7,7 @@ import json
 import re
 from typing import Any, Dict, List, Optional
 from app.config import settings
+from app.pipeline.compat import allow_trusted_torch_pickle
 from app.pipeline.document_utils import chunk_text
 
 
@@ -30,8 +31,9 @@ class GraphRAGSummarizer:
         try:
             from transformers import AutoModelForCausalLM, AutoTokenizer
 
-            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-            self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
+            with allow_trusted_torch_pickle():
+                self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
             self.model.eval()
             print("✓ Qwen LLM initialized for GraphRAG reasoning")
             return True

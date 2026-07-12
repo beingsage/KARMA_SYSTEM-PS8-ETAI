@@ -141,30 +141,42 @@ class Settings:
     _device_segmentation: str = get_env("DEVICE_FOR_SEGMENTATION", "AUTO", _env_config)
     _device_extraction: str = get_env("DEVICE_FOR_EXTRACTION", "AUTO", _env_config)
     _device_embedding: str = get_env("DEVICE_FOR_EMBEDDING", "AUTO", _env_config)
-    
+
+    @staticmethod
+    def _cuda_device_if_available() -> str:
+        try:
+            import torch
+
+            return "cuda:0" if torch.cuda.is_available() else "cpu"
+        except Exception:
+            return "cpu"
+
+    @classmethod
+    def _resolve_device(cls, override: str, execution_mode: str) -> str:
+        if override != "AUTO":
+            normalized = override.lower()
+            if normalized.startswith("cuda"):
+                return cls._cuda_device_if_available()
+            return override
+        if execution_mode == "cpu":
+            return "cpu"
+        return cls._cuda_device_if_available()
+
     @property
     def device_for_detection(self) -> str:
-        if self._device_detection != "AUTO":
-            return self._device_detection
-        return "cpu" if self.execution_mode == "cpu" else "cuda:0"
-    
+        return self._resolve_device(self._device_detection, self.execution_mode)
+
     @property
     def device_for_segmentation(self) -> str:
-        if self._device_segmentation != "AUTO":
-            return self._device_segmentation
-        return "cpu" if self.execution_mode == "cpu" else "cuda:0"
-    
+        return self._resolve_device(self._device_segmentation, self.execution_mode)
+
     @property
     def device_for_extraction(self) -> str:
-        if self._device_extraction != "AUTO":
-            return self._device_extraction
-        return "cpu" if self.execution_mode == "cpu" else "cuda:0"
-    
+        return self._resolve_device(self._device_extraction, self.execution_mode)
+
     @property
     def device_for_embedding(self) -> str:
-        if self._device_embedding != "AUTO":
-            return self._device_embedding
-        return "cpu" if self.execution_mode == "cpu" else "cuda:0"
+        return self._resolve_device(self._device_embedding, self.execution_mode)
     
     # Processing timeouts (in seconds)
     table_extraction_timeout: int = int(get_env("TABLE_EXTRACTION_TIMEOUT", "0", _env_config))  # 0 = no limit

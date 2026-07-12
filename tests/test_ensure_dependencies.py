@@ -1,8 +1,10 @@
 import subprocess
 import sys
+import types
 from pathlib import Path
 
 import scripts.ensure_dependencies as ensure_dependencies
+from app.pipeline.compat import ensure_pyarrow_compat
 
 
 def test_ensure_dependencies_handles_missing_packages(tmp_path, monkeypatch):
@@ -87,3 +89,15 @@ def test_main_returns_nonzero_when_dependency_install_fails(tmp_path, monkeypatc
     result = ensure_dependencies.main()
 
     assert result == 1
+
+
+def test_find_missing_dependencies_accepts_compatible_pyarrow(monkeypatch):
+    fake_pyarrow = types.ModuleType("pyarrow")
+    fake_pyarrow.ExtensionType = object
+    fake_pyarrow.__version__ = "25.0.0"
+
+    monkeypatch.setitem(sys.modules, "pyarrow", fake_pyarrow)
+
+    assert ensure_pyarrow_compat() is True
+    assert hasattr(fake_pyarrow, "PyExtensionType")
+    assert ensure_dependencies.find_missing_dependencies(["pyarrow==15.0.2"]) == []

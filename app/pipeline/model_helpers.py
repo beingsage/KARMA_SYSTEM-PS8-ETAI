@@ -13,6 +13,7 @@ import numpy as np
 import requests
 from PIL import Image
 
+from app.pipeline.compat import allow_trusted_torch_pickle
 from app.config import settings
 from app.pipeline.models import canonicalize_entity_name
 
@@ -73,7 +74,8 @@ class PIDSymbolDetector:
                 if not yolov12_path.exists():
                     yolov12_path = "yolov8n.pt"  # Use default pretrained
             
-            self.model = YOLO(str(yolov12_path))
+            with allow_trusted_torch_pickle():
+                self.model = YOLO(str(yolov12_path))
             self.source = "yolov12" if "yolov12" in str(yolov12_path).lower() else "yolov8"
             print(f"✓ PID Symbol Detector ready ({self.source})")
         except Exception as e:
@@ -435,17 +437,21 @@ class GLiRELRelationExtractor:
         self.model = None
         self.model_name = model_name or settings.glirel_model
         self.is_ready = False
+        self.backend = "heuristic"
 
         try:
-            from glirel import GLiREL
+            with allow_trusted_torch_pickle():
+                from glirel import GLiREL
 
-            self.model = GLiREL.from_pretrained(self.model_name)
+                self.model = GLiREL.from_pretrained(self.model_name)
             self.is_ready = self.model is not None
+            self.backend = "glirel"
             print(f"✓ GLiREL relation extractor ready: {self.model_name}")
         except Exception as e:
             print(f"⚠ GLiREL initialization failed: {e}, using heuristic fallback")
             self.model = None
-            self.is_ready = False
+            self.is_ready = True
+            self.backend = "heuristic"
 
     def extract(self, text: str, entities: List[Dict[str, Any]], schema: List[str] = None) -> List[Dict[str, Any]]:
         """Extract relations between entities using GLiREL."""

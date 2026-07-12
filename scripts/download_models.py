@@ -74,8 +74,13 @@ def download_all_models():
             elif hasattr(model, "mask_generator"):
                 ready = getattr(model, "mask_generator", None) is not None
 
+            backend = getattr(model, "backend", None)
+
             if ready:
-                print(f"  ✓ {model_name} initialized successfully")
+                if backend == "heuristic":
+                    print(f"  ⚠ {model_name} initialized with heuristic fallback")
+                else:
+                    print(f"  ✓ {model_name} initialized successfully")
                 successful += 1
             else:
                 print(f"  ⚠ {model_name} initialized but is not ready")

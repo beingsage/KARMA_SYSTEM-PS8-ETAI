@@ -12,6 +12,12 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from app.pipeline.compat import ensure_pyarrow_compat
+
 try:
     from packaging.requirements import Requirement
 except Exception:  # pragma: no cover - packaging is normally available
@@ -39,7 +45,7 @@ OPTIONAL_PACKAGES = [
     "loguru>=0.7.0",
     "node2vec>=0.4.7",
     "sentence-transformers>=3.0.0",
-    "pyarrow>=15.0.0,<16.0.0",
+    "pyarrow==15.0.2",
     "bertopic>=0.15.0",
     "hdbscan>=0.8.0",
     "umap-learn>=0.5.4",
@@ -95,6 +101,12 @@ def _is_package_satisfied(package_spec: str) -> bool:
     module_name = _package_to_module_name(package_spec)
 
     try:
+        if package_spec.lower().startswith("pyarrow"):
+            if ensure_pyarrow_compat():
+                return True
+            import pyarrow
+            return hasattr(pyarrow, "PyExtensionType")
+
         if Requirement is None:
             importlib.import_module(module_name)
             return True
@@ -215,9 +227,33 @@ def ensure_dependencies(
             "pip",
             "install",
             "--prefer-binary",
+            "--only-binary=:all:",
             "--no-cache-dir",
             package,
         ]
+        if normalized_package.startswith("pyarrow"):
+            install_cmd = [
+                python_bin,
+                "-m",
+                "pip",
+                "install",
+                "--prefer-binary",
+                "--only-binary=:all:",
+                "--no-cache-dir",
+                "pyarrow==15.0.2",
+            ]
+        elif normalized_package.startswith("torch"):
+            # Keep torch installation as-is; Kaggle setup handles GPU/CPU variants separately.
+            install_cmd = [
+                python_bin,
+                "-m",
+                "pip",
+                "install",
+                "--prefer-binary",
+                "--only-binary=:all:",
+                "--no-cache-dir",
+                package,
+            ]
         result = subprocess.run(install_cmd, capture_output=True, text=True)
         if result.returncode != 0:
             failed_packages.append(package)

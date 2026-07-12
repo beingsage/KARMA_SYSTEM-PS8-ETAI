@@ -1,63 +1,4 @@
 #!/usr/bin/env python3
-"""Fine-tune GLiNER helper
-
-Usage:
-  python scripts/fine_tune_gliner.py --data data/gliner_training.jsonl --output models/gliner-industrial-v1
-
-This script prepares the dataset and (if `gliner` exposes a training API) will invoke it.
-If `gliner` isn't installed or no training API is available, the script will copy the dataset
-and print manual training instructions.
-"""
-import argparse
-import json
-from pathlib import Path
-import shutil
-
-
-def main():
-    parser = argparse.ArgumentParser(description="Prepare and run GLiNER fine-tuning for industrial domain")
-    parser.add_argument("--data", required=True, help="Path to training data (JSONL)")
-    parser.add_argument("--output", required=True, help="Output model directory")
-    args = parser.parse_args()
-
-    data_path = Path(args.data)
-    out_dir = Path(args.output)
-
-    if not data_path.exists():
-        print(f"ERROR: training data not found: {data_path}")
-        raise SystemExit(2)
-
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    # copy example data into output so model directory has a record
-    shutil.copy2(str(data_path), str(out_dir / data_path.name))
-    print(f"Copied training data to {out_dir / data_path.name}")
-
-    try:
-        from gliner import GLiNER
-        print("Found GLiNER package. Attempting to initialize model for fine-tuning...")
-        # This is best-effort: GLiNER training APIs vary; keep this lightweight
-        model = GLiNER.from_pretrained("urchade/gliner_medium-v2.1")
-        print("Loaded base GLiNER model.")
-        print("If GLiNER provides a .train(...) API, call it here with the prepared JSONL dataset.")
-        print("Saving a snapshot of the base model to the output directory for later retraining.")
-        try:
-            model.save_pretrained(str(out_dir))
-            print(f"Saved model snapshot to {out_dir}")
-        except Exception:
-            print("Could not save model snapshot; please run gliner training manually.")
-    except Exception as exc:
-        print("GLiNER package not available or training API not detected:", exc)
-        print("Prepared data and output directory; run actual fine-tuning in your environment.")
-
-    print("Manual training example (if you have a GLiNER training CLI):")
-    print("  gliner-train --train " + str(out_dir / data_path.name) + " --output " + str(out_dir))
-    print("Or follow the GLiNER docs for transformer-based fine-tuning and save to the output directory.")
-
-
-if __name__ == "__main__":
-    main()
-#!/usr/bin/env python3
 """Fine-tune GLiNER for industrial domain entity extraction.
 
 This script is a starter workflow for preparing and storing a fine-tuned GLiNER model.
@@ -75,8 +16,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from app.pipeline.compat import allow_trusted_torch_pickle, ensure_pyarrow_compat
+
+ensure_pyarrow_compat()
 
 try:
     from gliner import GLiNER
@@ -155,7 +105,8 @@ def main() -> None:
     print(f"Loaded {len(examples)} training examples from {args.data}")
     print(f"Saved dataset preview to {args.preview_output}")
 
-    model = GLiNER.from_pretrained(args.base_model)
+    with allow_trusted_torch_pickle():
+        model = GLiNER.from_pretrained(args.base_model)
     print(f"Loaded base GLiNER model: {args.base_model}")
 
     if not args.output_dir.exists():

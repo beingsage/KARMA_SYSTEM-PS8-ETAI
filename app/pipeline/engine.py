@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime
 
 from app.config import settings
+from app.pipeline.compat import allow_trusted_torch_pickle
 from app.pipeline.models import detect_pid_components, get_model_stage_manifest
 from app.storage import create_job, update_job
 
@@ -121,7 +122,8 @@ class IndustrialGraphPipeline:
         # YOLO detector
         if YOLO is not None:
             try:
-                self.yolo_model = YOLO("yolov8n.pt")
+                with allow_trusted_torch_pickle():
+                    self.yolo_model = YOLO("yolov8n.pt")
                 print("✓ YOLO P&ID detector loaded")
             except Exception as e:
                 print(f"✗ YOLO failed: {e}")
@@ -135,10 +137,11 @@ class IndustrialGraphPipeline:
                 print(f"✗ Embedding failed: {e}")
 
         # Determine runtime mode
+        relation_ready = self.relation_extractor and getattr(self.relation_extractor, "backend", "glirel") != "heuristic"
         core_ready = all([
             self.ocr_processor,
             self.entity_extractor,
-            self.relation_extractor,
+            relation_ready,
             self.rag_summarizer,
             self.copilot_agent,
         ])

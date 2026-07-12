@@ -25,6 +25,7 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 from app.config import settings
+from app.pipeline.compat import allow_trusted_torch_pickle, ensure_pyarrow_compat
 
 # ============================================================================
 # 1. QDRANT VECTOR DATABASE INTEGRATION
@@ -252,15 +253,16 @@ class Qwen3LLM:
             for candidate in candidate_models:
                 try:
                     logger.info(f"Loading Qwen 3: {candidate}")
-                    tokenizer = AutoTokenizer.from_pretrained(candidate)
                     model_kwargs = {
                         "torch_dtype": torch.float16 if self.device == "cuda" else torch.float32,
                     }
 
-                    model = AutoModelForCausalLM.from_pretrained(
-                        candidate,
-                        **model_kwargs,
-                    )
+                    with allow_trusted_torch_pickle():
+                        tokenizer = AutoTokenizer.from_pretrained(candidate)
+                        model = AutoModelForCausalLM.from_pretrained(
+                            candidate,
+                            **model_kwargs,
+                        )
                     model.to(self.device)
 
                     self.model_name = candidate
@@ -486,6 +488,7 @@ class BERTopicLessonsMiner:
         self.available = False
 
         try:
+            ensure_pyarrow_compat()
             from bertopic import BERTopic
             self.BERTopic = BERTopic
             self.model = BERTopic(verbose=False)

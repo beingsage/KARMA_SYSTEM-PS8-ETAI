@@ -9,6 +9,7 @@ import json
 import re
 
 from app.config import settings
+from app.pipeline.compat import allow_trusted_torch_pickle
 
 
 class FailureMode(Enum):
@@ -57,8 +58,9 @@ class IndustrialCopilotAgent:
         try:
             from transformers import AutoModelForCausalLM, AutoTokenizer
 
-            self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-            self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
+            with allow_trusted_torch_pickle():
+                self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+                self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
             self.model.eval()
             print("✓ Industrial Copilot Agent Qwen LLM initialized")
             return True

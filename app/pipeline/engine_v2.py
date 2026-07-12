@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from app.config import settings
+from app.pipeline.compat import allow_trusted_torch_pickle
 from app.pipeline.document_utils import chunk_text, normalize_text
 from app.pipeline.entity_linker import BlinkEntityLinker
 from app.pipeline.model_helpers import (
@@ -144,7 +145,7 @@ class IndustrialGraphPipeline:
             if getattr(self.graph_store, "connected", False):
                 print("✓ Neo4j store ready")
             else:
-                print("✗ Neo4j store unavailable")
+                print("⚠ Neo4j store unavailable; continuing without graph persistence")
         except Exception as exc:
             print(f"⚠ Graph store initialization failed: {type(exc).__name__} - {exc}")
 
@@ -167,7 +168,8 @@ class IndustrialGraphPipeline:
         try:
             from ultralytics import YOLO
 
-            self.yolo_model = YOLO("yolov8n.pt")
+            with allow_trusted_torch_pickle():
+                self.yolo_model = YOLO("yolov8n.pt")
             print("✓ YOLO model loaded")
         except Exception as exc:
             print(f"⚠ YOLO initialization failed: {type(exc).__name__} - {exc}")
@@ -176,7 +178,8 @@ class IndustrialGraphPipeline:
             import doclayout_yolo
 
             model_path = self._resolve_model_path("yolov8n.pt")
-            self.doclayout_yolo_detector = doclayout_yolo.YOLO(str(model_path))
+            with allow_trusted_torch_pickle():
+                self.doclayout_yolo_detector = doclayout_yolo.YOLO(str(model_path))
             print("✓ DocLayout-YOLO detector loaded")
         except Exception as exc:
             print(f"⚠ DocLayout-YOLO initialization failed: {type(exc).__name__} - {exc}")
@@ -185,11 +188,13 @@ class IndustrialGraphPipeline:
         print(f"✓ Pipeline initialized in '{self.model_mode}' mode")
 
     def _resolve_model_mode(self) -> str:
+        relation_ready = self.relation_extractor and getattr(self.relation_extractor, "backend", "glirel") != "heuristic"
+
         if all(
             [
                 self.ocr_processor,
                 self.entity_extractor,
-                self.relation_extractor,
+                relation_ready,
                 self.rag_summarizer,
                 self.copilot_agent,
             ]
@@ -708,7 +713,8 @@ class IndustrialGraphPipeline:
                 else:
                     raise RuntimeError("table_transformer package models are not loaded; falling back to Hugging Face TableTransformer")
             except Exception as package_exc:
-                print(f"⚠ Table Transformer package extraction failed: {package_exc}")
+                if "table_transformer package models are not loaded" not in str(package_exc):
+                    print(f"⚠ Table Transformer package extraction failed: {package_exc}")
                 try:
                     import warnings
                     from transformers import AutoImageProcessor
@@ -717,11 +723,11 @@ class IndustrialGraphPipeline:
 
                     model_name = "microsoft/table-transformer-detection"
                     if self.table_transformer_processor is None:
-                        with warnings.catch_warnings():
+                        with warnings.catch_warnings(), allow_trusted_torch_pickle():
                             warnings.filterwarnings("ignore", message=".*num_batches_tracked.*")
                             self.table_transformer_processor = AutoImageProcessor.from_pretrained(model_name)
                     if self.table_transformer_model is None:
-                        with warnings.catch_warnings():
+                        with warnings.catch_warnings(), allow_trusted_torch_pickle():
                             warnings.filterwarnings("ignore", message=".*num_batches_tracked.*")
                             self.table_transformer_model = TableTransformerForObjectDetection.from_pretrained(model_name)
 
@@ -771,7 +777,8 @@ class IndustrialGraphPipeline:
 
                 if self.doclayout_yolo_detector is None:
                     root_model = self._resolve_model_path("yolov8n.pt")
-                    self.doclayout_yolo_detector = doclayout_yolo.YOLO(str(root_model))
+                    with allow_trusted_torch_pickle():
+                        self.doclayout_yolo_detector = doclayout_yolo.YOLO(str(root_model))
 
                 detector = self.doclayout_yolo_detector
                 for page_number, image in enumerate(images, start=1):

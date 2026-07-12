@@ -8,6 +8,7 @@ from typing import Dict, List, Any, Optional
 
 from app.config import settings
 import warnings
+from app.pipeline.compat import ensure_pyarrow_compat, install_safe_torch_load_default
 
 # Suppress expected FutureWarnings from dependencies
 warnings.filterwarnings("ignore", category=FutureWarning, message=".*torch.load.*")
@@ -15,6 +16,28 @@ warnings.filterwarnings("ignore", category=FutureWarning, message=".*resume_down
 warnings.filterwarnings("ignore", category=FutureWarning, message=".*torch.meshgrid.*")
 warnings.filterwarnings("ignore", message=".*num_batches_tracked.*")
 warnings.filterwarnings("ignore", category=UserWarning, message=r".*Failed to load custom C\+\+ ops.*")
+# Provide a safe default for torch.load where supported to prefer weights-only loading
+try:
+    install_safe_torch_load_default()
+    ensure_pyarrow_compat()
+
+    import torch
+
+    def _print_runtime_info():
+        try:
+            tv = getattr(torch, "__version__", "unknown")
+            print(f"[runtime] torch=={tv}, cuda_available={torch.cuda.is_available()}")
+        except Exception:
+            print("[runtime] torch installed but version info unavailable")
+
+    _print_runtime_info()
+    if getattr(torch, "_structured_safe_torch_load_installed", False):
+        print("[runtime] Applied safe default: torch.load(..., weights_only=True)")
+    else:
+        print("[runtime] torch.load signature does not support weights_only or inspect failed; skipping monkeypatch")
+except Exception:
+    # torch not installed yet in environment
+    pass
 from app.pipeline.engine_v2 import get_pipeline
 from app.pipeline.advanced_models import (
     QdrantVectorStore,
