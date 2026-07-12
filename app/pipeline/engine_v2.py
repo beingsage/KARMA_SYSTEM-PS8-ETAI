@@ -48,6 +48,20 @@ class IndustrialGraphPipeline:
         self.stage_status: List[Dict[str, Any]] = []
         self._initialize_all_models()
 
+    def _resolve_model_path(self, filename: str) -> Path:
+        repo_root = Path(__file__).resolve().parents[2]
+        candidates = [
+            repo_root / filename,
+            repo_root / "models" / filename,
+            Path.cwd() / filename,
+            Path.cwd() / "models" / filename,
+            Path(filename),
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                return candidate
+        return candidates[0]
+
     def _initialize_all_models(self) -> None:
         """Initialize all model and inference components."""
 
@@ -161,7 +175,7 @@ class IndustrialGraphPipeline:
         try:
             import doclayout_yolo
 
-            model_path = Path(__file__).resolve().parents[2] / "yolov8n.pt"
+            model_path = self._resolve_model_path("yolov8n.pt")
             self.doclayout_yolo_detector = doclayout_yolo.YOLO(str(model_path))
             print("✓ DocLayout-YOLO detector loaded")
         except Exception as exc:
@@ -756,7 +770,7 @@ class IndustrialGraphPipeline:
                 import doclayout_yolo  # type: ignore
 
                 if self.doclayout_yolo_detector is None:
-                    root_model = Path(__file__).resolve().parents[2] / "yolov8n.pt"
+                    root_model = self._resolve_model_path("yolov8n.pt")
                     self.doclayout_yolo_detector = doclayout_yolo.YOLO(str(root_model))
 
                 detector = self.doclayout_yolo_detector

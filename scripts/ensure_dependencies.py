@@ -203,6 +203,11 @@ def ensure_dependencies(
 
     failed_packages: list[str] = []
     for package in missing_packages:
+        normalized_package = _normalize_package_spec(package).lower()
+        if os.path.isdir("/kaggle") and "groundingdino" in normalized_package:
+            print(f"  SKIP: skipping {package} on Kaggle; GroundingDINO will remain unavailable")
+            continue
+
         install_cmd = [
             python_bin,
             "-m",

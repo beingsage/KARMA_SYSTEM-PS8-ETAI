@@ -19,26 +19,42 @@ class Neo4jGraphStore:
         self.connected = False
         self._connect()
     
+    @staticmethod
+    def _credential_candidates() -> list[tuple[str, str]]:
+        candidates: list[tuple[str, str]] = []
+        seen: set[tuple[str, str]] = set()
+        for user, password in [
+            (settings.neo4j_user, settings.neo4j_password),
+            ("neo4j", settings.neo4j_password),
+            ("neo4j", "neo4j"),
+            ("neo4j", "industrial_graph_password"),
+        ]:
+            if (user, password) not in seen:
+                seen.add((user, password))
+                candidates.append((user, password))
+        return candidates
+
     def _connect(self) -> bool:
         last_error: Exception | None = None
         for attempt in range(20):
-            try:
-                self.driver = GraphDatabase.driver(
-                    settings.neo4j_uri,
-                    auth=(settings.neo4j_user, settings.neo4j_password),
-                    encrypted=False,
-                )
-                with self.driver.session() as session:
-                    session.run("RETURN 1")
-                self.connected = True
-                print(f"✓ Connected to Neo4j at {settings.neo4j_uri}")
-                return True
-            except Exception as e:
-                last_error = e
-                self.connected = False
-                if attempt % 5 == 0 or attempt == 19:
-                    print(f"  Waiting for Neo4j ({attempt + 1}/20): {e}")
-                time.sleep(3)
+            for user, password in self._credential_candidates():
+                try:
+                    self.driver = GraphDatabase.driver(
+                        settings.neo4j_uri,
+                        auth=(user, password),
+                        encrypted=False,
+                    )
+                    with self.driver.session() as session:
+                        session.run("RETURN 1")
+                    self.connected = True
+                    print(f"✓ Connected to Neo4j at {settings.neo4j_uri} as {user}")
+                    return True
+                except Exception as e:
+                    last_error = e
+                    self.connected = False
+                    if attempt % 5 == 0 or attempt == 19:
+                        print(f"  Waiting for Neo4j ({attempt + 1}/20): {e}")
+            time.sleep(3)
 
         print(f"✗ Neo4j unavailable: {last_error}")
         return False

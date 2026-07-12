@@ -271,10 +271,13 @@ dbms.directories.data=./data
 dbms.directories.logs=./logs
 EOF
 
+  local neo4j_user="${NEO4J_USER:-neo4j}"
+  local neo4j_password="${NEO4J_PASSWORD:-industrial_graph_password}"
+
   if ! port_is_open "127.0.0.1" 7687; then
     echo "  Starting Neo4j on localhost:7687"
     cd "$neo4j_dir"
-    nohup env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes ./bin/neo4j console >/dev/null 2>&1 &
+    nohup env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes NEO4J_AUTH="${neo4j_user}/${neo4j_password}" ./bin/neo4j console >/dev/null 2>&1 &
     disown
   else
     echo "  Neo4j already running"
@@ -292,8 +295,8 @@ start_native_backends() {
   wait_for_port "Neo4j" "127.0.0.1" 7687 180 || true
 
   export NEO4J_URI="bolt://localhost:7687"
-  export NEO4J_USER="neo4j"
-  export NEO4J_PASSWORD="industrial_graph_password"
+  export NEO4J_USER="${NEO4J_USER:-neo4j}"
+  export NEO4J_PASSWORD="${NEO4J_PASSWORD:-industrial_graph_password}"
   export QDRANT_HOST="localhost"
   export QDRANT_PORT="6333"
   export REDIS_HOST="localhost"

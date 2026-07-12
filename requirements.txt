@@ -25,6 +25,8 @@ accelerate>=0.24.0
 # Entity & Relation Extraction
 gliner>=0.2.0
 glirel>=0.2.0
+seqeval<1.0.0
+table_transformer>=1.0.6
 transformers>=4.40.0
 torch
 
