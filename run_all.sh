@@ -596,5 +596,9 @@ echo "Ctrl+C to stop the server"
 echo "================================================================================"
 echo ""
 
-NEO4J_URI=bolt://localhost:7687 NEO4J_USER=neo4j NEO4J_PASSWORD=industrial_graph_password \
-  "$PYTHON_BIN" -m uvicorn app.main:app --host 0.0.0.0 --port 8001
+if port_is_open "127.0.0.1" 8001; then
+  echo "  FastAPI already running on http://127.0.0.1:8001; reusing the existing server."
+else
+  NEO4J_URI=bolt://localhost:7687 NEO4J_USER=neo4j NEO4J_PASSWORD=industrial_graph_password \
+    "$PYTHON_BIN" -m uvicorn app.main:app --host 0.0.0.0 --port 8001
+fi

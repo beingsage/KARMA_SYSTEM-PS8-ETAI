@@ -174,22 +174,27 @@ def ensure_dependencies(
     install_targets = list(required_packages or requirements)
 
     if include_optional:
-     install_targets.extend(
-        pkg for pkg in OPTIONAL_PACKAGES
-        if pkg not in install_targets
+        install_targets.extend(
+            pkg for pkg in OPTIONAL_PACKAGES
+            if pkg not in install_targets
+        )
+
+    missing_packages = find_missing_dependencies(
+        install_targets,
+        include_optional=False,
     )
 
     import os
 
     # Kaggle already provides CUDA-enabled PyTorch.
     if os.path.isdir("/kaggle"):
-       missing_packages = [
-        pkg
-        for pkg in missing_packages
-        if not _normalize_package_spec(pkg).lower().startswith(
-            ("torch", "torchvision", "torchaudio")
-        )
-    ]
+        missing_packages = [
+            pkg
+            for pkg in missing_packages
+            if not _normalize_package_spec(pkg).lower().startswith(
+                ("torch", "torchvision", "torchaudio")
+            )
+        ]
 
     if not missing_packages:
         return []
