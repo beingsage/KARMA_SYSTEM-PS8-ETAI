@@ -245,6 +245,11 @@ start_neo4j_local() {
     tar -xzf "$tarball" -C "$neo4j_dir" --strip-components=1
   fi
 
+  if [ ! -d "$neo4j_dir/data/databases/neo4j" ]; then
+    echo "  Configuring initial Neo4j password"
+    env NEO4J_AUTH="${neo4j_user}/${neo4j_password}" "$neo4j_dir/bin/neo4j-admin" set-initial-password "$neo4j_password" >/dev/null 2>&1 || true
+  fi
+
   if ! command -v java >/dev/null 2>&1; then
     echo "  WARNING: Java is required for Neo4j."
     if [ "$(id -u)" -eq 0 ] && command -v apt-get >/dev/null 2>&1; then
@@ -416,6 +421,19 @@ fi
 # ============================================================================
 echo "[3/6] Installing Python dependencies..."
 
+echo "  Installing GLiREL / seqeval / BLINK compatibility packages..."
+if ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --upgrade pip setuptools wheel >/dev/null 2>&1; then
+  echo "  WARNING: pip toolchain upgrade failed; continuing with existing environment."
+fi
+
+if ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --no-build-isolation requests pyyaml >/dev/null 2>&1; then
+  echo "  WARNING: failed to install requests/pyyaml for BLINK compatibility; continuing."
+fi
+
+if ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --no-build-isolation "glirel==1.2.1" "seqeval>=1.0.0,<1.3.0" "blink>=0.2.0" >/dev/null 2>&1; then
+  echo "  WARNING: failed to install the GLiREL/seqeval/BLINK package set; continuing."
+fi
+
 DEP_BOOTSTRAP_CMD=("$PYTHON_BIN" "$ROOT_DIR/scripts/ensure_dependencies.py" --requirements "$ROOT_DIR/requirements.txt" --python "$PYTHON_BIN")
 if [ "${RUN_ALL_INCLUDE_OPTIONAL:-0}" = "1" ]; then
   DEP_BOOTSTRAP_CMD+=(--include-optional)
@@ -432,7 +450,8 @@ fi
 # ============================================================================
 echo "[4/6] Creating necessary directories..."
 
-mkdir -p data/jobs data/uploads models
+echo "  Creating data and model cache directories"
+mkdir -p data/jobs data/uploads models models/transformers models/huggingface
 echo "  ✓ Directories created"
 
 # ============================================================================
@@ -444,108 +463,17 @@ echo "  This step downloads ~2.5GB of pre-trained models."
 echo "  Models will be cached for future runs."
 echo ""
 
-export PYTHONPATH="$ROOT_DIR"
-"$PYTHON_BIN" - << 'PYTHON_SCRIPT' || true
-import sys
-from pathlib import Path
+export TRANSFORMERS_CACHE="$ROOT_DIR/models/transformers"
+export HF_HOME="$ROOT_DIR/models/huggingface"
+export HF_HUB_CACHE="$ROOT_DIR/models/huggingface/hub"
+export HF_DATASETS_CACHE="$ROOT_DIR/models/huggingface/datasets"
+export HF_MODULES_CACHE="$ROOT_DIR/models/huggingface/modules"
 
-sys.path.insert(0, str(Path.cwd()))
-
-try:
-    from app.pipeline.model_helpers import (
-        PIDSymbolDetector,
-        GroundingDinoDetector,
-        SamSegmenter,
-        BgeEmbedder,
-        BgeReranker,
-        GLiRELRelationExtractor,
-        BlinkEntityLinker,
-    )
-
-    from app.pipeline.advanced_models import (
-        initialize_advanced_models,
-    )
-
-    print("  Initializing CORE models (downloading if needed)...")
-    print("  " + "-" * 70)
-
-    # Original 8 models
-    models = [
-        ("YOLOv12 P&ID Detector", PIDSymbolDetector),
-        ("GroundingDINO Zero-shot Detector", GroundingDinoDetector),
-        ("SAM2 Segmenter", SamSegmenter),
-        ("BGE-M3 Embedder", BgeEmbedder),
-        ("BGE-Reranker-v2", BgeReranker),
-        ("GLiREL Relation Extractor", GLiRELRelationExtractor),
-        ("BLINK Entity Linker", BlinkEntityLinker),
-    ]
-
-    success = 0
-    for name, model_class in models:
-        try:
-            model = model_class()
-            ready = True
-            if name == "GLiREL Relation Extractor":
-                ready = bool(getattr(model, "is_ready", False))
-            elif name == "BLINK Entity Linker":
-                ready = bool(getattr(model, "is_ready", False))
-            elif hasattr(model, "model"):
-                ready = getattr(model, "model", None) is not None
-
-            if ready:
-                print(f"  ✓ {name}")
-                success += 1
-            else:
-                print(f"  ⚠ {name}: unavailable")
-        except Exception as e:
-            print(f"  ⚠ {name}: {type(e).__name__}")
-
-    print("  " + "-" * 70)
-    print(f"  Core models ready: {success}/{len(models)}")
-    print()
-
-    # Also try to load entity extractor
-    try:
-        from app.pipeline.entity_extractor import GlinerEntityExtractor
-        GlinerEntityExtractor()
-        print("  ✓ GLiNER Entity Extractor")
-    except Exception as e:
-        print(f"  ⚠ GLiNER Entity Extractor: {type(e).__name__}")
-
-    # And relation extractor
-    try:
-        from app.pipeline.relation_extractor import GLiRELRelationExtractor as RelExtractor
-        extractor = RelExtractor()
-        if getattr(extractor, "is_ready", False):
-            print("  ✓ GLiREL Relation Extractor (in pipeline)")
-        else:
-            print("  ⚠ GLiREL Relation Extractor (in pipeline): unavailable")
-    except Exception as e:
-        print(f"  ⚠ GLiREL Relation Extractor: {type(e).__name__}")
-
-    print()
-    print("  Initializing ADVANCED models...")
-    print("  " + "-" * 70)
-
-    # Initialize advanced models
-    advanced_models = initialize_advanced_models()
-
-    advanced_success = len([m for m in advanced_models.values() if m is not None])
-    print()
-    print(f"  Advanced models ready: {advanced_success}/{len(advanced_models)}")
-    print()
-    print("  All models initialization complete!")
-except Exception as e:
-    print(f"  ✗ Model initialization encountered a fatal error: {type(e).__name__}: {e}")
-    import traceback
-    traceback.print_exc()
-    print()
-    print("  Continuing startup in best-effort mode. Some features may be unavailable.")
-    sys.exit(0)
-
-PYTHON_SCRIPT
-
-echo "  ✓ Models ready"
+if ! "$PYTHON_BIN" "$ROOT_DIR/scripts/download_models.py"; then
+  echo "  ⚠ Model download completed with some failures; continuing in best-effort mode."
+else
+  echo "  ✓ Model download and initialization completed successfully"
+fi
 
 # ============================================================================
 # 6. START SERVICES

@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Any, Dict, List
 import time
 from neo4j import GraphDatabase
+from neo4j.exceptions import AuthError, Neo4jError
 from app.config import settings
 
 
@@ -22,38 +23,46 @@ class Neo4jGraphStore:
     @staticmethod
     def _credential_candidates() -> list[tuple[str, str]]:
         candidates: list[tuple[str, str]] = []
-        seen: set[tuple[str, str]] = set()
-        for user, password in [
-            (settings.neo4j_user, settings.neo4j_password),
-            ("neo4j", settings.neo4j_password),
-            ("neo4j", "neo4j"),
-            ("neo4j", "industrial_graph_password"),
-        ]:
-            if (user, password) not in seen:
-                seen.add((user, password))
-                candidates.append((user, password))
+        if settings.neo4j_user and settings.neo4j_password:
+            candidates.append((settings.neo4j_user, settings.neo4j_password))
         return candidates
 
     def _connect(self) -> bool:
         last_error: Exception | None = None
+        credentials = self._credential_candidates()
+        if not credentials:
+            print("✗ Neo4j credentials are not configured. Set NEO4J_USER and NEO4J_PASSWORD.")
+            return False
+
+        user, password = credentials[0]
         for attempt in range(20):
-            for user, password in self._credential_candidates():
-                try:
-                    self.driver = GraphDatabase.driver(
-                        settings.neo4j_uri,
-                        auth=(user, password),
-                        encrypted=False,
-                    )
-                    with self.driver.session() as session:
-                        session.run("RETURN 1")
-                    self.connected = True
-                    print(f"✓ Connected to Neo4j at {settings.neo4j_uri} as {user}")
-                    return True
-                except Exception as e:
-                    last_error = e
-                    self.connected = False
-                    if attempt % 5 == 0 or attempt == 19:
-                        print(f"  Waiting for Neo4j ({attempt + 1}/20): {e}")
+            try:
+                self.driver = GraphDatabase.driver(
+                    settings.neo4j_uri,
+                    auth=(user, password),
+                    encrypted=False,
+                )
+                with self.driver.session() as session:
+                    session.run("RETURN 1")
+                self.connected = True
+                print(f"✓ Connected to Neo4j at {settings.neo4j_uri} as {user}")
+                return True
+            except AuthError as e:
+                self.connected = False
+                print(f"✗ Neo4j authentication failure for {user}@{settings.neo4j_uri}: {e}")
+                if getattr(e, "code", "").endswith("CredentialsExpired") or "CredentialsExpired" in str(e):
+                    print("  Neo4j credentials are expired. Update NEO4J_PASSWORD or reset the password with neo4j-admin.")
+                return False
+            except Neo4jError as e:
+                last_error = e
+                self.connected = False
+                if attempt % 5 == 0 or attempt == 19:
+                    print(f"  Waiting for Neo4j ({attempt + 1}/20): {e}")
+            except Exception as e:
+                last_error = e
+                self.connected = False
+                if attempt % 5 == 0 or attempt == 19:
+                    print(f"  Waiting for Neo4j ({attempt + 1}/20): {e}")
             time.sleep(3)
 
         print(f"✗ Neo4j unavailable: {last_error}")

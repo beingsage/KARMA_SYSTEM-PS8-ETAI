@@ -18,7 +18,10 @@ from app.pipeline.model_helpers import (
     BgeReranker,
     GLiRELRelationExtractor,
     BlinkEntityLinker,
+    download_model_checkpoint,
+    MODELS_DIR,
 )
+from app.pipeline.entity_extractor import GlinerEntityExtractor
 
 
 def download_all_models():
@@ -28,6 +31,17 @@ def download_all_models():
     print("Industrial PDF-to-Graph Pipeline - Model Download Script")
     print("=" * 80)
     print()
+
+    checkpoint_files = [
+        ("yolov8n.pt", "https://github.com/ultralytics/assets/releases/download/v8.2.0/yolov8n.pt"),
+        ("groundingdino_swint_ogc.pth", "https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth"),
+        ("sam_vit_b_01ec64.pth", "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth"),
+    ]
+    for filename, url in checkpoint_files:
+        try:
+            download_model_checkpoint(url, MODELS_DIR / filename)
+        except Exception as exc:
+            print(f"  ⚠ Failed to pre-download {filename}: {exc}")
     
     models_to_download = [
         ("PID Symbol Detector (YOLOv12)", PIDSymbolDetector),
@@ -37,6 +51,7 @@ def download_all_models():
         ("BGE-Reranker-v2", BgeReranker),
         ("GLiREL Relation Extractor", GLiRELRelationExtractor),
         ("BLINK Entity Linker", BlinkEntityLinker),
+        ("GLiNER Entity Extractor", GlinerEntityExtractor),
     ]
     
     print("Initializing models...")
@@ -48,19 +63,23 @@ def download_all_models():
     for model_name, model_class in models_to_download:
         print(f"Loading: {model_name}...")
         try:
-            if model_class == BgeEmbedder:
-                model = model_class()
-            elif model_class == BgeReranker:
-                model = model_class()
-            elif model_class == GLiRELRelationExtractor:
-                model = model_class()
-            elif model_class == BlinkEntityLinker:
-                model = model_class()
+            model = model_class()
+            ready = True
+            if hasattr(model, "is_ready"):
+                ready = bool(getattr(model, "is_ready", False))
+            elif hasattr(model, "model"):
+                ready = getattr(model, "model", None) is not None
+            elif hasattr(model, "segmenter"):
+                ready = getattr(model, "segmenter", None) is not None
+            elif hasattr(model, "mask_generator"):
+                ready = getattr(model, "mask_generator", None) is not None
+
+            if ready:
+                print(f"  ✓ {model_name} initialized successfully")
+                successful += 1
             else:
-                model = model_class()
-            
-            print(f"  ✓ {model_name} initialized successfully")
-            successful += 1
+                print(f"  ⚠ {model_name} initialized but is not ready")
+                failed += 1
         except Exception as e:
             print(f"  ✗ {model_name} failed: {e}")
             failed += 1

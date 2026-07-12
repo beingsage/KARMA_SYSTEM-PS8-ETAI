@@ -206,6 +206,7 @@ def ensure_dependencies(
         normalized_package = _normalize_package_spec(package).lower()
         if os.path.isdir("/kaggle") and "groundingdino" in normalized_package:
             print(f"  SKIP: skipping {package} on Kaggle; GroundingDINO will remain unavailable")
+            failed_packages.append(package)
             continue
 
         install_cmd = [
@@ -221,8 +222,9 @@ def ensure_dependencies(
         if result.returncode != 0:
             failed_packages.append(package)
             print(f"  WARNING: failed to install {package}")
-            if result.stderr.strip():
-                print(result.stderr.strip())
+            stderr = result.stderr or ""
+            if stderr.strip():
+                print(stderr.strip())
             continue
 
     # Verify directly instead of importing scripts.ensure_dependencies
@@ -236,6 +238,9 @@ def ensure_dependencies(
             "  WARNING: some dependencies remain unavailable: "
             + ", ".join(remaining)
         )
+        for package in remaining:
+            if package not in failed_packages:
+                failed_packages.append(package)
         return failed_packages
 
     return []
