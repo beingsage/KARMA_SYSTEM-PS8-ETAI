@@ -9,6 +9,8 @@ import tempfile
 import warnings
 from typing import Any, Dict, List, Optional
 
+from PIL import Image
+
 # Suppress expected warnings from dependencies
 warnings.filterwarnings("ignore", category=FutureWarning, message=".*torch.load.*")
 warnings.filterwarnings("ignore", category=UserWarning, message=".*Failed to load custom.*")
@@ -182,7 +184,7 @@ class DoclingOCRProcessor(BaseOCRProcessor):
 
 
 class TesseractOCRProcessor(BaseOCRProcessor):
-    """Fallback OCR processor using Tesseract and pdf2image."""
+    """Fallback OCR processor using Tesseract with resilient PDF rendering."""
 
     def __init__(self) -> None:
         self.available = self._check_availability()
@@ -190,24 +192,118 @@ class TesseractOCRProcessor(BaseOCRProcessor):
     def _check_availability(self) -> bool:
         try:
             import pytesseract  # noqa: F401
-            from pdf2image import convert_from_bytes  # noqa: F401
+            import fitz  # noqa: F401
             return True
         except Exception:
-            return False
+            try:
+                import pytesseract  # noqa: F401
+                from pdf2image import convert_from_bytes  # noqa: F401
+                return True
+            except Exception:
+                return False
+
+    @staticmethod
+    def _render_pdf_with_pdf2image(pdf_bytes: bytes) -> List[Image.Image]:
+        from pdf2image import convert_from_bytes
+
+        return convert_from_bytes(pdf_bytes)
+
+    @staticmethod
+    def _render_pdf_with_pymupdf(pdf_bytes: bytes) -> List[Image.Image]:
+        import fitz
+
+        document = fitz.open(stream=pdf_bytes, filetype="pdf")
+        images: List[Image.Image] = []
+        try:
+            for page in document:
+                pixmap = page.get_pixmap(dpi=200, alpha=False)
+                mode = "RGBA" if pixmap.alpha else ("RGB" if pixmap.n >= 3 else "L")
+                image = Image.frombytes(mode, [pixmap.width, pixmap.height], pixmap.samples)
+                if image.mode != "RGB":
+                    image = image.convert("RGB")
+                images.append(image)
+        finally:
+            document.close()
+        return images
+
+    @staticmethod
+    def _extract_text_with_pymupdf(pdf_bytes: bytes) -> str:
+        try:
+            import fitz
+        except Exception:
+            return ""
+
+        document = fitz.open(stream=pdf_bytes, filetype="pdf")
+        texts: List[str] = []
+        try:
+            for page in document:
+                page_text = page.get_text("text").strip()
+                if page_text:
+                    texts.append(page_text)
+        finally:
+            document.close()
+        return "\n\n".join(texts).strip()
 
     def process(self, pdf_bytes: bytes) -> Dict[str, Any]:
         if not self.available:
-            raise RuntimeError("Tesseract OCR fallback is not available. Install pytesseract and pdf2image.")
+            raise RuntimeError("Tesseract OCR fallback is not available. Install pytesseract and PyMuPDF or pdf2image.")
 
-        from pdf2image import convert_from_bytes
         import pytesseract
 
-        images = convert_from_bytes(pdf_bytes)
-        pages = []
-        for image in images:
-            pages.append(pytesseract.image_to_string(image, lang="eng"))
+        images: List[Image.Image] = []
+        render_backend = "pdf2image"
+
+        try:
+            images = self._render_pdf_with_pdf2image(pdf_bytes)
+        except Exception as exc:
+            print(f"⚠ pdf2image rendering failed: {exc}; falling back to PyMuPDF")
+            render_backend = "pymupdf"
+            try:
+                images = self._render_pdf_with_pymupdf(pdf_bytes)
+            except Exception as fitz_exc:
+                extracted_text = self._extract_text_with_pymupdf(pdf_bytes)
+                if extracted_text:
+                    return {
+                        "stage": "ocr_tesseract_fallback",
+                        "status": "fallback",
+                        "text": extracted_text,
+                        "tables": [],
+                        "layout": [],
+                        "reading_order": [],
+                        "formulas": [],
+                        "confidence": 0.65,
+                        "processor": "pymupdf-text",
+                    }
+                raise RuntimeError(
+                    "Tesseract OCR fallback could not render PDF with pdf2image or PyMuPDF"
+                ) from fitz_exc
+
+        pages: List[str] = []
+        try:
+            for image in images:
+                pages.append(pytesseract.image_to_string(image, lang="eng"))
+        except Exception as exc:
+            extracted_text = self._extract_text_with_pymupdf(pdf_bytes)
+            if extracted_text:
+                print(f"⚠ Tesseract OCR failed: {exc}; using PyMuPDF text extraction fallback")
+                return {
+                    "stage": "ocr_tesseract_fallback",
+                    "status": "fallback",
+                    "text": extracted_text,
+                    "tables": [],
+                    "layout": [],
+                    "reading_order": [],
+                    "formulas": [],
+                    "confidence": 0.65,
+                    "processor": "pymupdf-text",
+                }
+            raise
 
         text = "\n\n".join(page.strip() for page in pages if page)
+        if not text:
+            text = self._extract_text_with_pymupdf(pdf_bytes)
+            if text:
+                render_backend = f"{render_backend}+text"
         return {
             "stage": "ocr_tesseract_fallback",
             "status": "fallback",
@@ -217,7 +313,7 @@ class TesseractOCRProcessor(BaseOCRProcessor):
             "reading_order": [],
             "formulas": [],
             "confidence": 0.70,
-            "processor": "tesseract",
+            "processor": f"tesseract+{render_backend}",
         }
 
 

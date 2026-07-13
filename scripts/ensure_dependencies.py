@@ -19,6 +19,8 @@ if str(ROOT_DIR) not in sys.path:
 
 from app.pipeline.compat import ensure_pyarrow_compat
 
+ensure_pyarrow_compat()
+
 try:
     from packaging.requirements import Requirement
 except Exception:  # pragma: no cover - packaging is normally available
@@ -56,14 +58,6 @@ OPTIONAL_PACKAGES = [
     "pytorch-lightning>=2.0.0",
 ]
 
-KAGGLE_SKIP_PREFIXES = (
-    "groundingdino",
-    "seqeval",
-    "blink",
-    "table_transformer",
-)
-
-
 def _normalize_package_spec(package_spec: str) -> str:
     normalized = package_spec.strip()
     if normalized.lower().startswith("-e "):
@@ -80,6 +74,7 @@ def _normalize_package_spec(package_spec: str) -> str:
 def _package_to_module_name(package_spec: str) -> str:
     normalized = _normalize_package_spec(package_spec).lower()
     mapping = {
+        "groundingdino-py": "groundingdino",
         "qdrant-client": "qdrant_client",
         "sentence-transformers": "sentence_transformers",
         "pydantic-settings": "pydantic_settings",
@@ -91,6 +86,10 @@ def _package_to_module_name(package_spec: str) -> str:
         "pyarrow": "pyarrow",
         "segment-anything": "segment_anything",
         "doclayout_yolo": "doclayout_yolo",
+        "surya-ocr": "surya",
+        "umap-learn": "umap",
+        "nougat-ocr": "nougat",
+        "pytesseract": "pytesseract",
     }
     for prefix, module_name in mapping.items():
         if normalized.startswith(prefix):
@@ -106,18 +105,15 @@ def _package_to_module_name(package_spec: str) -> str:
 
 
 def _is_kaggle_environment() -> bool:
-    return os.path.isdir("/kaggle") or os.environ.get("KAGGLE_ENV", "").lower() not in {"", "0", "false", "no"}
+    return bool(
+        os.path.isdir("/kaggle")
+        or os.environ.get("KAGGLE_URL_BASE", "").strip()
+        or os.environ.get("KAGGLE_KERNEL_RUN_TYPE", "").strip()
+    )
 
 
 def _should_skip_on_kaggle(package_spec: str) -> bool:
-    if not _is_kaggle_environment():
-        return False
-
-    normalized = _normalize_package_spec(package_spec).lower()
-    if normalized.startswith("git+") and "#egg=groundingdino" in normalized:
-        return True
-
-    return any(normalized.startswith(prefix) for prefix in KAGGLE_SKIP_PREFIXES)
+    return False
 
 
 def _is_package_satisfied(package_spec: str) -> bool:
@@ -156,7 +152,7 @@ def _is_package_satisfied(package_spec: str) -> bool:
             installed_version = getattr(module, "__version__", None)
 
         if not installed_version:
-            return False
+            return True
 
         return requirement.specifier.contains(installed_version, prereleases=True)
     except Exception:

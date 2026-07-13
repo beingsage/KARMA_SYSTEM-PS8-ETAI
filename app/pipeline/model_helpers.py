@@ -16,6 +16,7 @@ from PIL import Image
 from app.pipeline.compat import allow_trusted_torch_pickle
 from app.config import settings
 from app.pipeline.models import canonicalize_entity_name
+from app.pipeline.runtime import select_device
 
 MODELS_DIR = Path(__file__).resolve().parents[2] / "models"
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
@@ -128,6 +129,7 @@ class GroundingDinoDetector:
         self.model = None
         self.inference = None
         self.T = None
+        self.device = select_device()
         self.is_ready = True
         self.backend = "fallback"
 
@@ -146,7 +148,7 @@ class GroundingDinoDetector:
             if not checkpoint_path.exists():
                 download_model_checkpoint(self.MODEL_URL, checkpoint_path)
             
-            self.model = inference.load_model(str(config_path), str(checkpoint_path), device="cpu")
+            self.model = inference.load_model(str(config_path), str(checkpoint_path), device=self.device)
             self.is_ready = True
             self.backend = "groundingdino"
             print("✓ GroundingDINO detector ready")
@@ -187,7 +189,7 @@ class GroundingDinoDetector:
                     prompt,
                     box_threshold=0.3,
                     text_threshold=0.25,
-                    device="cpu",
+                    device=self.device,
                 )
                 
                 boxes = boxes * torch.Tensor([image.width, image.height, image.width, image.height])
@@ -442,6 +444,7 @@ class GLiRELRelationExtractor:
     def __init__(self, model_name: Optional[str] = None) -> None:
         self.model = None
         self.model_name = model_name or settings.glirel_model
+        self.device = select_device()
         self.is_ready = False
         self.backend = "heuristic"
 
@@ -449,7 +452,7 @@ class GLiRELRelationExtractor:
             with allow_trusted_torch_pickle():
                 from glirel import GLiREL
 
-                self.model = GLiREL.from_pretrained(self.model_name)
+                self.model = GLiREL.from_pretrained(self.model_name, map_location=self.device)
             self.is_ready = self.model is not None
             self.backend = "glirel"
             print(f"✓ GLiREL relation extractor ready: {self.model_name}")

@@ -30,8 +30,8 @@ else
   pip install --prefer-binary --index-url https://download.pytorch.org/whl/cpu "torch" "torchvision" "torchaudio" || true
 fi
 
-echo "[kaggle_setup] Installing common extras"
-pip install --prefer-binary -r "$ROOT_DIR/requirements.txt" || echo "[kaggle_setup] requirements install reported errors; continue"
+echo "[kaggle_setup] Bootstrapping repo dependencies through the managed installer"
+python "$ROOT_DIR/scripts/ensure_dependencies.py" --requirements "$ROOT_DIR/requirements.txt" --python "$(command -v python)" || echo "[kaggle_setup] dependency bootstrap reported errors; continue"
 
 echo "[kaggle_setup] Kaggle environment setup complete"
 exit 0

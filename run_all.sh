@@ -475,7 +475,12 @@ elif ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --no-build-is
   echo "  WARNING: failed to install the GLiREL/seqeval/BLINK package set; continuing."
 fi
 
-DEP_BOOTSTRAP_CMD=("$PYTHON_BIN" "$ROOT_DIR/scripts/ensure_dependencies.py" --requirements "$ROOT_DIR/requirements.txt" --python "$PYTHON_BIN")
+DEP_REQUIREMENTS_FILE="$ROOT_DIR/requirements.txt"
+if [ -z "${KAGGLE_ENV:-}" ] && [ -f "$ROOT_DIR/requirements.full.txt" ]; then
+  DEP_REQUIREMENTS_FILE="$ROOT_DIR/requirements.full.txt"
+fi
+
+DEP_BOOTSTRAP_CMD=("$PYTHON_BIN" "$ROOT_DIR/scripts/ensure_dependencies.py" --requirements "$DEP_REQUIREMENTS_FILE" --python "$PYTHON_BIN")
 if [ "${RUN_ALL_INCLUDE_OPTIONAL:-0}" = "1" ]; then
   DEP_BOOTSTRAP_CMD+=(--include-optional)
 fi
