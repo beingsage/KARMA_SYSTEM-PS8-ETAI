@@ -9,6 +9,65 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from app.config import settings
+import torch
+
+
+def _is_cuda_available() -> bool:
+    try:
+        return torch.cuda.is_available()
+    except Exception:
+        return False
+
+
+def _move_to_cuda_if_possible(obj, name: str = "model") -> None:
+    """Best-effort: move a torch module to CUDA if possible and available."""
+    if not _is_cuda_available():
+        return
+    try:
+        device = torch.device("cuda:0")
+        candidate = obj
+        for attr in ("model", "torch_model", "hf_model", "transformer", "encoder"):
+            if hasattr(candidate, attr):
+                candidate = getattr(candidate, attr)
+                break
+        import torch.nn as nn
+        if isinstance(candidate, nn.Module):
+            candidate.to(device)
+            return
+        if hasattr(obj, "to"):
+            try:
+                obj.to(device)
+                return
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+
+def _log_model_device(obj, name: str) -> None:
+    try:
+        dev = None
+        for attr in ("model", "torch_model", "hf_model", "transformer", "encoder"):
+            if hasattr(obj, attr):
+                cand = getattr(obj, attr)
+                try:
+                    dev = next(cand.parameters()).device
+                    break
+                except Exception:
+                    pass
+        if dev is None and hasattr(obj, "device"):
+            dev = getattr(obj, "device")
+        if dev is None:
+            try:
+                dev = next(obj.parameters()).device
+            except Exception:
+                dev = None
+        if dev is None:
+            dev = torch.device("cuda:0") if _is_cuda_available() else torch.device("cpu")
+        print(f"✓ {name} device: {dev}")
+    except Exception:
+        print(f"✓ {name} device: unknown")
+
 from app.pipeline.compat import allow_trusted_torch_pickle
 from app.pipeline.document_utils import chunk_text, normalize_text
 from app.pipeline.entity_linker import BlinkEntityLinker
@@ -72,6 +131,8 @@ class IndustrialGraphPipeline:
             from app.pipeline.ocr_processor import get_best_ocr_processor
 
             self.ocr_processor = get_best_ocr_processor()
+            _move_to_cuda_if_possible(self.ocr_processor, "OCR processor")
+            _log_model_device(self.ocr_processor, "OCR processor")
             print(f"✓ OCR processor ready ({self.ocr_processor.__class__.__name__})")
         except Exception as exc:
             print(f"⚠ OCR initialization failed: {type(exc).__name__} - {exc}")
@@ -80,6 +141,8 @@ class IndustrialGraphPipeline:
             from app.pipeline.entity_extractor import GlinerEntityExtractor
 
             self.entity_extractor = GlinerEntityExtractor()
+            _move_to_cuda_if_possible(self.entity_extractor, "Entity extractor")
+            _log_model_device(self.entity_extractor, "Entity extractor")
             print(f"✓ Entity extractor ready ({self.entity_extractor.__class__.__name__})")
         except Exception as exc:
             print(f"⚠ Entity extractor initialization failed: {type(exc).__name__} - {exc}")
@@ -91,6 +154,8 @@ class IndustrialGraphPipeline:
             if not getattr(relation_extractor, "is_ready", False):
                 raise RuntimeError("Relation extractor did not initialize")
             self.relation_extractor = relation_extractor
+            _move_to_cuda_if_possible(self.relation_extractor, "Relation extractor")
+            _log_model_device(self.relation_extractor, "Relation extractor")
             print(f"✓ Relation extractor ready ({self.relation_extractor.__class__.__name__})")
         except Exception as exc:
             self.relation_extractor = None
@@ -98,6 +163,8 @@ class IndustrialGraphPipeline:
 
         try:
             self.pid_symbol_detector = PIDSymbolDetector()
+            _move_to_cuda_if_possible(self.pid_symbol_detector, "PID symbol detector")
+            _log_model_device(self.pid_symbol_detector, "PID symbol detector")
             print(f"✓ PID symbol detector ready ({self.pid_symbol_detector.source})")
         except Exception as exc:
             self.pid_symbol_detector = None
@@ -105,6 +172,8 @@ class IndustrialGraphPipeline:
 
         try:
             self.grounding_dino_detector = GroundingDinoDetector()
+            _move_to_cuda_if_possible(self.grounding_dino_detector, "GroundingDINO detector")
+            _log_model_device(self.grounding_dino_detector, "GroundingDINO detector")
             print("✓ GroundingDINO detector ready")
         except Exception as exc:
             self.grounding_dino_detector = None
@@ -112,6 +181,8 @@ class IndustrialGraphPipeline:
 
         try:
             self.sam_segmenter = SamSegmenter()
+            _move_to_cuda_if_possible(self.sam_segmenter, "SAM2 segmenter")
+            _log_model_device(self.sam_segmenter, "SAM2 segmenter")
             print("✓ SAM2 segmenter ready")
         except Exception as exc:
             self.sam_segmenter = None
@@ -119,6 +190,8 @@ class IndustrialGraphPipeline:
 
         try:
             self.embedding_model = BgeEmbedder()
+            _move_to_cuda_if_possible(self.embedding_model, "BGE embedding model")
+            _log_model_device(self.embedding_model, "BGE embedding model")
             print("✓ BGE embedding model ready")
         except Exception as exc:
             self.embedding_model = None
@@ -126,6 +199,8 @@ class IndustrialGraphPipeline:
 
         try:
             self.reranker_model = BgeReranker()
+            _move_to_cuda_if_possible(self.reranker_model, "BGE reranker model")
+            _log_model_device(self.reranker_model, "BGE reranker model")
             print("✓ BGE reranker ready")
         except Exception as exc:
             self.reranker_model = None
@@ -133,6 +208,8 @@ class IndustrialGraphPipeline:
 
         try:
             self.blink_linker = BlinkEntityLinker()
+            _move_to_cuda_if_possible(self.blink_linker, "BLINK linker")
+            _log_model_device(self.blink_linker, "BLINK linker")
             print("✓ BLINK linker ready")
         except Exception as exc:
             self.blink_linker = None
@@ -170,6 +247,8 @@ class IndustrialGraphPipeline:
 
             with allow_trusted_torch_pickle():
                 self.yolo_model = YOLO("yolov8n.pt")
+            _move_to_cuda_if_possible(self.yolo_model, "YOLO model")
+            _log_model_device(self.yolo_model, "YOLO model")
             print("✓ YOLO model loaded")
         except Exception as exc:
             print(f"⚠ YOLO initialization failed: {type(exc).__name__} - {exc}")
@@ -180,6 +259,8 @@ class IndustrialGraphPipeline:
             model_path = self._resolve_model_path("yolov8n.pt")
             with allow_trusted_torch_pickle():
                 self.doclayout_yolo_detector = doclayout_yolo.YOLO(str(model_path))
+            _move_to_cuda_if_possible(self.doclayout_yolo_detector, "DocLayout-YOLO detector")
+            _log_model_device(self.doclayout_yolo_detector, "DocLayout-YOLO detector")
             print("✓ DocLayout-YOLO detector loaded")
         except Exception as exc:
             print(f"⚠ DocLayout-YOLO initialization failed: {type(exc).__name__} - {exc}")
@@ -732,9 +813,11 @@ class IndustrialGraphPipeline:
         if images:
             try:
                 from table_transformer import TableExtractionPipeline
+                from app.pipeline.runtime import select_device
 
                 if self.table_transformer_pipeline is None:
-                    self.table_transformer_pipeline = TableExtractionPipeline(det_device="cpu", str_device="cpu")
+                    device = select_device()
+                    self.table_transformer_pipeline = TableExtractionPipeline(det_device=device, str_device=device)
 
                 pipeline = self.table_transformer_pipeline
                 if pipeline.det_model is not None and pipeline.str_model is not None:

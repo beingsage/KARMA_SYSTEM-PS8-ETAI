@@ -33,11 +33,18 @@ if [ -d "/kaggle" ]; then
     export KAGGLE_ENV=1
     if [ -f "$ROOT_DIR/kaggle_setup.sh" ] && [ -z "${RUN_ALL_SKIP_KAGGLE_SETUP:-}" ]; then
       echo "  Running $ROOT_DIR/kaggle_setup.sh (this may take a few minutes)..."
-      bash "$ROOT_DIR/kaggle_setup.sh" || echo "  WARNING: kaggle_setup.sh failed; continuing in best-effort mode."
+      if bash "$ROOT_DIR/kaggle_setup.sh"; then
+        echo "  Kaggle setup script completed"
+      else
+        echo "  WARNING: kaggle_setup.sh failed; continuing in best-effort mode."
+      fi
     fi
 
     PYTHON_BIN=$(which python)
     PIP_BIN=$(which pip)
+    if "$PYTHON_BIN" -c 'import torch; print(f"[run_all] torch.cuda.is_available()={torch.cuda.is_available()}")' >/dev/null 2>&1; then
+      "$PYTHON_BIN" -c 'import torch; print(f"[run_all] torch.cuda.is_available()={torch.cuda.is_available()}")'
+    fi
 
 elif [ -x "$ROOT_DIR/.venv/bin/python" ]; then
     source "$ROOT_DIR/.venv/bin/activate"

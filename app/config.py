@@ -138,8 +138,8 @@ class Settings:
     # ============================================================================
     # Execution Mode Configuration
     # ============================================================================
-    # Options: 'cpu' (no time restriction, for local testing) or 'gpu' (optimized for speed on server)
-    execution_mode: str = get_env("EXECUTION_MODE", "cpu", _env_config).lower()
+    # Options: 'AUTO' (default), 'cpu' (force CPU), or 'gpu' (prefer GPU if available)
+    execution_mode: str = get_env("EXECUTION_MODE", "AUTO", _env_config).lower()
     
     # Device settings - can override with specific values or use AUTO for mode-based defaults
     _device_detection: str = get_env("DEVICE_FOR_DETECTION", "AUTO", _env_config)
@@ -158,11 +158,14 @@ class Settings:
 
     @classmethod
     def _resolve_device(cls, override: str, execution_mode: str) -> str:
-        if override != "AUTO":
-            normalized = override.lower()
-            if normalized.startswith("cuda"):
+        normalized = override.lower()
+        if normalized != "auto":
+            if normalized == "cpu":
+                return "cpu"
+            if normalized.startswith("cuda") or normalized == "gpu":
                 return cls._cuda_device_if_available()
-            return override
+            return normalized
+
         if execution_mode == "cpu":
             return "cpu"
         return cls._cuda_device_if_available()
@@ -207,5 +210,7 @@ settings.jobs_dir.mkdir(parents=True, exist_ok=True)
 print(f"[CONFIG] Execution Mode: {settings.execution_mode.upper()}", file=sys.stderr)
 if settings.execution_mode == "cpu":
     print("[CONFIG] Running in CPU mode (no time restrictions, for local testing)", file=sys.stderr)
+elif settings.execution_mode == "gpu":
+    print("[CONFIG] Running in GPU-preferred mode (optimized for speed)", file=sys.stderr)
 else:
-    print(f"[CONFIG] Running in GPU mode (optimized for speed)", file=sys.stderr)
+    print("[CONFIG] Running in AUTO mode: GPU if available, otherwise CPU", file=sys.stderr)

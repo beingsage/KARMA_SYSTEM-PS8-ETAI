@@ -307,13 +307,14 @@ class BgeEmbedder:
         if not texts:
             return []
 
+        device = getattr(self.model, "device", torch.device("cpu"))
         inputs = self.tokenizer(
             texts,
             return_tensors="pt",
             truncation=True,
             padding=True,
             max_length=512,
-        )
+        ).to(device)
         with torch.no_grad():
             outputs = self.model(**inputs)
 
@@ -392,7 +393,8 @@ class BgeReranker:
 
         try:
             import torch
-            inputs = self.tokenizer(query, candidate, return_tensors="pt", truncation=True, padding=True)
+            device = getattr(self.model, "device", torch.device("cpu"))
+            inputs = self.tokenizer(query, candidate, return_tensors="pt", truncation=True, padding=True).to(device)
             with torch.no_grad():
                 outputs = self.model(**inputs)
             

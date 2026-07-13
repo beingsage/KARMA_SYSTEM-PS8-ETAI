@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 from app.config import settings
 from app.pipeline.compat import allow_trusted_torch_pickle, ensure_pyarrow_compat
+from app.pipeline.runtime import select_device
 
 # ============================================================================
 # 1. QDRANT VECTOR DATABASE INTEGRATION
@@ -225,7 +226,7 @@ class Qwen3LLM:
     
     def __init__(self, load_model: bool = False):
         """Initialize Qwen 3 LLM."""
-        self.device = "cpu"
+        self.device = select_device()
         self.model_name = settings.qwen3_model
         self.tokenizer = None
         self.model = None
