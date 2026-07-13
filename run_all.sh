@@ -55,6 +55,7 @@ fi
 
 export PYTHON_BIN
 export PIP_BIN
+export PYTHONPATH="$ROOT_DIR${PYTHONPATH:+:$PYTHONPATH}"
 
 # Configure model/cache directories for Kaggle vs local
 if [ -d "/kaggle" ]; then
@@ -468,7 +469,9 @@ if ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --no-build-isol
   echo "  WARNING: failed to install requests/pyyaml for BLINK compatibility; continuing."
 fi
 
-if ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --no-build-isolation "glirel==1.2.1" "seqeval>=1.0.0,<1.3.0" "blink>=0.2.0" >/dev/null 2>&1; then
+if [ -n "${KAGGLE_ENV:-}" ]; then
+  echo "  Kaggle mode: skipping GLiREL/seqeval/BLINK package installation and using fallbacks."
+elif ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --no-build-isolation "glirel==1.2.1" "seqeval>=1.0.0,<1.3.0" "blink>=0.2.0" >/dev/null 2>&1; then
   echo "  WARNING: failed to install the GLiREL/seqeval/BLINK package set; continuing."
 fi
 
@@ -577,5 +580,5 @@ else
   NEO4J_URI="${NEO4J_URI:-bolt://localhost:7687}" \
   NEO4J_USER="${NEO4J_USER:-neo4j}" \
   NEO4J_PASSWORD="${NEO4J_PASSWORD:-industrial_graph_password}" \
-    "$PYTHON_BIN" -m uvicorn app.main:app --host 0.0.0.0 --port 8001
+    "$PYTHON_BIN" -m uvicorn --app-dir "$ROOT_DIR" app.main:app --host 0.0.0.0 --port 8001
 fi

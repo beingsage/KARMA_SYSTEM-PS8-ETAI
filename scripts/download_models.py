@@ -79,6 +79,8 @@ def download_all_models():
             if ready:
                 if backend == "heuristic":
                     print(f"  ⚠ {model_name} initialized with heuristic fallback")
+                elif backend == "fallback":
+                    print(f"  ⚠ {model_name} initialized with fallback")
                 else:
                     print(f"  ✓ {model_name} initialized successfully")
                 successful += 1

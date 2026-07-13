@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import importlib
+import os
 from importlib import metadata
 import subprocess
 import sys
@@ -55,6 +56,13 @@ OPTIONAL_PACKAGES = [
     "pytorch-lightning>=2.0.0",
 ]
 
+KAGGLE_SKIP_PREFIXES = (
+    "groundingdino",
+    "seqeval",
+    "blink",
+    "table_transformer",
+)
+
 
 def _normalize_package_spec(package_spec: str) -> str:
     normalized = package_spec.strip()
@@ -97,8 +105,26 @@ def _package_to_module_name(package_spec: str) -> str:
     return normalized.split("[", 1)[0].split("=", 1)[0].split(">", 1)[0].split("<", 1)[0].replace("-", "_")
 
 
+def _is_kaggle_environment() -> bool:
+    return os.path.isdir("/kaggle") or os.environ.get("KAGGLE_ENV", "").lower() not in {"", "0", "false", "no"}
+
+
+def _should_skip_on_kaggle(package_spec: str) -> bool:
+    if not _is_kaggle_environment():
+        return False
+
+    normalized = _normalize_package_spec(package_spec).lower()
+    if normalized.startswith("git+") and "#egg=groundingdino" in normalized:
+        return True
+
+    return any(normalized.startswith(prefix) for prefix in KAGGLE_SKIP_PREFIXES)
+
+
 def _is_package_satisfied(package_spec: str) -> bool:
     module_name = _package_to_module_name(package_spec)
+
+    if _should_skip_on_kaggle(package_spec):
+        return True
 
     try:
         if package_spec.lower().startswith("pyarrow"):
@@ -196,10 +222,8 @@ def ensure_dependencies(
         include_optional=False,
     )
 
-    import os
-
     # Kaggle already provides CUDA-enabled PyTorch.
-    if os.path.isdir("/kaggle"):
+    if _is_kaggle_environment():
         missing_packages = [
             pkg
             for pkg in missing_packages
@@ -216,8 +240,8 @@ def ensure_dependencies(
     failed_packages: list[str] = []
     for package in missing_packages:
         normalized_package = _normalize_package_spec(package).lower()
-        if os.path.isdir("/kaggle") and "groundingdino" in normalized_package:
-            print(f"  SKIP: skipping {package} on Kaggle; GroundingDINO will remain unavailable")
+        if _should_skip_on_kaggle(package):
+            print(f"  SKIP: skipping {package} on Kaggle; fallback behavior will be used")
             failed_packages.append(package)
             continue
 

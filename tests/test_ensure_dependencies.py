@@ -101,3 +101,19 @@ def test_find_missing_dependencies_accepts_compatible_pyarrow(monkeypatch):
     assert ensure_pyarrow_compat() is True
     assert hasattr(fake_pyarrow, "PyExtensionType")
     assert ensure_dependencies.find_missing_dependencies(["pyarrow==15.0.2"]) == []
+
+
+def test_find_missing_dependencies_skips_kaggle_fallback_packages(monkeypatch):
+    monkeypatch.setenv("KAGGLE_ENV", "1")
+
+    missing = ensure_dependencies.find_missing_dependencies(
+        [
+            "git+https://github.com/IDEA-Research/GroundingDINO.git@main#egg=groundingdino",
+            "seqeval>=1.0.0,<1.3.0",
+            "blink>=0.2.0",
+            "table_transformer>=1.0.6",
+            "fakepkg==1.0",
+        ]
+    )
+
+    assert missing == ["fakepkg==1.0"]

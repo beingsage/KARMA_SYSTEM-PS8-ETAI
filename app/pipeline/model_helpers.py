@@ -128,6 +128,8 @@ class GroundingDinoDetector:
         self.model = None
         self.inference = None
         self.T = None
+        self.is_ready = True
+        self.backend = "fallback"
 
         try:
             import groundingdino
@@ -145,12 +147,16 @@ class GroundingDinoDetector:
                 download_model_checkpoint(self.MODEL_URL, checkpoint_path)
             
             self.model = inference.load_model(str(config_path), str(checkpoint_path), device="cpu")
+            self.is_ready = True
+            self.backend = "groundingdino"
             print("✓ GroundingDINO detector ready")
         except Exception as e:
-            print(f"✗ GroundingDINO initialization failed: {e}")
+            print(f"⚠ GroundingDINO initialization failed: {e}; using empty-detection fallback")
             self.model = None
             self.inference = None
             self.T = None
+            self.is_ready = True
+            self.backend = "fallback"
 
     def _prepare_image(self, image: Image.Image) -> Any:
         """Prepare image for GroundingDINO inference."""
@@ -553,16 +559,19 @@ class BlinkEntityLinker:
         self.model = None
         self.model_name = model_name or settings.blink_model
         self.blink_available = False
-        self.is_ready = False
+        self.is_ready = True
+        self.backend = "fallback"
 
         try:
             import blink
             self.blink_available = True
             self.is_ready = True
+            self.backend = "blink"
             print("✓ BLINK entity linker ready")
         except Exception:
             self.blink_available = False
-            self.is_ready = False
+            self.is_ready = True
+            self.backend = "fallback"
             print("⚠ BLINK unavailable; using lightweight lexical fallback")
 
     @staticmethod
