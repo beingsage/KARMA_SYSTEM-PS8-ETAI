@@ -8,6 +8,7 @@ import json
 import importlib
 import os
 from importlib import metadata
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -69,6 +70,64 @@ def _normalize_package_spec(package_spec: str) -> str:
         return normalized
 
     return normalized
+
+
+def _is_pytorch_package(package_spec: str) -> bool:
+    normalized = _normalize_package_spec(package_spec).lower()
+    return normalized.startswith("torch") or normalized.startswith("torchvision") or normalized.startswith("torchaudio")
+
+
+def _cuda_tag_for_environment() -> str:
+    if os.environ.get("PYTORCH_CUDA_TAG"):
+        return os.environ["PYTORCH_CUDA_TAG"]
+    if _is_kaggle_environment():
+        return ""
+    if shutil.which("nvidia-smi"):
+        return "cu118"
+    return "cpu"
+
+
+def _pytorch_install_cmd(package: str) -> list[str]:
+    base = _normalize_package_spec(package)
+    version = base.split("==", 1)[1] if "==" in base else base
+    tag = _cuda_tag_for_environment()
+    if tag:
+        if base.startswith("torch") or base.startswith("torchvision"):
+            return [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "--prefer-binary",
+                "--only-binary=:all:",
+                "--no-cache-dir",
+                f"{base}+{tag}",
+                "--extra-index-url",
+                f"https://download.pytorch.org/whl/{tag}",
+            ]
+        if base.startswith("torchaudio"):
+            return [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "--prefer-binary",
+                "--only-binary=:all:",
+                "--no-cache-dir",
+                f"{base}+{tag}",
+                "--extra-index-url",
+                f"https://download.pytorch.org/whl/{tag}",
+            ]
+    return [
+        sys.executable,
+        "-m",
+        "pip",
+        "install",
+        "--prefer-binary",
+        "--only-binary=:all:",
+        "--no-cache-dir",
+        package,
+    ]
 
 
 def _package_to_module_name(package_spec: str) -> str:
@@ -262,18 +321,20 @@ def ensure_dependencies(
                 "--no-cache-dir",
                 "pyarrow==15.0.2",
             ]
-        elif normalized_package.startswith("torch"):
-            # Keep torch installation as-is; Kaggle setup handles GPU/CPU variants separately.
-            install_cmd = [
-                python_bin,
-                "-m",
-                "pip",
-                "install",
-                "--prefer-binary",
-                "--only-binary=:all:",
-                "--no-cache-dir",
-                package,
-            ]
+        elif _is_pytorch_package(package):
+            if _is_kaggle_environment():
+                install_cmd = [
+                    python_bin,
+                    "-m",
+                    "pip",
+                    "install",
+                    "--prefer-binary",
+                    "--only-binary=:all:",
+                    "--no-cache-dir",
+                    package,
+                ]
+            else:
+                install_cmd = _pytorch_install_cmd(package)
         result = subprocess.run(install_cmd, capture_output=True, text=True)
         if result.returncode != 0:
             failed_packages.append(package)

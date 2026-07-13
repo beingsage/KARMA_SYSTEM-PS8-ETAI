@@ -72,6 +72,19 @@ def health() -> dict[str, object]:
 @app.on_event("startup")
 async def warm_pipeline() -> None:
     """Preload the main pipeline so the first request doesn't pay bootstrap cost."""
+    # Run environment validation checks first (fail-fast on critical issues)
+    try:
+        from scripts.check_environment import run_all_checks
+
+        ok = await asyncio.to_thread(run_all_checks)
+        if not ok:
+            raise RuntimeError("Environment validation failed. See startup logs for details.")
+    except Exception as exc:
+        # If checks cannot run, fail startup to avoid unpredictable runtime errors
+        print(f"[startup] Environment validation error: {exc}")
+        raise
+
+    # Warm pipeline and advanced models after environment validated
     await asyncio.to_thread(get_pipeline)
     await asyncio.to_thread(get_advanced_models)
 

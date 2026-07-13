@@ -89,6 +89,12 @@ load_env_file() {
 
 load_env_file
 
+export NEO4J_USERNAME="${NEO4J_USERNAME:-${NEO4J_USER:-neo4j}}"
+export NEO4J_USER="${NEO4J_USERNAME}"
+export NEO4J_PASSWORD="${NEO4J_PASSWORD:-industrial_graph_password}"
+export NEO4J_INITIAL_PASSWORD="${NEO4J_INITIAL_PASSWORD:-neo4j}"
+export NEO4J_AUTH="${NEO4J_USERNAME}/${NEO4J_PASSWORD}"
+
 # ============================================================================
 # 2. CHECK BACKEND SERVICE MODE
 # ============================================================================
@@ -255,13 +261,37 @@ start_qdrant_local() {
   fi
 }
 
+docker_neo4j_container_id() {
+  docker compose ps -q neo4j 2>/dev/null || true
+}
+
+docker_neo4j_password_ok() {
+  local container_id
+  container_id="$(docker_neo4j_container_id)"
+  if [ -z "$container_id" ]; then
+    return 1
+  fi
+  docker exec "$container_id" cypher-shell -u "$NEO4J_USERNAME" -p "$NEO4J_PASSWORD" "RETURN 1;" >/dev/null 2>&1
+}
+
+rotate_docker_neo4j_password() {
+  local container_id
+  container_id="$(docker_neo4j_container_id)"
+  if [ -z "$container_id" ]; then
+    return 1
+  fi
+  docker exec "$container_id" cypher-shell -u "$NEO4J_USERNAME" -p "$NEO4J_INITIAL_PASSWORD" \
+    "ALTER CURRENT USER SET PASSWORD FROM '$NEO4J_INITIAL_PASSWORD' TO '$NEO4J_PASSWORD';" >/dev/null 2>&1
+}
+
 start_neo4j_local() {
   echo "  Preparing native Neo4j..."
   local neo4j_dir="$OPEN_SOURCE_DIR/neo4j"
   local tarball="$OPEN_SOURCE_DIR/downloads/neo4j.tar.gz"
   local neo4j_version="5.15.0"
-  local neo4j_user="${NEO4J_USER:-neo4j}"
+  local neo4j_username="${NEO4J_USERNAME:-${NEO4J_USER:-neo4j}}"
   local neo4j_password="${NEO4J_PASSWORD:-industrial_graph_password}"
+  local neo4j_initial_password="${NEO4J_INITIAL_PASSWORD:-neo4j}"
 
   if [ ! -x "$neo4j_dir/bin/neo4j" ]; then
     rm -rf "$neo4j_dir"
@@ -272,7 +302,7 @@ start_neo4j_local() {
 
   if [ ! -d "$neo4j_dir/data/databases/neo4j" ]; then
     echo "  Configuring initial Neo4j password"
-    env NEO4J_AUTH="${neo4j_user}/${neo4j_password}" "$neo4j_dir/bin/neo4j-admin" set-initial-password "$neo4j_password" >/dev/null 2>&1 || true
+    env NEO4J_AUTH="${neo4j_username}/${neo4j_password}" "$neo4j_dir/bin/neo4j-admin" set-initial-password "$neo4j_password" >/dev/null 2>&1 || true
   fi
 
   if ! command -v java >/dev/null 2>&1; then
@@ -304,10 +334,23 @@ EOF
   if ! port_is_open "127.0.0.1" 7687; then
     echo "  Starting Neo4j on localhost:7687"
     cd "$neo4j_dir"
-    nohup env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes NEO4J_AUTH="${neo4j_user}/${neo4j_password}" ./bin/neo4j console >/dev/null 2>&1 &
+    nohup env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes NEO4J_AUTH="${neo4j_username}/${neo4j_password}" ./bin/neo4j console >/dev/null 2>&1 &
     disown
   else
     echo "  Neo4j already running"
+  fi
+
+  # If Neo4j started but the password is expired on first login, rotate it automatically.
+  if port_is_open "127.0.0.1" 7687; then
+    sleep 5
+    if ! "$neo4j_dir/bin/cypher-shell" -u "$neo4j_username" -p "$neo4j_password" "RETURN 1;" >/dev/null 2>&1; then
+      echo "  Neo4j authentication failed; attempting password rotation from initial password"
+      if "$neo4j_dir/bin/cypher-shell" -u "$neo4j_username" -p "$neo4j_initial_password" "ALTER CURRENT USER SET PASSWORD FROM '$neo4j_initial_password' TO '$neo4j_password';" >/dev/null 2>&1; then
+        echo "  ✓ Neo4j password rotated successfully"
+      else
+        echo "  WARNING: Neo4j password rotation failed; verify NEO4J_INITIAL_PASSWORD and NEO4J_PASSWORD"
+      fi
+    fi
   fi
 }
 
@@ -322,12 +365,38 @@ start_native_backends() {
   wait_for_port "Neo4j" "127.0.0.1" 7687 180 || true
 
   export NEO4J_URI="bolt://localhost:7687"
-  export NEO4J_USER="${NEO4J_USER:-neo4j}"
+  export NEO4J_USER="${NEO4J_USERNAME:-${NEO4J_USER:-neo4j}}"
   export NEO4J_PASSWORD="${NEO4J_PASSWORD:-industrial_graph_password}"
   export QDRANT_HOST="localhost"
   export QDRANT_PORT="6333"
   export REDIS_HOST="localhost"
   export REDIS_PORT="6379"
+}
+
+install_torch_wheels() {
+  if [ -n "${KAGGLE_ENV:-}" ]; then
+    echo "  Kaggle environment detected; skipping explicit torch wheel installation."
+    return 0
+  fi
+
+  local torch_version="2.10.0"
+  local torchvision_version="0.25.0"
+  local torchaudio_version="2.10.0"
+  local cuda_tag="cpu"
+
+  if [ "${EXECUTION_MODE:-cpu}" = "gpu" ] && command -v nvidia-smi >/dev/null 2>&1; then
+    cuda_tag="cu118"
+  fi
+
+  if [ "$cuda_tag" = "cpu" ]; then
+    echo "  Installing CPU PyTorch wheels"
+    "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu \
+      "torch==${torch_version}+cpu" "torchvision==${torchvision_version}+cpu" "torchaudio==${torchaudio_version}" || true
+  else
+    echo "  Installing GPU PyTorch wheels ($cuda_tag)"
+    "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --extra-index-url https://download.pytorch.org/whl/${cuda_tag} \
+      "torch==${torch_version}+${cuda_tag}" "torchvision==${torchvision_version}+${cuda_tag}" "torchaudio==${torchaudio_version}" || true
+  fi
 }
 
 if [ "$LOCAL_BACKENDS_MODE" = true ]; then
@@ -352,6 +421,15 @@ else
     echo "  Starting backing services (Neo4j, Qdrant, Redis)..."
     docker compose rm -sf neo4j qdrant redis >/dev/null 2>&1 || true
     docker compose up -d neo4j qdrant redis 2>/dev/null || true
+
+    if ! docker_neo4j_password_ok; then
+      echo "  Docker Neo4j auth failed; attempting password rotation..."
+      if rotate_docker_neo4j_password; then
+        echo "  ✓ Docker Neo4j password rotated successfully"
+      else
+        echo "  WARNING: Docker Neo4j password rotation failed; verify NEO4J_INITIAL_PASSWORD and NEO4J_PASSWORD"
+      fi
+    fi
   fi
 fi
 
@@ -443,6 +521,8 @@ fi
 # ============================================================================
 echo "[3/6] Installing Python dependencies..."
 
+install_torch_wheels
+
 echo "  Installing GLiREL / seqeval / BLINK compatibility packages..."
 if ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --upgrade pip setuptools wheel >/dev/null 2>&1; then
   echo "  WARNING: pip toolchain upgrade failed; continuing with existing environment."
@@ -475,9 +555,18 @@ elif ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --no-build-is
   echo "  WARNING: failed to install the GLiREL/seqeval/BLINK package set; continuing."
 fi
 
-DEP_REQUIREMENTS_FILE="$ROOT_DIR/requirements.txt"
-if [ -z "${KAGGLE_ENV:-}" ] && [ -f "$ROOT_DIR/requirements.full.txt" ]; then
-  DEP_REQUIREMENTS_FILE="$ROOT_DIR/requirements.full.txt"
+DEP_REQUIREMENTS_FILE="$ROOT_DIR/requirements.lock"
+if [ ! -f "$DEP_REQUIREMENTS_FILE" ]; then
+  DEP_REQUIREMENTS_FILE="$ROOT_DIR/requirements.txt"
+  if [ -z "${KAGGLE_ENV:-}" ] && [ -f "$ROOT_DIR/requirements.full.txt" ]; then
+    DEP_REQUIREMENTS_FILE="$ROOT_DIR/requirements.full.txt"
+  fi
+fi
+
+if [ "$DEP_REQUIREMENTS_FILE" = "$ROOT_DIR/requirements.lock" ]; then
+  echo "  Using locked dependency file: requirements.lock"
+else
+  echo "  Using dependency file: $(basename "$DEP_REQUIREMENTS_FILE")"
 fi
 
 DEP_BOOTSTRAP_CMD=("$PYTHON_BIN" "$ROOT_DIR/scripts/ensure_dependencies.py" --requirements "$DEP_REQUIREMENTS_FILE" --python "$PYTHON_BIN")

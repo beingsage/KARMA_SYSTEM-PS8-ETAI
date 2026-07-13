@@ -64,8 +64,13 @@ class Settings:
     
     # Neo4j
     neo4j_uri: str = get_env("NEO4J_URI", "bolt://localhost:7687", _env_config)
-    neo4j_user: str = get_env("NEO4J_USER", "neo4j", _env_config)
+    neo4j_user: str = get_env(
+        "NEO4J_USER",
+        get_env("NEO4J_USERNAME", "neo4j", _env_config),
+        _env_config,
+    )
     neo4j_password: str = get_env("NEO4J_PASSWORD", "industrial_graph_password", _env_config)
+    neo4j_initial_password: str = get_env("NEO4J_INITIAL_PASSWORD", "neo4j", _env_config)
     
     # LLM models
     qwen_model: str = get_env("QWEN_MODEL", "Qwen/Qwen2.5-0.5B-Instruct", _env_config)
