@@ -1,0 +1,5 @@
+-r base.txt
+graphrag==3.1.0
+langgraph==0.2.76
+langchain==0.3.0
+langchain-community==0.4.2

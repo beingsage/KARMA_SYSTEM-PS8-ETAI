@@ -1,0 +1,6 @@
+-r base.txt
+transformers==4.57.6
+sentence-transformers==5.6.0
+gliner==0.2.27
+glirel==1.2.1
+blink==0.2.0

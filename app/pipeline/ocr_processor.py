@@ -56,13 +56,49 @@ class DoclingOCRProcessor(BaseOCRProcessor):
             return True
 
         try:
+            # Try the most common import first
             import surya.input.processing as surya_input
-            from surya.layout import LayoutPredictor
-            from surya.table_rec import TableRecPredictor
+            layout_cls = None
+            table_cls = None
+
+            try:
+                from surya.layout import LayoutPredictor
+                layout_cls = LayoutPredictor
+            except Exception:
+                # fallback lookups: inspect surya module for layout-like classes
+                try:
+                    import surya as _surya
+                    for name in dir(_surya):
+                        if "Layout" in name or "layout" in name:
+                            candidate = getattr(_surya, name)
+                            if callable(candidate):
+                                layout_cls = candidate
+                                break
+                except Exception:
+                    pass
+
+            try:
+                from surya.table_rec import TableRecPredictor
+                table_cls = TableRecPredictor
+            except Exception:
+                # best-effort fallback: try to find a table predictor in surya
+                try:
+                    import surya as _surya
+                    for name in dir(_surya):
+                        if "Table" in name or "table" in name:
+                            candidate = getattr(_surya, name)
+                            if callable(candidate):
+                                table_cls = candidate
+                                break
+                except Exception:
+                    pass
+
+            if layout_cls is None or table_cls is None:
+                raise ImportError("Surya API mismatch: required classes not found")
 
             self.surya_input = surya_input
-            self.layout_predictor = LayoutPredictor()
-            self.table_predictor = TableRecPredictor()
+            self.layout_predictor = layout_cls()
+            self.table_predictor = table_cls()
             self.surya_ready = True
             print("✓ Surya layout and table extraction initialized")
             return True

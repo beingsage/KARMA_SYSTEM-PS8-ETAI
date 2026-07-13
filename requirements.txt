@@ -1,2 +1,3 @@
-# Install the pinned, reproducible runtime stack from the lockfile.
--r requirements.lock
+# Install the full layered runtime stack.
+# Use requirements.lock for a reproduction lockfile if you need exact environment parity.
+-r requirements/all.txt

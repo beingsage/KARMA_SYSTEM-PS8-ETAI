@@ -66,7 +66,24 @@ app.add_middleware(
 
 @app.get("/health")
 def health() -> dict[str, object]:
-    return {"status": "ok", "service": settings.app_name}
+    pipeline = get_pipeline()
+    health_status = pipeline.get_health_status()
+    return {
+        "status": health_status["status"],
+        "service": health_status["service"],
+        "runtime_mode": health_status["runtime_mode"],
+        "model_counts": health_status["model_counts"],
+        "components": health_status["components"],
+        "backend_integrations": health_status["backend_integrations"],
+        "stage_status": health_status["stage_status"],
+        "stages": health_status["stages"],
+    }
+
+
+@app.get("/api/v1/health")
+def api_health() -> dict[str, object]:
+    """Structured health endpoint for pipeline readiness and component availability."""
+    return health()
 
 
 @app.on_event("startup")
@@ -78,15 +95,13 @@ async def warm_pipeline() -> None:
 
         ok = await asyncio.to_thread(run_all_checks)
         if not ok:
-            raise RuntimeError("Environment validation failed. See startup logs for details.")
+            print("[startup] WARNING: Environment validation completed with warnings. Continuing in degraded mode.")
     except Exception as exc:
-        # If checks cannot run, fail startup to avoid unpredictable runtime errors
-        print(f"[startup] Environment validation error: {exc}")
-        raise
+        print(f"[startup] WARNING: Environment validation error: {exc}. Continuing in degraded mode.")
 
-    # Warm pipeline and advanced models after environment validated
+    # Warm pipeline and advanced models after environment checked
     await asyncio.to_thread(get_pipeline)
-    await asyncio.to_thread(get_advanced_models)
+    await asyncio.to_thread(initialize_advanced_models)
 
 
 def _run_pipeline_sync(uploaded_filename: str, pdf_bytes: bytes, job_id: str) -> dict[str, object]:

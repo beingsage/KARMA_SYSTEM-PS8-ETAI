@@ -1,0 +1,6 @@
+-r vision.txt
+-r document.txt
+-r nlp.txt
+-r graph.txt
+-r analytics.txt
+-r agent.txt

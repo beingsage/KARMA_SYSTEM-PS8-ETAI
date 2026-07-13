@@ -104,6 +104,15 @@ source .venv/bin/activate
 # 2. Install dependencies
 pip install -r requirements.txt
 
+# Optional: install layer-by-layer
+./scripts/install_base.sh
+./scripts/install_vision.sh
+./scripts/install_document.sh
+./scripts/install_nlp.sh
+./scripts/install_graph.sh
+./scripts/install_analytics.sh
+./scripts/install_agents.sh
+
 # 3. Download models
 python scripts/download_models.py
 

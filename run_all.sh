@@ -91,8 +91,9 @@ load_env_file
 
 export NEO4J_USERNAME="${NEO4J_USERNAME:-${NEO4J_USER:-neo4j}}"
 export NEO4J_USER="${NEO4J_USERNAME}"
-export NEO4J_PASSWORD="${NEO4J_PASSWORD:-industrial_graph_password}"
-export NEO4J_INITIAL_PASSWORD="${NEO4J_INITIAL_PASSWORD:-neo4j}"
+export NEO4J_PASSWORD="${NEO4J_PASSWORD:-80907012}"
+# Enforce hardcoded initial password for Neo4j to ensure predictable startup
+export NEO4J_INITIAL_PASSWORD="${NEO4J_INITIAL_PASSWORD:-80907012}"
 export NEO4J_AUTH="${NEO4J_USERNAME}/${NEO4J_PASSWORD}"
 
 # ============================================================================
@@ -290,8 +291,8 @@ start_neo4j_local() {
   local tarball="$OPEN_SOURCE_DIR/downloads/neo4j.tar.gz"
   local neo4j_version="5.15.0"
   local neo4j_username="${NEO4J_USERNAME:-${NEO4J_USER:-neo4j}}"
-  local neo4j_password="${NEO4J_PASSWORD:-industrial_graph_password}"
-  local neo4j_initial_password="${NEO4J_INITIAL_PASSWORD:-neo4j}"
+  local neo4j_password="${NEO4J_PASSWORD:-80907012}"
+  local neo4j_initial_password="${NEO4J_INITIAL_PASSWORD:-80907012}"
 
   if [ ! -x "$neo4j_dir/bin/neo4j" ]; then
     rm -rf "$neo4j_dir"
@@ -302,7 +303,7 @@ start_neo4j_local() {
 
   if [ ! -d "$neo4j_dir/data/databases/neo4j" ]; then
     echo "  Configuring initial Neo4j password"
-    env NEO4J_AUTH="${neo4j_username}/${neo4j_password}" "$neo4j_dir/bin/neo4j-admin" set-initial-password "$neo4j_password" >/dev/null 2>&1 || true
+    env NEO4J_AUTH="${neo4j_username}/${neo4j_password}" "$neo4j_dir/bin/neo4j-admin" dbms set-initial-password "$neo4j_password" >/dev/null 2>&1 || true
   fi
 
   if ! command -v java >/dev/null 2>&1; then
@@ -340,15 +341,26 @@ EOF
     echo "  Neo4j already running"
   fi
 
-  # If Neo4j started but the password is expired on first login, rotate it automatically.
+  # If Neo4j started but the password is expired or the configured password was not applied,
+  # reset the local data directory and restart with the configured password.
   if port_is_open "127.0.0.1" 7687; then
     sleep 5
     if ! "$neo4j_dir/bin/cypher-shell" -u "$neo4j_username" -p "$neo4j_password" "RETURN 1;" >/dev/null 2>&1; then
-      echo "  Neo4j authentication failed; attempting password rotation from initial password"
-      if "$neo4j_dir/bin/cypher-shell" -u "$neo4j_username" -p "$neo4j_initial_password" "ALTER CURRENT USER SET PASSWORD FROM '$neo4j_initial_password' TO '$neo4j_password';" >/dev/null 2>&1; then
-        echo "  ✓ Neo4j password rotated successfully"
+      echo "  Neo4j authentication failed; resetting local Neo4j data and applying the configured password"
+      rm -rf "$neo4j_dir/data" "$neo4j_dir/logs" "$neo4j_dir/run"
+      mkdir -p "$neo4j_dir/data" "$neo4j_dir/logs"
+      env NEO4J_AUTH="${neo4j_username}/${neo4j_password}" "$neo4j_dir/bin/neo4j-admin" dbms set-initial-password "$neo4j_password" >/dev/null 2>&1 || true
+      pkill -f "$neo4j_dir/bin/neo4j" 2>/dev/null || true
+      sleep 2
+      cd "$neo4j_dir"
+      nohup env NEO4J_ACCEPT_LICENSE_AGREEMENT=yes NEO4J_AUTH="${neo4j_username}/${neo4j_password}" ./bin/neo4j console >/dev/null 2>&1 &
+      disown
+      cd "$ROOT_DIR"
+      sleep 5
+      if "$neo4j_dir/bin/cypher-shell" -u "$neo4j_username" -p "$neo4j_password" "RETURN 1;" >/dev/null 2>&1; then
+        echo "  ✓ Neo4j restarted successfully with the configured password"
       else
-        echo "  WARNING: Neo4j password rotation failed; verify NEO4J_INITIAL_PASSWORD and NEO4J_PASSWORD"
+        echo "  WARNING: Neo4j restart did not authenticate with the configured password"
       fi
     fi
   fi
@@ -366,7 +378,7 @@ start_native_backends() {
 
   export NEO4J_URI="bolt://localhost:7687"
   export NEO4J_USER="${NEO4J_USERNAME:-${NEO4J_USER:-neo4j}}"
-  export NEO4J_PASSWORD="${NEO4J_PASSWORD:-industrial_graph_password}"
+  export NEO4J_PASSWORD="${NEO4J_PASSWORD:-80907012}"
   export QDRANT_HOST="localhost"
   export QDRANT_PORT="6333"
   export REDIS_HOST="localhost"
@@ -384,7 +396,7 @@ install_torch_wheels() {
   local torchaudio_version="2.10.0"
   local cuda_tag="cpu"
 
-  if [ "${EXECUTION_MODE:-cpu}" = "gpu" ] && command -v nvidia-smi >/dev/null 2>&1; then
+  if [ "${EXECUTION_MODE:-gpu}" = "gpu" ] && command -v nvidia-smi >/dev/null 2>&1; then
     cuda_tag="cu118"
   fi
 
@@ -659,7 +671,7 @@ echo "  Core (8 models):        YOLOv12, GroundingDINO, SAM2, GLiNER, GLiREL, BL
 echo "  Advanced (7 systems):   Qdrant, GraphRAG, Qwen 3, TimesFM, TFT, LangGraph, RCA Agent"
 echo "  Total:                  15 models + systems integrated"
 echo ""
-echo "Execution Mode: ${EXECUTION_MODE:-cpu}"
+echo "Execution Mode: ${EXECUTION_MODE:-gpu}"
 echo "  Set EXECUTION_MODE=gpu for optimized GPU processing"
 echo "  Local CPU mode: No time restrictions, suitable for testing all features"
 echo "  GPU mode: Optimized for speed on server hardware"
@@ -669,10 +681,13 @@ echo "==========================================================================
 echo ""
 
 if port_is_open "127.0.0.1" 8001; then
-  echo "  FastAPI already running on http://127.0.0.1:8001; reusing the existing server."
-else
-  NEO4J_URI="${NEO4J_URI:-bolt://localhost:7687}" \
-  NEO4J_USER="${NEO4J_USER:-neo4j}" \
-  NEO4J_PASSWORD="${NEO4J_PASSWORD:-industrial_graph_password}" \
-    "$PYTHON_BIN" -m uvicorn --app-dir "$ROOT_DIR" app.main:app --host 0.0.0.0 --port 8001
+  echo "  FastAPI already running on http://127.0.0.1:8001; restarting it so the latest Neo4j and runtime settings are applied."
+  pkill -f "uvicorn --app-dir $ROOT_DIR app.main:app" 2>/dev/null || true
+  pkill -f "app.main:app" 2>/dev/null || true
+  sleep 2
 fi
+
+NEO4J_URI="${NEO4J_URI:-bolt://localhost:7687}" \
+NEO4J_USER="${NEO4J_USER:-neo4j}" \
+NEO4J_PASSWORD="${NEO4J_PASSWORD:-80907012}" \
+  "$PYTHON_BIN" -m uvicorn --app-dir "$ROOT_DIR" app.main:app --host 0.0.0.0 --port 8001

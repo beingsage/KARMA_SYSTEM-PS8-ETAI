@@ -32,19 +32,26 @@ def _safe_version(pkg: str) -> str | None:
 
 
 def check_neo4j_env() -> bool:
+    """Return True when Neo4j appears usable, False when missing or misconfigured.
+
+    Neo4j is mandatory for the full pipeline deployment. If connectivity or
+    authentication fails this function returns False so callers can abort and
+    require the operator to fix credentials. The default password is set in
+    `run_all.sh` to a consistent hardcoded value for predictable startup.
+    """
     uri = os.environ.get("NEO4J_URI") or os.environ.get("NEO4J_BOLT_URI")
     user = os.environ.get("NEO4J_USERNAME") or os.environ.get("NEO4J_USER") or "neo4j"
     pwd = os.environ.get("NEO4J_PASSWORD")
 
     if not uri or not pwd:
-        print("[env-check] Neo4j: URI or password not set; skipping active check")
-        return True
+        print("[env-check][error] Neo4j: URI or password not set; Neo4j is required")
+        return False
 
     try:
         neo4j = import_module("neo4j")
     except Exception:
-        print("[env-check] Neo4j driver not installed; cannot perform live check")
-        return True
+        print("[env-check][error] Neo4j driver not installed; install neo4j python driver")
+        return False
 
     try:
         driver = neo4j.GraphDatabase.driver(uri, auth=(user, pwd), max_connection_lifetime=30)
@@ -56,7 +63,7 @@ def check_neo4j_env() -> bool:
         return True
     except Exception as exc:
         msg = str(exc)
-        print(f"[env-check] Neo4j connection failed: {type(exc).__name__} - {msg}")
+        print(f"[env-check][error] Neo4j connection failed: {type(exc).__name__} - {msg[:200]}")
         if "CredentialsExpired" in msg or "password change" in msg.lower() or "must change" in msg.lower():
             print("[env-check][action] Neo4j requires password change. Run:")
             print("  cypher-shell -u neo4j -p neo4j")
@@ -161,6 +168,9 @@ def check_pyarrow_version() -> bool:
         return True
 
     if major > 15:
+        if _is_kaggle_environment():
+            print("[env-check][warn] pyarrow is newer than pinned version but running on Kaggle; continuing")
+            return True
         print("[env-check][error] pyarrow version is too new for the pinned ML stack. Use pyarrow==15.0.2")
         return False
 

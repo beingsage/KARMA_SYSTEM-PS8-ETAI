@@ -67,6 +67,15 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+# Optional: install by layer
+./scripts/install_base.sh
+./scripts/install_vision.sh
+./scripts/install_document.sh
+./scripts/install_nlp.sh
+./scripts/install_graph.sh
+./scripts/install_analytics.sh
+./scripts/install_agents.sh
+
 ### 2. Download All Models (Optional but Recommended)
 
 Pre-download all models to avoid delays during first run:

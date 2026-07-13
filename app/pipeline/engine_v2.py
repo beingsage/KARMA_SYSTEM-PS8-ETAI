@@ -212,6 +212,54 @@ class IndustrialGraphPipeline:
 
         return "unavailable"
 
+    def get_health_status(self) -> Dict[str, Any]:
+        loaded_components = {
+            "ocr": self.ocr_processor is not None,
+            "entity_extractor": self.entity_extractor is not None,
+            "relation_extractor": self.relation_extractor is not None,
+            "neo4j": self.graph_store is not None and getattr(self.graph_store, "connected", False),
+            "rag_summarizer": self.rag_summarizer is not None,
+            "copilot_agent": self.copilot_agent is not None,
+            "yolo": self.yolo_model is not None,
+            "pid_symbol_detector": self.pid_symbol_detector is not None,
+            "groundingdino": self.grounding_dino_detector is not None,
+            "sam": self.sam_segmenter is not None,
+            "embeddings": self.embedding_model is not None,
+            "reranker": self.reranker_model is not None,
+            "blink": self.blink_linker is not None,
+        }
+
+        try:
+            import qdrant_client  # type: ignore
+            qdrant_installed = True
+        except Exception:
+            qdrant_installed = False
+
+        try:
+            import redis  # type: ignore
+            redis_installed = True
+        except Exception:
+            redis_installed = False
+
+        return {
+            "service": settings.app_name,
+            "status": "ready" if self.model_mode in {"best-model-stack", "hybrid-fallback-stack", "partial-stack", "ocr-only"} else "unavailable",
+            "runtime_mode": self.model_mode,
+            "model_counts": {
+                "core_models": 8,
+                "advanced_systems": 7,
+                "total": 15,
+            },
+            "components": loaded_components,
+            "backend_integrations": {
+                "neo4j": "connected" if loaded_components["neo4j"] else "unavailable",
+                "qdrant_client_installed": qdrant_installed,
+                "redis_client_installed": redis_installed,
+            },
+            "stage_status": self.stage_status,
+            "stages": [stage["stage"] for stage in self.stage_status],
+        }
+
     async def run(self, uploaded_filename: Optional[str], pdf_bytes: bytes, job_id: Optional[str] = None) -> Dict[str, Any]:
         if job_id is None:
             job = create_job(uploaded_filename)
