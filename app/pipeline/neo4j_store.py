@@ -308,7 +308,14 @@ class Neo4jGraphStore:
         self,
         entities: List[Dict[str, Any]],
         job_id: str,
+        batch_size: int = None,
     ) -> bool:
+        """Persist entities with memory-efficient batching."""
+        from app.config import settings
+        
+        if batch_size is None:
+            batch_size = settings.neo4j_entity_batch_size
+        
         if not self.driver:
             return False
 
@@ -335,40 +342,106 @@ class Neo4jGraphStore:
                     entity_count=len(valid_entities),
                 )
 
-                for entity in valid_entities:
-                    name = entity.get("name", "").strip()
-                    entity_type = entity.get("entity_type", "").strip()
-                    stable_id = str(
-                        entity.get("stable_id")
-                        or entity.get("canonical_name")
-                        or canonicalize_entity_name(name)
-                        or self._entity_hash(name, entity_type)
-                    ).strip()
-                    legacy_id = self._entity_hash(name, entity_type)
-                    ontology = entity.get("ontology", {}) if isinstance(entity.get("ontology"), dict) else {}
-                    ontology_type_id = entity.get("ontology_type_id") or ontology.get("type_id") or entity_type
-                    ontology_label = entity.get("ontology_label") or ontology.get("label") or entity_type
-                    ontology_parent_type_id = entity.get("ontology_parent_type_id") or ontology.get("parent_type_id")
-                    ontology_status = entity.get("ontology_status") or ontology.get("status")
-                    ontology_confidence = entity.get("ontology_confidence")
-                    ontology_path = entity.get("ontology_path") or ontology.get("path") or []
-                    source_document = entity.get("source_document")
-                    evidence_span = entity.get("evidence_span")
-                    unknown_candidate = entity.get("unknown_candidate")
-                    type_id = entity.get("type_id") or entity.get("ontology_type_id") or entity_type
-                    parent_type_id = entity.get("parent_type_id") or entity.get("ontology_parent_type_id")
-                    status = entity.get("status") or entity.get("ontology_status") or "active"
-                    schema_version = entity.get("schema_version") or "1.0.0"
-                    provenance = entity.get("provenance") or {
-                        "source_document": source_document,
-                        "source_method": entity.get("source") or entity.get("source_method") or "pipeline",
-                        "evidence": entity.get("evidence") or entity.get("context") or "",
-                    }
-                    session.run(
-                        """
-                        MERGE (e:Entity {stable_id: $stable_id})
-                        SET e.name = $name,
-                            e.canonical_name = $canonical_name,
+            # Process entities in batches to avoid memory explosion
+            for batch_start in range(0, len(valid_entities), batch_size):
+                batch_end = min(batch_start + batch_size, len(valid_entities))
+                batch = valid_entities[batch_start:batch_end]
+                
+                with self.driver.session() as session:
+                    for entity in batch:
+                        name = entity.get("name", "").strip()
+                        entity_type = entity.get("entity_type", "").strip()
+                        stable_id = str(
+                            entity.get("stable_id")
+                            or entity.get("canonical_name")
+                            or canonicalize_entity_name(name)
+                            or self._entity_hash(name, entity_type)
+                        ).strip()
+                        legacy_id = self._entity_hash(name, entity_type)
+                        ontology = entity.get("ontology", {}) if isinstance(entity.get("ontology"), dict) else {}
+                        ontology_type_id = entity.get("ontology_type_id") or ontology.get("type_id") or entity_type
+                        ontology_label = entity.get("ontology_label") or ontology.get("label") or entity_type
+                        ontology_parent_type_id = entity.get("ontology_parent_type_id") or ontology.get("parent_type_id")
+                        ontology_status = entity.get("ontology_status") or ontology.get("status")
+                        ontology_confidence = entity.get("ontology_confidence")
+                        ontology_path = entity.get("ontology_path") or ontology.get("path") or []
+                        source_document = entity.get("source_document")
+                        evidence_span = entity.get("evidence_span")
+                        unknown_candidate = entity.get("unknown_candidate")
+                        type_id = entity.get("type_id") or entity.get("ontology_type_id") or entity_type
+                        parent_type_id = entity.get("parent_type_id") or entity.get("ontology_parent_type_id")
+                        status = entity.get("status") or entity.get("ontology_status") or "active"
+                        schema_version = entity.get("schema_version") or "1.0.0"
+                        provenance = entity.get("provenance") or {
+                            "source_document": source_document,
+                            "source_method": entity.get("source") or entity.get("source_method") or "pipeline",
+                            "evidence": entity.get("evidence") or entity.get("context") or "",
+                        }
+                        session.run(
+                            """
+                            MERGE (e:Entity {stable_id: $stable_id})
+                            SET e.name = $name,
+                                e.canonical_name = $canonical_name,
+                                e.id = coalesce(e.id, $legacy_id),
+                                e.type = $entity_type,
+                                e.entity_type = $entity_type,
+                                e.confidence = $confidence,
+                                e.ontology_type_id = $ontology_type_id,
+                                e.ontology_label = $ontology_label,
+                                e.ontology_parent_type_id = $ontology_parent_type_id,
+                                e.ontology_status = $ontology_status,
+                                e.ontology_confidence = $ontology_confidence,
+                                e.ontology_path = $ontology_path,
+                                e.ontology = $ontology,
+                                e.type_id = $type_id,
+                                e.parent_type_id = $parent_type_id,
+                                e.schema_version = $schema_version,
+                                e.status = $status,
+                                e.provenance = $provenance,
+                                e.source_document = $source_document,
+                                e.evidence_span = $evidence_span,
+                                e.unknown_candidate = $unknown_candidate,
+                                e.timestamp = $timestamp
+                            WITH e
+                            MATCH (j:Job {job_id: $job_id})
+                            MERGE (j)-[r:EXTRACTED_ENTITY]->(e)
+                            SET r.timestamp = $timestamp
+                            """,
+                            stable_id=stable_id,
+                            legacy_id=legacy_id,
+                            name=name,
+                            canonical_name=entity.get("canonical_name", name),
+                            entity_type=entity_type,
+                            confidence=entity.get("confidence", 0.5),
+                            ontology=ontology,
+                            ontology_type_id=ontology_type_id,
+                            ontology_label=ontology_label,
+                            ontology_parent_type_id=ontology_parent_type_id,
+                            ontology_status=ontology_status,
+                            ontology_confidence=ontology_confidence,
+                            ontology_path=ontology_path,
+                            source_document=source_document,
+                            evidence_span=evidence_span,
+                            unknown_candidate=unknown_candidate,
+                            type_id=type_id,
+                            parent_type_id=parent_type_id,
+                            schema_version=schema_version,
+                            status=status,
+                            provenance=provenance,
+                            job_id=job_id,
+                            timestamp=timestamp,
+                        )
+
+                # Explicit cleanup after batch
+                batch = None
+                import gc
+                gc.collect()
+            
+            print(f"✓ Persisted {len(valid_entities)} entities to Neo4j in batches of {batch_size}")
+            return True
+        except Exception as e:
+            print(f"⚠ Failed to persist entities: {e}")
+            return False
                             e.id = coalesce(e.id, $legacy_id),
                             e.type = $entity_type,
                             e.entity_type = $entity_type,
@@ -398,6 +471,7 @@ class Neo4jGraphStore:
                                 t.updated_at = $timestamp
                             MERGE (e)-[:INSTANCE_OF]->(t)
                         )
+                        WITH e
                         MATCH (j:Job {job_id: $job_id})
                         MERGE (j)-[r:EXTRACTED_ENTITY]->(e)
                         SET r.timestamp = $timestamp
@@ -427,7 +501,12 @@ class Neo4jGraphStore:
                         timestamp=timestamp,
                     )
 
-                print(f"✓ Persisted {len(valid_entities)} entities to Neo4j")
+                # Explicit cleanup after batch
+                batch = None
+                import gc
+                gc.collect()
+            
+            print(f"✓ Persisted {len(valid_entities)} entities to Neo4j in batches of {batch_size}")
                 return True
         except Exception as e:
             print(f"⚠ Failed to persist entities: {e}")
@@ -436,24 +515,14 @@ class Neo4jGraphStore:
     def persist_relations(
         self,
         relations: List[Dict[str, Any]],
-        job_id: str
+        job_id: str,
+        batch_size: int = None,
     ) -> bool:
-        if not self.driver:
-            return False
-
-        valid_relations = [
-            relation
-            for relation in relations
-            if relation.get("source") and relation.get("target")
-        ]
-        if not valid_relations:
-            print("⚠ No valid relations to persist")
-            return False
-
-        timestamp = datetime.now().isoformat()
-        try:
-            with self.driver.session() as session:
-                for relation in valid_relations:
+        """Persist relations with memory-efficient batching."""
+        from app.config import settings
+        
+        if batch_size is None:
+            batch_size = settings.neo4j_relation_batch_size
                     source = relation.get("source", "").strip()
                     target = relation.get("target", "").strip()
                     relation_type = relation.get("relation_type", "").strip()
@@ -538,7 +607,14 @@ class Neo4jGraphStore:
                         timestamp=timestamp,
                     )
 
-                print(f"✓ Persisted {len(valid_relations)} relations to Neo4j")
+                    total_persisted += 1
+                
+                # Explicit cleanup after batch
+                batch = None
+                import gc
+                gc.collect()
+            
+            print(f"✓ Persisted {total_persisted} relations to Neo4j in batches of {batch_size}")
                 return True
         except Exception as e:
             print(f"⚠ Failed to persist relations: {e}")

@@ -202,6 +202,12 @@ class Settings:
     ocr_processing_timeout: int = int(get_env("OCR_PROCESSING_TIMEOUT", "0", _env_config))    # 0 = no limit
     pdf_render_timeout: int = int(get_env("PDF_RENDER_TIMEOUT", "0", _env_config))            # 0 = no limit
     
+    # Memory optimization settings
+    neo4j_entity_batch_size: int = int(get_env("NEO4J_ENTITY_BATCH_SIZE", "50", _env_config))
+    neo4j_relation_batch_size: int = int(get_env("NEO4J_RELATION_BATCH_SIZE", "100", _env_config))
+    chunk_indexing_batch_size: int = int(get_env("CHUNK_INDEXING_BATCH_SIZE", "50", _env_config))
+    enable_aggressive_gc: bool = get_env("ENABLE_AGGRESSIVE_GC", "false", _env_config).lower() == "true"
+    
     # Logging configuration
     log_level: str = get_env("LOG_LEVEL", "INFO", _env_config)
     verbose: bool = get_env("VERBOSE", "false", _env_config).lower() == "true"

@@ -1,4 +1,14 @@
 import asyncio
+import gc
+import os
+
+# Configure aggressive garbage collection for memory-constrained environments (Kaggle)
+# Enable on startup in Kaggle environment
+if os.getenv("KAGGLE_KERNEL_INTEGRATIONS_KERNEL_INTEGRATIONS_GPU_REQUEST") or os.getenv("KAGGLE_KERNEL_RUN_TYPE"):
+    gc.set_threshold(700, 10, 10)  # More aggressive GC
+    print("[init] Enabled aggressive garbage collection for Kaggle environment")
+else:
+    gc.set_threshold(900, 10, 10)  # Default but slightly more aggressive
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Body
 from fastapi.middleware.cors import CORSMiddleware
@@ -78,6 +88,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add memory cleanup middleware for Kaggle environment
+@app.middleware("http")
+async def memory_cleanup_middleware(request, call_next):
+    """Middleware to clean up memory after each request."""
+    response = await call_next(request)
+    
+    # Perform garbage collection after request completes
+    gc.collect()
+    
+    return response
 
 
 @app.get("/health")

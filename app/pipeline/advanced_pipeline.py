@@ -131,17 +131,35 @@ class AdvancedPipelineStages:
         if text_chunks:
             try:
                 from app.pipeline.llamaindex_hybrid import LlamaIndexHybrid
+                import gc
 
+                # Process chunks in batches to avoid memory explosion
+                chunk_batch_size = 50
                 llm_index = LlamaIndexHybrid()
-                llm_index.build_index(
-                    text_chunks=text_chunks,
-                    text_chunks_metadata=[{"chunk_id": i, "job_id": job_id} for i in range(len(text_chunks))],
-                )
+                total_indexed = 0
+                
+                for batch_start in range(0, len(text_chunks), chunk_batch_size):
+                    batch_end = min(batch_start + chunk_batch_size, len(text_chunks))
+                    batch = text_chunks[batch_start:batch_end]
+                    batch_metadata = [{"chunk_id": i, "job_id": job_id} for i in range(batch_start, batch_end)]
+                    
+                    llm_index.build_index(
+                        text_chunks=batch,
+                        text_chunks_metadata=batch_metadata,
+                    )
+                    total_indexed += len(batch)
+                    
+                    # Clean up batch
+                    batch = None
+                    batch_metadata = None
+                    gc.collect()
+                
                 pipeline_result["llama_indexed"] = True
-                pipeline_result["llama_index_chunks"] = len(text_chunks)
+                pipeline_result["llama_index_chunks"] = total_indexed
                 pipeline_result["stage_8_llama_indexing"] = {
                     "status": "completed",
-                    "indexed_chunks": len(text_chunks),
+                    "indexed_chunks": total_indexed,
+                    "batch_size": chunk_batch_size,
                     "timestamp": datetime.now().isoformat()
                 }
             except Exception as e:

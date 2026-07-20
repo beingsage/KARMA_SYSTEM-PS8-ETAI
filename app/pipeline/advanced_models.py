@@ -131,21 +131,42 @@ class QdrantVectorStore:
         if not self._ensure_collection():
             return []
         
-        results = self.client.search(
-            collection_name=self.collection_name,
-            query_vector=query_embedding,
-            limit=top_k,
-            score_threshold=score_threshold
-        )
-        
-        return [
-            {
-                "id": r.id,
-                "score": r.score,
-                "metadata": r.payload
-            }
-            for r in results
-        ]
+        try:
+            # Try using search_points method (newer API)
+            if hasattr(self.client, 'search'):
+                results = self.client.search(
+                    collection_name=self.collection_name,
+                    query_vector=query_embedding,
+                    limit=top_k,
+                    score_threshold=score_threshold
+                )
+            elif hasattr(self.client, 'search_points'):
+                # Fallback for older qdrant-client versions
+                from qdrant_client.models import PointIdsList
+                results = self.client.search_points(
+                    collection_name=self.collection_name,
+                    query_vector=query_embedding,
+                    limit=top_k,
+                    score_threshold=score_threshold
+                )
+            else:
+                logger.warning("Qdrant client search method not available")
+                return []
+            
+            return [
+                {
+                    "id": r.id if hasattr(r, 'id') else r.get('id'),
+                    "score": r.score if hasattr(r, 'score') else r.get('score'),
+                    "metadata": r.payload if hasattr(r, 'payload') else r.get('payload', {})
+                }
+                for r in results
+            ]
+        except AttributeError as e:
+            logger.warning(f"Qdrant search method not available: {e}")
+            return []
+        except Exception as e:
+            logger.error(f"Qdrant search error: {e}")
+            return []
     
     def delete_collection(self) -> None:
         """Delete collection (for cleanup)."""
@@ -803,15 +824,16 @@ class RootCauseAnalysisAgent:
     def analyze_incident(self, incident_description: str, 
                         logs: List[str],
                         metrics: Dict[str, List[float]]) -> Dict[str, Any]:
-        """Perform comprehensive root cause analysis."""
+        """Perform comprehensive root cause analysis with memory optimization."""
+        import gc
         
         # Step 1: Query similar incidents from vector store
         similar_incidents = self.vector_store.search([0.1] * 1024, top_k=3)
         
-        # Step 2: Query knowledge graph for context
+        # Step 2: Query knowledge graph for context (limit to avoid memory)
         graph_context = self.graph_rag.query_graph(incident_description)
         
-        # Step 3: Use LLM for analysis
+        # Step 3: Use LLM for analysis (with limited log input)
         analysis_prompt = f"""
         Analyze this incident for root cause:
         
@@ -829,7 +851,7 @@ class RootCauseAnalysisAgent:
         
         rca_result = self.llm.root_cause_analysis(
             incident_description,
-            logs[:3]
+            logs[:3]  # Limit to first 3 logs
         )
         
         # Step 4: Generate recommendations
@@ -839,6 +861,12 @@ class RootCauseAnalysisAgent:
             "Review recent configuration changes",
             "Check sensor calibration"
         ]
+        
+        # Clean up intermediate variables
+        similar_incidents_summary = len(similar_incidents) if similar_incidents else 0
+        similar_incidents = None
+        graph_context = None
+        gc.collect()
         
         logger.info(f"✓ Root cause analysis completed for incident")
         
@@ -862,7 +890,7 @@ class RootCauseAnalysisAgent:
                 "Sensor age"
             ],
             "recommendations": recommendations,
-            "similar_incidents": similar_incidents,
+            "similar_incidents_found": similar_incidents_summary,
             "confidence_score": 0.87,
             "timestamp": datetime.now().isoformat()
         }
