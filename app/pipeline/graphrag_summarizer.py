@@ -123,28 +123,38 @@ class GraphRAGSummarizer:
 
             # Prefer local snapshot for fully offline/local runs
             local_dir = Path(getattr(settings, "qwen_local", ""))
-            model_source: str = self.model_name
+            if local_dir and not local_dir.is_absolute():
+                local_dir = Path(__file__).resolve().parents[2] / local_dir
+            model_candidates: List[tuple[str, bool]] = []
             if local_dir and local_dir.exists() and any(local_dir.iterdir()):
-                model_source = str(local_dir)
+                model_candidates.append((str(local_dir), True))
+            for candidate in [self.model_name, settings.qwen_model]:
+                candidate_str = str(candidate)
+                if candidate_str and candidate_str not in {item[0] for item in model_candidates}:
+                    model_candidates.append((candidate_str, False))
 
-            with allow_trusted_torch_pickle():
-                self.tokenizer = AutoTokenizer.from_pretrained(model_source, local_files_only=model_source == str(local_dir))
-                self.model = AutoModelForCausalLM.from_pretrained(
-                    model_source,
-                    local_files_only=model_source == str(local_dir),
-                    torch_dtype=dtype if target_torch_device.type == "cuda" else None,
-                    device_map=None,
-                )
+            for model_source, local_only in model_candidates:
+                with allow_trusted_torch_pickle():
+                    self.tokenizer = AutoTokenizer.from_pretrained(model_source, local_files_only=local_only)
+                    model_kwargs = {"device_map": None}
+                    if target_torch_device.type == "cuda":
+                        model_kwargs["dtype"] = dtype
+                    self.model = AutoModelForCausalLM.from_pretrained(
+                        model_source,
+                        local_files_only=local_only,
+                        **model_kwargs,
+                    )
 
-            self.model.to(target_torch_device)
-            self.model.eval()
+                self.model.to(target_torch_device)
+                self.model.eval()
 
-            # Remember for input movement
-            self._qwen_device = target_torch_device
-            self._qwen_dtype = dtype
+                # Remember for input movement
+                self._qwen_device = target_torch_device
+                self._qwen_dtype = dtype
+                self.model_name = model_source
 
-            print(f"✓ Qwen LLM initialized for GraphRAG reasoning (source={model_source}, device={target_torch_device}, dtype={dtype})")
-            return True
+                print(f"✓ Qwen LLM initialized for GraphRAG reasoning (source={model_source}, device={target_torch_device}, dtype={dtype})")
+                return True
 
         except Exception as exc:
             print(f"✗ GraphRAG Qwen initialization failed: {exc}")
@@ -530,19 +540,12 @@ class GraphRAGSummarizer:
         if qwen_device is not None:
             encoded = {k: v.to(qwen_device) for k, v in encoded.items()}
         with torch.no_grad():
-
-            # Use lower temperature (0.3) for more deterministic, evidence-based output
-            # Avoid high temperature which encourages hallucination
             outputs = self.model.generate(
                 **encoded,
-
                 max_new_tokens=512,
-                temperature=0.3,  # Low temperature for consistency
-                top_p=0.9,  # Nucleus sampling for focused output
-                num_beams=1,  # Single beam (greedy) for more predictable output
-                early_stopping=True,
+                num_beams=1,
                 eos_token_id=self.tokenizer.eos_token_id,
-                do_sample=False,  # Deterministic generation
+                do_sample=False,
             )
 
         generated = outputs[0][encoded["input_ids"].shape[1] :]

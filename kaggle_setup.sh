@@ -6,9 +6,11 @@ echo "[kaggle_setup] Starting Kaggle-friendly environment setup"
 
 # Configure caches to /kaggle/working for persistence in Kaggle
 export HF_HOME="/kaggle/working/hf_cache"
-export TRANSFORMERS_CACHE="/kaggle/working/hf_cache"
+export HF_HUB_CACHE="/kaggle/working/hf_cache/hub"
+export HF_DATASETS_CACHE="/kaggle/working/hf_cache/datasets"
+export HF_MODULES_CACHE="/kaggle/working/hf_cache/modules"
 export TORCH_HOME="/kaggle/working/torch_cache"
-mkdir -p "$HF_HOME" "$TRANSFORMERS_CACHE" "$TORCH_HOME"
+mkdir -p "$HF_HOME" "$HF_HUB_CACHE" "$HF_DATASETS_CACHE" "$HF_MODULES_CACHE" "$TORCH_HOME"
 echo "[kaggle_setup] HF_HOME=$HF_HOME"
 
 echo "[kaggle_setup] Upgrading pip, setuptools, wheel"
@@ -52,7 +54,7 @@ else
 fi
 
 echo "[kaggle_setup] Bootstrapping repo dependencies through the managed installer"
-python "$ROOT_DIR/scripts/ensure_dependencies.py" --requirements "$ROOT_DIR/requirements.txt" --python "$(command -v python)" || echo "[kaggle_setup] dependency bootstrap reported errors; continue"
+python "$ROOT_DIR/scripts/ensure_dependencies.py" --requirements "$ROOT_DIR/requirements.txt" --python "$(command -v python)" --include-optional || echo "[kaggle_setup] dependency bootstrap reported errors; continue"
 
 echo "[kaggle_setup] Kaggle environment setup complete"
 exit 0

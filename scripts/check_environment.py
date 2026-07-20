@@ -238,6 +238,16 @@ def check_node2vec_import() -> bool:
         return False
 
 
+def check_llamaindex_import() -> bool:
+    try:
+        from llama_index.core import Document  # type: ignore
+        print("[env-check] llama-index-core import OK")
+        return True
+    except Exception as exc:
+        print(f"[env-check][error] llama-index-core import failed: {type(exc).__name__} - {exc}")
+        return False
+
+
 def run_all_checks() -> bool:
     ok = True
     print("[env-check] Running environment validation checks...")
@@ -265,6 +275,8 @@ def run_all_checks() -> bool:
         if not check_langgraph_import():
             ok = False
         if not check_node2vec_import():
+            ok = False
+        if not check_llamaindex_import():
             ok = False
     except Exception as exc:
         print(f"[env-check] Unexpected error during checks: {exc}")

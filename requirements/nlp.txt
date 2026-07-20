@@ -4,4 +4,4 @@ sentence-transformers==5.6.0
 gliner==0.2.27
 glirel==1.2.1
 git+https://github.com/chakki-works/seqeval.git#egg=seqeval
-git+https://github.com/facebookresearch/BLINK.git#egg=blink
+# BLINK is provided by the local compatibility shim in ./blink

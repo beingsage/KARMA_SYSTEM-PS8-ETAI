@@ -70,16 +70,13 @@ else:
   print("✓ CPU runtime OK")
 PYVERIFY
 
-# Install core and ML dependencies from lock file
+# Install core and ML dependencies from the managed stack installer
 echo ""
-echo "Installing locked dependencies..."
-if [ -f "$ROOT_DIR/requirements.txt" ]; then
-  echo "Using requirements.txt"
-  pip install --prefer-binary --no-cache-dir -r "$ROOT_DIR/requirements.txt"
-else
-  echo "Using requirements.full.txt"
-  pip install --prefer-binary --no-cache-dir -r "$ROOT_DIR/requirements.full.txt"
-fi
+echo "Installing layered dependencies..."
+python3 "$ROOT_DIR/scripts/ensure_dependencies.py" \
+  --requirements "$ROOT_DIR/requirements.txt" \
+  --python "$(command -v python3)" \
+  --include-optional
 
 # Verify key imports
 echo ""

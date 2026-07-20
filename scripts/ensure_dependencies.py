@@ -58,6 +58,7 @@ OPTIONAL_PACKAGES = [
     "langgraph>=0.2.76",
     "langchain>=0.3.0",
     "langchain-community>=0.4.2",
+    "llama-index-core>=0.12.0,<0.15.0",
     "timesfm>=2.0.2",
     "pytorch-lightning>=2.2.0",
 ]
@@ -156,6 +157,7 @@ def _package_to_module_name(package_spec: str) -> str:
         "blink": "blink",
         "langgraph": "langgraph",
         "node2vec": "node2vec",
+        "llama-index-core": "llama_index.core",
     }
     for prefix, module_name in mapping.items():
         if normalized.startswith(prefix):
@@ -353,7 +355,6 @@ def ensure_dependencies(
             "pip",
             "install",
             "--prefer-binary",
-            "--only-binary=:all:",
             "--no-cache-dir",
             package,
         ]
@@ -364,22 +365,26 @@ def ensure_dependencies(
                 "pip",
                 "install",
                 "--prefer-binary",
-                "--only-binary=:all:",
                 "--no-cache-dir",
                 "pyarrow>=21.0.0,<26.0.0",
             ]
         elif _is_pytorch_package(package):
             install_cmd = _pytorch_install_cmd(package)
         elif _is_vcs_package(package):
-            install_cmd = [
+            vcs_args = [
                 python_bin,
                 "-m",
                 "pip",
                 "install",
                 "--prefer-binary",
                 "--no-cache-dir",
+            ]
+            if "groundingdino" in normalized_package:
+                vcs_args.append("--no-build-isolation")
+            install_cmd = [
                 package,
             ]
+            install_cmd = vcs_args + install_cmd
         result = subprocess.run(install_cmd, capture_output=True, text=True)
         if result.returncode != 0:
             failed_packages.append(package)

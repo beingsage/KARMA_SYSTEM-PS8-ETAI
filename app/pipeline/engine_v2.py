@@ -14,12 +14,11 @@ from typing import Any, Callable, Dict, List, Optional
 
 from app.config import settings
 import torch
-from app.pipeline.runtime import cuda_is_usable, select_device
 
 
 def _is_cuda_available() -> bool:
     try:
-        return cuda_is_usable()
+        return torch.cuda.is_available()
     except Exception:
         return False
 
@@ -749,9 +748,9 @@ class IndustrialGraphPipeline:
                 "document_segments": text_chunks or [],
                 "layout": layout_info.get("layout", []),
                 "tables": table_info.get("tables", []),
-                "formulas": formulas or [],
+                "formulas": (formulas or {}).get("formulas", []) if isinstance(formulas, dict) else (formulas or []),
                 "doclayout_yolo": doclayout_yolo_info or {},
-                "reading_order": reading_order or [],
+                "reading_order": (reading_order or {}).get("reading_order", []) if isinstance(reading_order, dict) else (reading_order or []),
                 "table_transformer": table_transformer_info or {},
                 "groundingdino": groundingdino_info or {},
                 "sam_segments": sam_segmentation_info or {},
@@ -1287,9 +1286,9 @@ class IndustrialGraphPipeline:
                 "document_segments": text_chunks or [],
                 "layout": layout_info.get("layout", []),
                 "tables": table_info.get("tables", []),
-                "formulas": formulas or [],
+                "formulas": (formulas or {}).get("formulas", []) if isinstance(formulas, dict) else (formulas or []),
                 "doclayout_yolo": doclayout_yolo_info or {},
-                "reading_order": reading_order or [],
+                "reading_order": (reading_order or {}).get("reading_order", []) if isinstance(reading_order, dict) else (reading_order or []),
                 "table_transformer": table_transformer_info or {},
                 "groundingdino": groundingdino_info or {},
                 "sam_segments": sam_segmentation_info or {},
@@ -2274,7 +2273,7 @@ class IndustrialGraphPipeline:
                 except Exception:
                     pass
 
-            is_cuda = _is_cuda_available()
+            is_cuda = torch.cuda.is_available()
             pages_to_process = images[:1] if not is_cuda else images
             for page_idx, image in enumerate(pages_to_process, start=1):
                 page_boxes = boxes_by_page.get(page_idx, [])

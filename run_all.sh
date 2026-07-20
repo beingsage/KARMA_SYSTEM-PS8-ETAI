@@ -67,16 +67,22 @@ export PYTHONPATH="$ROOT_DIR${PYTHONPATH:+:$PYTHONPATH}"
 # Configure model/cache directories for Kaggle vs local
 if [ -d "/kaggle" ]; then
   export HF_HOME="/kaggle/working/hf_cache"
-  export TRANSFORMERS_CACHE="/kaggle/working/hf_cache"
+  export HF_HUB_CACHE="/kaggle/working/hf_cache/hub"
+  export HF_DATASETS_CACHE="/kaggle/working/hf_cache/datasets"
+  export HF_MODULES_CACHE="/kaggle/working/hf_cache/modules"
   export TORCH_HOME="/kaggle/working/torch_cache"
 else
   export HF_HOME="$ROOT_DIR/models/huggingface"
-  export TRANSFORMERS_CACHE="$ROOT_DIR/models/transformers"
+  export HF_HUB_CACHE="$ROOT_DIR/models/huggingface/hub"
+  export HF_DATASETS_CACHE="$ROOT_DIR/models/huggingface/datasets"
+  export HF_MODULES_CACHE="$ROOT_DIR/models/huggingface/modules"
   export TORCH_HOME="$ROOT_DIR/models/torch_cache"
 fi
 
 echo "  HF_HOME=$HF_HOME"
-echo "  TRANSFORMERS_CACHE=$TRANSFORMERS_CACHE"
+echo "  HF_HUB_CACHE=$HF_HUB_CACHE"
+echo "  HF_DATASETS_CACHE=$HF_DATASETS_CACHE"
+echo "  HF_MODULES_CACHE=$HF_MODULES_CACHE"
 echo "  TORCH_HOME=$TORCH_HOME"
 
 load_env_file() {
@@ -564,6 +570,9 @@ fi
 
 echo "  Using dependency file: $(basename "$DEP_REQUIREMENTS_FILE")"
 
+if [ -z "${RUN_ALL_INCLUDE_OPTIONAL+x}" ]; then
+  RUN_ALL_INCLUDE_OPTIONAL=1
+fi
 DEP_BOOTSTRAP_CMD=("$PYTHON_BIN" "$ROOT_DIR/scripts/ensure_dependencies.py" --requirements "$DEP_REQUIREMENTS_FILE" --python "$PYTHON_BIN")
 if [ "${RUN_ALL_INCLUDE_OPTIONAL:-0}" = "1" ]; then
   DEP_BOOTSTRAP_CMD+=(--include-optional)
@@ -581,7 +590,7 @@ fi
 echo "[4/6] Creating necessary directories..."
 
 echo "  Creating data and model cache directories"
-mkdir -p data/jobs data/uploads models models/transformers models/huggingface
+mkdir -p data/jobs data/uploads models models/transformers models/huggingface models/huggingface/hub models/huggingface/datasets models/huggingface/modules models/torch_cache
 echo "  ✓ Directories created"
 
 # ============================================================================
@@ -593,7 +602,6 @@ echo "  This step downloads ~2.5GB of pre-trained models."
 echo "  Models will be cached for future runs."
 echo ""
 
-export TRANSFORMERS_CACHE="$ROOT_DIR/models/transformers"
 export HF_HOME="$ROOT_DIR/models/huggingface"
 export HF_HUB_CACHE="$ROOT_DIR/models/huggingface/hub"
 export HF_DATASETS_CACHE="$ROOT_DIR/models/huggingface/datasets"

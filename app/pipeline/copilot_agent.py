@@ -7,9 +7,11 @@ from typing import Any, Dict, List, Optional, Tuple
 from enum import Enum
 import json
 import re
+from pathlib import Path
 
 from app.config import settings
 from app.pipeline.compat import allow_trusted_torch_pickle
+from app.pipeline.runtime import select_device
 
 try:
     from sklearn.feature_extraction.text import TfidfVectorizer
@@ -138,6 +140,7 @@ class IndustrialCopilotAgent:
     def __init__(self, load_model: bool = False) -> None:
         self.model = None
         self.tokenizer = None
+        self.device = select_device()
         self.model_name = settings.qwen_model
         self._load_attempted = False
         self.retriever = SemanticRetriever()
@@ -159,14 +162,41 @@ class IndustrialCopilotAgent:
     def _initialize(self) -> bool:
         self._load_attempted = True
         try:
+            import torch
             from transformers import AutoModelForCausalLM, AutoTokenizer
 
-            with allow_trusted_torch_pickle():
-                self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-                self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
-            self.model.eval()
-            print("✓ Industrial Copilot Agent Qwen LLM initialized")
-            return True
+            local_dir = Path(getattr(settings, "qwen_local", ""))
+            if local_dir and not local_dir.is_absolute():
+                local_dir = Path(__file__).resolve().parents[2] / local_dir
+
+            candidate_models: List[tuple[str, bool]] = []
+            if local_dir and local_dir.exists() and any(local_dir.iterdir()):
+                candidate_models.append((str(local_dir), True))
+            for candidate in [self.model_name, settings.qwen_model]:
+                candidate_str = str(candidate)
+                if candidate_str and candidate_str not in {item[0] for item in candidate_models}:
+                    candidate_models.append((candidate_str, False))
+
+            target_device = torch.device("cuda:0" if self.device == "cuda" else "cpu")
+            dtype = torch.float16 if target_device.type == "cuda" else torch.float32
+
+            for candidate, local_only in candidate_models:
+                with allow_trusted_torch_pickle():
+                    self.tokenizer = AutoTokenizer.from_pretrained(candidate, local_files_only=local_only)
+                    model_kwargs = {"device_map": None}
+                    if target_device.type == "cuda":
+                        model_kwargs["dtype"] = dtype
+                    self.model = AutoModelForCausalLM.from_pretrained(
+                        candidate,
+                        local_files_only=local_only,
+                        **model_kwargs,
+                    )
+                self.model.to(target_device)
+                self.model.eval()
+                self._qwen_device = target_device
+                self.model_name = candidate
+                print("✓ Industrial Copilot Agent Qwen LLM initialized")
+                return True
         except Exception as exc:
             print(f"✗ Industrial Copilot initialization failed: {exc}")
             self.model = None
@@ -515,9 +545,12 @@ class IndustrialCopilotAgent:
         )
         excerpt = text[:1000].replace("\n", " ")
         query_text = f"\nUSER QUERY: {query}" if query else ""
-        layout_text = "\nLAYOUT STRUCTURE:\n" + str(layout[:6]) if layout else ""
-        tables_text = "\nTABLES:\n" + str(tables[:4]) if tables else ""
-        reading_text = "\nREADING ORDER:\n" + str(reading_order[:12]) if reading_order else ""
+        layout_items = self._normalize_sequence(layout, ("layout",))
+        tables_items = self._normalize_sequence(tables, ("tables",))
+        reading_order_items = self._normalize_sequence(reading_order, ("reading_order",))
+        layout_text = "\nLAYOUT STRUCTURE:\n" + str(layout_items[:6]) if layout_items else ""
+        tables_text = "\nTABLES:\n" + str(tables_items[:4]) if tables_items else ""
+        reading_text = "\nREADING ORDER:\n" + str(reading_order_items[:12]) if reading_order_items else ""
         return (
             "You are an industrial operations expert. Analyze the extracted entities, relations, document excerpt, and document structure then return ONLY valid JSON. "
             "Provide a JSON object with keys: summary, anomalies, risks, recommendations, compliance, confidence."
@@ -527,6 +560,30 @@ class IndustrialCopilotAgent:
             f"{layout_text}{tables_text}{reading_text}{query_text}\n"
             "Do not provide markdown or any commentary outside the JSON object."
         )
+
+    @staticmethod
+    def _normalize_sequence(value: Any, preferred_keys: Tuple[str, ...] = ()) -> List[Any]:
+        if value is None:
+            return []
+        if isinstance(value, list):
+            return value
+        if isinstance(value, tuple):
+            return list(value)
+        if isinstance(value, dict):
+            for key in preferred_keys:
+                nested = value.get(key)
+                if isinstance(nested, list):
+                    return nested
+            for nested in value.values():
+                if isinstance(nested, list):
+                    return nested
+            return []
+        if isinstance(value, str):
+            return [value]
+        try:
+            return list(value)
+        except Exception:
+            return []
 
     def _build_rag_prompt(
         self,
@@ -751,14 +808,14 @@ class IndustrialCopilotAgent:
 
         import torch
         encoded = self.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024)
+        qwen_device = getattr(self, "_qwen_device", None)
+        if qwen_device is not None:
+            encoded = {k: v.to(qwen_device) for k, v in encoded.items()}
         with torch.no_grad():
             outputs = self.model.generate(
                 **encoded,
                 max_new_tokens=256,
-                temperature=0.3,
-                top_p=0.9,
                 num_beams=1,
-                early_stopping=True,
                 eos_token_id=self.tokenizer.eos_token_id,
                 do_sample=False,
             )

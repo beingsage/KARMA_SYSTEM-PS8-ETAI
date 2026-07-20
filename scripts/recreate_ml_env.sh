@@ -4,6 +4,7 @@
 
 set -euo pipefail
 
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 VENV_DIR=".venv.clean"
 PYTHON=${PYTHON:-python3}
 
@@ -18,10 +19,9 @@ pip install --force-reinstall --upgrade --prefer-binary --only-binary=:all: --no
   torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0
 
 echo "Installing remaining pinned requirements..."
-if [ -f "requirements.txt" ]; then
-  pip install -r requirements.txt
-else
-  pip install -r requirements.full.txt
-fi
+python "$ROOT_DIR/scripts/ensure_dependencies.py" \
+  --requirements "$ROOT_DIR/requirements.txt" \
+  --python "$(command -v python)" \
+  --include-optional
 
 echo "Done. Activate with: source ${VENV_DIR}/bin/activate"

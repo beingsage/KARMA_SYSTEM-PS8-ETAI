@@ -244,23 +244,35 @@ class Qwen3LLM:
 
         self._load_attempted = True
         try:
+            import torch
             from transformers import AutoTokenizer, AutoModelForCausalLM
 
             self.device = select_device()
-            candidate_models = list(dict.fromkeys([self.model_name, settings.qwen_model]))
+            local_dir = Path(getattr(settings, "qwen_local", ""))
+            if local_dir and not local_dir.is_absolute():
+                local_dir = Path(__file__).resolve().parents[2] / local_dir
+
+            candidate_models: List[tuple[str, bool]] = []
+            if local_dir and local_dir.exists() and any(local_dir.iterdir()):
+                candidate_models.append((str(local_dir), True))
+            for candidate in [self.model_name, settings.qwen_model]:
+                candidate_str = str(candidate)
+                if candidate_str and candidate_str not in {item[0] for item in candidate_models}:
+                    candidate_models.append((candidate_str, False))
 
             last_error: Exception | None = None
-            for candidate in candidate_models:
+            for candidate, local_only in candidate_models:
                 try:
                     logger.info(f"Loading Qwen 3: {candidate}")
                     model_kwargs = {
-                        "torch_dtype": torch.float16 if self.device == "cuda" else torch.float32,
+                        "dtype": torch.float16 if self.device == "cuda" else torch.float32,
                     }
 
                     with allow_trusted_torch_pickle():
-                        tokenizer = AutoTokenizer.from_pretrained(candidate)
+                        tokenizer = AutoTokenizer.from_pretrained(candidate, local_files_only=local_only)
                         model = AutoModelForCausalLM.from_pretrained(
                             candidate,
+                            local_files_only=local_only,
                             **model_kwargs,
                         )
                     model.to(self.device)
@@ -294,15 +306,19 @@ class Qwen3LLM:
             temperature = settings.qwen3_temperature if temperature is None else temperature
             do_sample = float(temperature) > 0.0
 
-            inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
-            
-            outputs = self.model.generate(
-                **inputs,
-                max_new_tokens=max_tokens,
-                temperature=temperature,
-                top_p=0.95,
-                do_sample=do_sample
-            )
+            inputs = self.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=1024).to(self.device)
+
+            generation_kwargs = {
+                "max_new_tokens": max_tokens,
+                "do_sample": do_sample,
+                "num_beams": 1,
+                "eos_token_id": self.tokenizer.eos_token_id,
+            }
+            if do_sample:
+                generation_kwargs["temperature"] = float(temperature)
+                generation_kwargs["top_p"] = 0.95
+
+            outputs = self.model.generate(**inputs, **generation_kwargs)
             
             response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
             logger.info(f"✓ Generated response with Qwen 3")
@@ -572,8 +588,9 @@ class HDBSCANClusterer:
             return {"labels": [], "probabilities": [], "clusters": {}, "summary": "HDBSCAN unavailable or no embeddings"}
 
         try:
+            embedding_array = np.asarray(embeddings, dtype=np.float32)
             clusterer = self.clusterer_cls(min_cluster_size=min_cluster_size)
-            labels = clusterer.fit_predict(embeddings)
+            labels = clusterer.fit_predict(embedding_array)
             probabilities = getattr(clusterer, "probabilities_", [0.0] * len(labels))
             clusters: Dict[int, List[int]] = {}
             for idx, label in enumerate(labels):
@@ -587,6 +604,26 @@ class HDBSCANClusterer:
                 "summary": f"HDBSCAN produced {len(clusters)} clusters from {len(embeddings)} embeddings"
             }
         except Exception as exc:
+            if "ensure_all_finite" in str(exc) or "force_all_finite" in str(exc):
+                try:
+                    from sklearn.cluster import DBSCAN
+
+                    embedding_array = np.asarray(embeddings, dtype=np.float32)
+                    dbscan = DBSCAN(eps=0.5, min_samples=min_cluster_size)
+                    labels = dbscan.fit_predict(embedding_array)
+                    clusters: Dict[int, List[int]] = {}
+                    for idx, label in enumerate(labels):
+                        clusters.setdefault(int(label), []).append(idx)
+                    probabilities = [0.0 if label == -1 else 1.0 for label in labels]
+                    return {
+                        "labels": labels.tolist() if hasattr(labels, "tolist") else list(labels),
+                        "probabilities": probabilities,
+                        "clusters": clusters,
+                        "outlier_count": int((labels == -1).sum() if hasattr(labels, "sum") else sum(1 for x in labels if x == -1)),
+                        "summary": f"HDBSCAN fell back to DBSCAN after sklearn API mismatch: {exc}",
+                    }
+                except Exception as fallback_exc:
+                    logger.error(f"HDBSCAN fallback clustering failed: {fallback_exc}")
             logger.error(f"HDBSCAN clustering failed: {exc}")
             return {"labels": [], "probabilities": [], "clusters": {}, "summary": f"Clustering failed: {exc}"}
 
