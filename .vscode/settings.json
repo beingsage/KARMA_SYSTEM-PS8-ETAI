@@ -1,0 +1,5 @@
+{
+    "python.defaultInterpreterPath": "/media/sagesujal/DEV1/bytes/structured/.venv/bin/python",
+    "python.analysis.exclude": ["**/models/**"],
+    "files.watcherExclude": {"**/models/**": true}
+}
