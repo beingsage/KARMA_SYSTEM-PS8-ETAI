@@ -245,9 +245,8 @@ class Qwen3LLM:
         self._load_attempted = True
         try:
             from transformers import AutoTokenizer, AutoModelForCausalLM
-            import torch
 
-            self.device = "cuda" if torch.cuda.is_available() else "cpu"
+            self.device = select_device()
             candidate_models = list(dict.fromkeys([self.model_name, settings.qwen_model]))
 
             last_error: Exception | None = None

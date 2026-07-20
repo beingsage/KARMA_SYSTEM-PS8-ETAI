@@ -59,9 +59,81 @@
         "label": "controls",
         "source": "sample.pdf",
         "text": "pressure measures sensor Industrial pumpcontrols a motor and monitors a pressure sensor."
+      },
+      {
+        "kind": "relation",
+        "label": "controls",
+        "source": "sample.pdf",
+        "text": "motor measures pressure Industrial pumpcontrols a motor and monitors a pressure sensor."
+      },
+      {
+        "kind": "relation",
+        "label": "controls",
+        "source": "sample.pdf",
+        "text": "motor measures sensor Industrial pumpcontrols a motor and monitors a pressure sensor."
+      },
+      {
+        "kind": "relation",
+        "label": "controls",
+        "source": "sample.pdf",
+        "text": "pressure measures sensor Industrial pumpcontrols a motor and monitors a pressure sensor."
+      },
+      {
+        "kind": "relation",
+        "label": "controls",
+        "source": "sample.pdf",
+        "text": "motor measures pressure Industrial pumpcontrols a motor and monitors a pressure sensor."
+      },
+      {
+        "kind": "relation",
+        "label": "controls",
+        "source": "sample.pdf",
+        "text": "motor measures sensor Industrial pumpcontrols a motor and monitors a pressure sensor."
+      },
+      {
+        "kind": "relation",
+        "label": "controls",
+        "source": "sample.pdf",
+        "text": "pressure measures sensor Industrial pumpcontrols a motor and monitors a pressure sensor."
       }
     ],
     "type": [
+      {
+        "kind": "type",
+        "label": "asset.equipment",
+        "source": "sample.pdf",
+        "text": "motor equipment Industrial pumpcontrols a motor and monitors a pressure sensor."
+      },
+      {
+        "kind": "type",
+        "label": "process.pressure",
+        "source": "sample.pdf",
+        "text": "pressure parameter Industrial pumpcontrols a motor and monitors a pressure sensor."
+      },
+      {
+        "kind": "type",
+        "label": "asset.sensor",
+        "source": "sample.pdf",
+        "text": "sensor sensor Industrial pumpcontrols a motor and monitors a pressure sensor."
+      },
+      {
+        "kind": "type",
+        "label": "asset.equipment",
+        "source": "sample.pdf",
+        "text": "motor equipment Industrial pumpcontrols a motor and monitors a pressure sensor."
+      },
+      {
+        "kind": "type",
+        "label": "process.pressure",
+        "source": "sample.pdf",
+        "text": "pressure parameter Industrial pumpcontrols a motor and monitors a pressure sensor."
+      },
+      {
+        "kind": "type",
+        "label": "asset.sensor",
+        "source": "sample.pdf",
+        "text": "sensor sensor Industrial pumpcontrols a motor and monitors a pressure sensor."
+      },
       {
         "kind": "type",
         "label": "asset.equipment",
@@ -146,14 +218,30 @@
       "source_document": "sample.pdf",
       "text_excerpt": "Industrial pumpcontrols a motor and monitors a pressure sensor.",
       "timestamp": "2026-07-18T20:32:54.631881"
+    },
+    {
+      "entity_count": 3,
+      "proposal_count": 0,
+      "relation_count": 3,
+      "source_document": "sample.pdf",
+      "text_excerpt": "Industrial pumpcontrols a motor and monitors a pressure sensor.",
+      "timestamp": "2026-07-20T15:22:56.262344"
+    },
+    {
+      "entity_count": 3,
+      "proposal_count": 0,
+      "relation_count": 3,
+      "source_document": "sample.pdf",
+      "text_excerpt": "Industrial pumpcontrols a motor and monitors a pressure sensor.",
+      "timestamp": "2026-07-20T15:24:19.696967"
     }
   ],
   "registry_version": "2026-07-18T20:22:46.119239",
   "relation_observations": {
     "controls": {
-      "average_confidence": 0.9699999999999999,
-      "confidence_sum": 8.729999999999999,
-      "count": 9,
+      "average_confidence": 0.9700000000000002,
+      "confidence_sum": 14.550000000000002,
+      "count": 15,
       "examples": [
         "motor measures pressure Industrial pumpcontrols a motor and monitors a pressure sensor.",
         "motor measures sensor Industrial pumpcontrols a motor and monitors a pressure sensor.",
@@ -161,44 +249,44 @@
       ],
       "first_seen": "2026-07-18T20:22:50.989524",
       "label": "controls",
-      "last_seen": "2026-07-18T20:32:54.631877"
+      "last_seen": "2026-07-20T15:24:19.696963"
     }
   },
   "schema_version": "1.0.0",
   "type_observations": {
     "asset.equipment": {
       "average_confidence": 1.0,
-      "confidence_sum": 3.0,
-      "count": 3,
+      "confidence_sum": 5.0,
+      "count": 5,
       "examples": [
         "motor equipment Industrial pumpcontrols a motor and monitors a pressure sensor."
       ],
       "first_seen": "2026-07-18T20:22:50.989447",
       "label": "Equipment",
-      "last_seen": "2026-07-18T20:32:54.631800"
+      "last_seen": "2026-07-20T15:24:19.696894"
     },
     "asset.sensor": {
       "average_confidence": 1.0,
-      "confidence_sum": 3.0,
-      "count": 3,
+      "confidence_sum": 5.0,
+      "count": 5,
       "examples": [
         "sensor sensor Industrial pumpcontrols a motor and monitors a pressure sensor."
       ],
       "first_seen": "2026-07-18T20:22:50.989508",
       "label": "Sensor",
-      "last_seen": "2026-07-18T20:32:54.631832"
+      "last_seen": "2026-07-20T15:24:19.696923"
     },
     "process.pressure": {
-      "average_confidence": 0.9700000000000001,
-      "confidence_sum": 2.91,
-      "count": 3,
+      "average_confidence": 0.97,
+      "confidence_sum": 4.85,
+      "count": 5,
       "examples": [
         "pressure parameter Industrial pumpcontrols a motor and monitors a pressure sensor."
       ],
       "first_seen": "2026-07-18T20:22:50.989490",
       "label": "Pressure",
-      "last_seen": "2026-07-18T20:32:54.631818"
+      "last_seen": "2026-07-20T15:24:19.696910"
     }
   },
-  "updated_at": "2026-07-18T22:10:59.279026"
+  "updated_at": "2026-07-20T15:24:20.016861"
 }

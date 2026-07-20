@@ -10,8 +10,10 @@ import sys
 import traceback
 from importlib import import_module
 from importlib.metadata import version, PackageNotFoundError
+from packaging.version import InvalidVersion, Version
 
 from app.pipeline.compat import ensure_pyarrow_compat
+from app.pipeline.runtime import cuda_is_usable
 
 
 def _is_kaggle_environment() -> bool:
@@ -85,26 +87,38 @@ def check_torch_abi() -> bool:
 
     print(f"[env-check] torch={tv}, torchvision={vv}, torchaudio={av}")
 
-    # Compare major.minor
     def major_minor(v: str) -> str:
         parts = v.split(".")
         return ".".join(parts[:2]) if parts and parts[0] != "?" else v
 
-    if _is_kaggle_environment():
-        if major_minor(tv) != major_minor(av):
-            print("[env-check][warn] Torch and torchaudio versions differ on Kaggle; this may be acceptable if Kaggle installed a compatible runtime")
-        if major_minor(tv) != major_minor(vv):
-            print("[env-check][warn] Torch and torchvision versions differ on Kaggle; this may be acceptable if Kaggle installed a compatible runtime")
-        return True
+    try:
+        torch_minor = int(major_minor(tv).split(".")[1])
+        expected_torchvision_minor = f"0.{torch_minor + 15}"
+    except Exception:
+        expected_torchvision_minor = None
 
     if major_minor(tv) != major_minor(av):
-        print("[env-check][error] Torch and torchaudio ABI mismatch — reinstall matching versions")
+        print("[env-check][warn] Torch and torchaudio versions differ; verify they were installed from the same release matrix")
+    if expected_torchvision_minor and major_minor(vv) != expected_torchvision_minor:
+        print(
+            f"[env-check][warn] Torch/torchvision release pair looks unusual; expected torchvision {expected_torchvision_minor}.x for torch {major_minor(tv)}"
+        )
+
+    gpu_visible = False
+    try:
+        gpu_visible = bool(torch.cuda.is_available())
+    except Exception:
+        gpu_visible = False
+
+    if not gpu_visible:
+        print("[env-check] CUDA not visible; CPU runtime is acceptable.")
+        return True
+
+    if not cuda_is_usable():
+        print("[env-check][error] CUDA is visible, but the installed PyTorch wheel cannot execute on this GPU. Install the cu126 PyTorch trio.")
         return False
 
-    if major_minor(tv) != major_minor(vv):
-        print("[env-check][error] Torch and torchvision ABI mismatch — reinstall matching versions")
-        return False
-
+    print("[env-check] CUDA runtime smoke test passed")
     return True
 
 
@@ -136,13 +150,10 @@ def check_pyarrow_version() -> bool:
 
     print(f"[env-check] pyarrow=={pa}")
     try:
-        major, minor = map(int, pa.split(".")[:2])
-    except Exception:
-        return True
-
-    if major > 15:
-        print("[env-check][error] pyarrow version is too new for the pinned ML stack. Use pyarrow==15.0.2")
-        return False
+        if Version(pa) < Version("21.0.0"):
+            print("[env-check][warn] pyarrow is older than the Kaggle/transformers stack expects; some integrations may be limited")
+    except InvalidVersion:
+        pass
 
     return True
 
@@ -183,8 +194,48 @@ def check_glirel_import() -> bool:
         print("[env-check] glirel import OK")
         return True
     except Exception as exc:
-        print(f"[env-check][warn] glirel import failed: {type(exc).__name__} - {exc}")
+        print(f"[env-check][error] glirel import failed: {type(exc).__name__} - {exc}")
+        return False
+
+
+def check_groundingdino_import() -> bool:
+    try:
+        import groundingdino  # type: ignore
+        print("[env-check] groundingdino import OK")
         return True
+    except Exception as exc:
+        print(f"[env-check][error] groundingdino import failed: {type(exc).__name__} - {exc}")
+        return False
+
+
+def check_blink_import() -> bool:
+    try:
+        import blink  # type: ignore
+        print("[env-check] blink import OK")
+        return True
+    except Exception as exc:
+        print(f"[env-check][error] blink import failed: {type(exc).__name__} - {exc}")
+        return False
+
+
+def check_langgraph_import() -> bool:
+    try:
+        import langgraph  # type: ignore
+        print("[env-check] langgraph import OK")
+        return True
+    except Exception as exc:
+        print(f"[env-check][error] langgraph import failed: {type(exc).__name__} - {exc}")
+        return False
+
+
+def check_node2vec_import() -> bool:
+    try:
+        import node2vec  # type: ignore
+        print("[env-check] node2vec import OK")
+        return True
+    except Exception as exc:
+        print(f"[env-check][error] node2vec import failed: {type(exc).__name__} - {exc}")
+        return False
 
 
 def run_all_checks() -> bool:
@@ -203,9 +254,17 @@ def run_all_checks() -> bool:
             ok = False
         if not check_sentence_transformers_import():
             ok = False
+        if not check_groundingdino_import():
+            ok = False
         if not check_gliner_import():
             ok = False
         if not check_glirel_import():
+            ok = False
+        if not check_blink_import():
+            ok = False
+        if not check_langgraph_import():
+            ok = False
+        if not check_node2vec_import():
             ok = False
     except Exception as exc:
         print(f"[env-check] Unexpected error during checks: {exc}")

@@ -6,10 +6,12 @@ Enhanced with evidence grounding, provenance tracking, and hallucination prevent
 
 import json
 import re
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from app.config import settings
 from app.pipeline.compat import allow_trusted_torch_pickle
 from app.pipeline.document_utils import chunk_text
+from app.pipeline.runtime import select_device
 
 try:
     from sklearn.feature_extraction.text import TfidfVectorizer
@@ -114,7 +116,7 @@ class GraphRAGSummarizer:
             # Decide device/dtype
             device = getattr(settings, "device_for_extraction", None) or getattr(settings, "device_for_embedding", None)
             if not device:
-                device = "cuda" if torch.cuda.is_available() else "cpu"
+                device = select_device()
 
             target_torch_device = torch.device("cuda:0" if str(device).startswith("cuda") else "cpu")
             dtype = torch.float16 if target_torch_device.type == "cuda" else torch.float32
@@ -161,21 +163,7 @@ class GraphRAGSummarizer:
         
         Returns analysis with provenance tracking or 'no_evidence' status if insufficient data.
         """
-        if not self._ensure_llm():
-            return {
-                "summary_method": "unavailable",
-                "status": "llm_unavailable",
-                "reasoning": "GraphRAG model unavailable.",
-                "anomalies_detected": [],
-                "failure_risks": [],
-                "maintenance_recommendations": [],
-                "compliance": [],
-                "confidence": 0.0,
-                "evidence_coverage": 0.0,
-                "explanation_chains": [],
-            }
-
-        # Check if we have sufficient evidence to analyze
+        # Check if we have sufficient evidence before spending time loading the model.
         evidence_check = self._check_evidence_sufficiency(entities, relations, text)
         if not evidence_check["sufficient"]:
             return {
@@ -188,6 +176,20 @@ class GraphRAGSummarizer:
                 "compliance": [],
                 "confidence": 0.0,
                 "evidence_coverage": evidence_check["coverage"],
+                "explanation_chains": [],
+            }
+
+        if not self._ensure_llm():
+            return {
+                "summary_method": "unavailable",
+                "status": "llm_unavailable",
+                "reasoning": "GraphRAG model unavailable.",
+                "anomalies_detected": [],
+                "failure_risks": [],
+                "maintenance_recommendations": [],
+                "compliance": [],
+                "confidence": 0.0,
+                "evidence_coverage": 0.0,
                 "explanation_chains": [],
             }
 

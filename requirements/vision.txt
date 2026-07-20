@@ -3,7 +3,7 @@ torch==2.10.0
 torchvision==0.25.0
 torchaudio==2.10.0
 ultralytics==8.2.0
-groundingdino-py==0.4.0
+git+https://github.com/IDEA-Research/GroundingDINO.git#egg=groundingdino
 segment-anything==1.0.0
 doclayout_yolo==0.0.4
 albumentations==1.4.24

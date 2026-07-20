@@ -10,6 +10,10 @@ import os
 from pathlib import Path
 from datetime import datetime
 
+import pytest
+
+pytestmark = pytest.mark.skip(reason="Utility script, not a pytest module")
+
 # Add repo root to path
 repo_root = Path(__file__).parent.parent
 sys.path.insert(0, str(repo_root))

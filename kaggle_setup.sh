@@ -14,8 +14,8 @@ echo "[kaggle_setup] HF_HOME=$HF_HOME"
 echo "[kaggle_setup] Upgrading pip, setuptools, wheel"
 python -m pip install --upgrade pip setuptools wheel
 
-echo "[kaggle_setup] Installing compatible pyarrow and safetensors"
-pip install --prefer-binary --only-binary=:all: pyarrow==15.0.2 safetensors || true
+echo "[kaggle_setup] Ensuring safetensors is available"
+pip install --prefer-binary --only-binary=:all: safetensors || true
 
 check_torch_install() {
   echo "[kaggle_setup] Inspecting installed torch package..."
@@ -33,23 +33,23 @@ PY
 }
 
 if command -v nvidia-smi >/dev/null 2>&1; then
-  echo "[kaggle_setup] GPU detected (nvidia-smi available). Trying CUDA-enabled PyTorch (cu118)"
-  if pip install --prefer-binary --extra-index-url https://download.pytorch.org/whl/cu118 "torch" "torchvision" "torchaudio"; then
-    echo "[kaggle_setup] Installed CUDA PyTorch (cu118) from PyTorch index"
+  echo "[kaggle_setup] GPU detected (nvidia-smi available). Installing CUDA-enabled PyTorch (cu126)"
+  if pip install --force-reinstall --upgrade --prefer-binary --only-binary=:all: --no-cache-dir --index-url https://download.pytorch.org/whl/cu126 \
+      torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0; then
+    echo "[kaggle_setup] Installed CUDA PyTorch (cu126) from PyTorch index"
   else
-    echo "[kaggle_setup] cu118 wheel install failed, falling back to CPU-only wheels"
-    pip install --prefer-binary --index-url https://download.pytorch.org/whl/cpu "torch" "torchvision" "torchaudio" || true
+    echo "[kaggle_setup] cu126 wheel install failed, falling back to CPU-only wheels"
+    pip install --force-reinstall --upgrade --prefer-binary --only-binary=:all: --no-cache-dir --index-url https://download.pytorch.org/whl/cpu \
+      torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 || true
   fi
   if ! check_torch_install >/dev/null 2>&1; then
     echo "[kaggle_setup] Warning: torch installation succeeded but import or GPU verification failed. Retaining best-effort install."
   fi
 else
   echo "[kaggle_setup] No GPU detected; installing CPU-only PyTorch wheels"
-  pip install --prefer-binary --index-url https://download.pytorch.org/whl/cpu "torch" "torchvision" "torchaudio" || true
+  pip install --force-reinstall --upgrade --prefer-binary --only-binary=:all: --no-cache-dir --index-url https://download.pytorch.org/whl/cpu \
+    torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 || true
 fi
-
-echo "[kaggle_setup] Installing known Kaggle package dependencies that often fail in mixed installs"
-pip install --prefer-binary groundingdino-py==0.4.0 docling==2.108.0 seqeval==1.2.2 blink==0.2.0 || echo "[kaggle_setup] Warning: explicit package install failed; continuing with best-effort environment"
 
 echo "[kaggle_setup] Bootstrapping repo dependencies through the managed installer"
 python "$ROOT_DIR/scripts/ensure_dependencies.py" --requirements "$ROOT_DIR/requirements.txt" --python "$(command -v python)" || echo "[kaggle_setup] dependency bootstrap reported errors; continue"

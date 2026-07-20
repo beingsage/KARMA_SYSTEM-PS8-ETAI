@@ -32,7 +32,7 @@ pip install --upgrade pip setuptools wheel
 echo "Detecting compute environment..."
 CUDA_TAG="cpu"
 if command -v nvidia-smi >/dev/null 2>&1; then
-  CUDA_TAG="cu118"
+  CUDA_TAG="cu126"
   echo "GPU detected: using CUDA build"
 else
   echo "No GPU detected: using CPU build"
@@ -42,11 +42,11 @@ fi
 echo ""
 echo "Installing PyTorch trio (torch, torchvision, torchaudio)..."
 if [ "$CUDA_TAG" = "cpu" ]; then
-  pip install --prefer-binary --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu \
-    "torch==2.5.1+cpu" "torchvision==0.20.1+cpu" "torchaudio==2.5.1"
+  pip install --force-reinstall --upgrade --prefer-binary --only-binary=:all: --no-cache-dir --index-url https://download.pytorch.org/whl/cpu \
+    "torch==2.10.0" "torchvision==0.25.0" "torchaudio==2.10.0"
 else
-  pip install --prefer-binary --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cu118 \
-    "torch==2.5.1+cu118" "torchvision==0.20.1+cu118" "torchaudio==2.5.1"
+  pip install --force-reinstall --upgrade --prefer-binary --only-binary=:all: --no-cache-dir --index-url https://download.pytorch.org/whl/cu126 \
+    "torch==2.10.0" "torchvision==0.25.0" "torchaudio==2.10.0"
 fi
 
 # Verify torch ABI
@@ -54,34 +54,31 @@ echo ""
 echo "Verifying PyTorch ABI match..."
 python3 - <<'PYVERIFY'
 import torch, torchvision, torchaudio
-tv = torch.__version__.split('+')[0]
-vv = torchvision.__version__.split('+')[0]
-av = torchaudio.__version__.split('+')[0]
-print(f"torch:       {tv}")
-print(f"torchvision: {vv}")
-print(f"torchaudio:  {av}")
+from app.pipeline.runtime import cuda_is_usable
 
-# Check major.minor match
-tv_mm = '.'.join(tv.split('.')[:2])
-vv_mm = '.'.join(vv.split('.')[:2])
-av_mm = '.'.join(av.split('.')[:2])
+print(f"torch:       {torch.__version__}")
+print(f"torchvision: {torchvision.__version__}")
+print(f"torchaudio:  {torchaudio.__version__}")
 
-if tv_mm != av_mm or tv_mm != vv_mm:
-  print(f"ERROR: ABI mismatch! {tv_mm} vs {av_mm} vs {vv_mm}")
-  exit(1)
-
-print("✓ PyTorch ABI OK")
+if torch.cuda.is_available():
+  print(f"cuda_usable: {cuda_is_usable()}")
+  if not cuda_is_usable():
+    print("ERROR: CUDA is visible but unusable with the installed PyTorch wheel")
+    raise SystemExit(1)
+  print("✓ CUDA runtime OK")
+else:
+  print("✓ CPU runtime OK")
 PYVERIFY
 
 # Install core and ML dependencies from lock file
 echo ""
 echo "Installing locked dependencies..."
-if [ -f "$ROOT_DIR/requirements.lock" ]; then
-  echo "Using requirements.lock"
-  pip install --prefer-binary --no-cache-dir -r "$ROOT_DIR/requirements.lock"
-else
+if [ -f "$ROOT_DIR/requirements.txt" ]; then
   echo "Using requirements.txt"
   pip install --prefer-binary --no-cache-dir -r "$ROOT_DIR/requirements.txt"
+else
+  echo "Using requirements.full.txt"
+  pip install --prefer-binary --no-cache-dir -r "$ROOT_DIR/requirements.full.txt"
 fi
 
 # Verify key imports

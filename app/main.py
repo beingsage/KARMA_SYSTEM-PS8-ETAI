@@ -10,6 +10,7 @@ from typing import Dict, List, Any, Optional
 from app.config import settings
 import warnings
 from app.pipeline.compat import ensure_pyarrow_compat, install_safe_torch_load_default
+from app.pipeline.runtime import cuda_is_usable
 from app.pipeline.neo4j_store import Neo4jGraphStore
 
 # Suppress expected FutureWarnings from dependencies
@@ -28,7 +29,7 @@ try:
     def _print_runtime_info():
         try:
             tv = getattr(torch, "__version__", "unknown")
-            print(f"[runtime] torch=={tv}, cuda_available={torch.cuda.is_available()}")
+            print(f"[runtime] torch=={tv}, cuda_usable={cuda_is_usable()}")
         except Exception:
             print("[runtime] torch installed but version info unavailable")
 

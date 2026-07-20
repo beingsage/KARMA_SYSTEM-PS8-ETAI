@@ -19,6 +19,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from app.pipeline.compat import ensure_pyarrow_compat
+from app.pipeline.runtime import cuda_is_usable
 
 ensure_pyarrow_compat()
 
@@ -35,29 +36,37 @@ DEFAULT_REQUIRED_PACKAGES = [
     "pydantic",
     "pypdf",
     "neo4j",
-    "numpy",
-    "requests",
-    "Pillow>=10.2.0,<11.0.0",
-    "pydantic-settings",
-    "httpx",
+    "numpy>=2.0,<3.0",
+    "requests>=2.32.3,<3.0.0",
+    "Pillow>=11.0.0,<13.0.0",
+    "pydantic-settings>=2.14.2,<3.0.0",
+    "httpx>=0.28.1,<1.0.0",
+    "pyarrow>=21.0.0,<26.0.0",
     "torch",
 ]
 
 OPTIONAL_PACKAGES = [
-    "qdrant-client>=1.14.3,<2.0.0",
-    "graphrag>=0.1.0",
+    "qdrant-client>=1.18.0,<2.0.0",
+    "graphrag>=3.1.0",
     "loguru>=0.7.0",
-    "node2vec>=0.4.7",
-    "sentence-transformers>=3.0.0",
-    "pyarrow==15.0.2",
-    "bertopic>=0.15.0",
-    "hdbscan>=0.8.0",
-    "umap-learn>=0.5.4",
+    "node2vec>=0.5.0",
+    "sentence-transformers>=5.6.0",
+    "bertopic>=0.17.4",
+    "hdbscan>=0.8.44",
+    "umap-learn>=0.5.12",
     "networkx>=3.0",
-    "langgraph>=0.1.0",
-    "timesfm>=1.0.0",
-    "pytorch-lightning>=2.0.0",
+    "langgraph>=0.2.76",
+    "langchain>=0.3.0",
+    "langchain-community>=0.4.2",
+    "timesfm>=2.0.2",
+    "pytorch-lightning>=2.2.0",
 ]
+
+PYTORCH_PACKAGE_VERSIONS = {
+    "torch": "2.10.0",
+    "torchvision": "0.25.0",
+    "torchaudio": "2.10.0",
+}
 
 def _normalize_package_spec(package_spec: str) -> str:
     normalized = package_spec.strip()
@@ -77,47 +86,40 @@ def _is_pytorch_package(package_spec: str) -> bool:
     return normalized.startswith("torch") or normalized.startswith("torchvision") or normalized.startswith("torchaudio")
 
 
+def _is_vcs_package(package_spec: str) -> bool:
+    normalized = package_spec.strip().lower()
+    return normalized.startswith("git+") or " @ git+" in normalized
+
+
 def _cuda_tag_for_environment() -> str:
     if os.environ.get("PYTORCH_CUDA_TAG"):
         return os.environ["PYTORCH_CUDA_TAG"]
-    if _is_kaggle_environment():
-        return ""
     if shutil.which("nvidia-smi"):
-        return "cu118"
+        return "cu126"
     return "cpu"
 
 
 def _pytorch_install_cmd(package: str) -> list[str]:
     base = _normalize_package_spec(package)
-    version = base.split("==", 1)[1] if "==" in base else base
+    package_name = base.split("[", 1)[0].split("==", 1)[0].strip()
+    version = base.split("==", 1)[1] if "==" in base else PYTORCH_PACKAGE_VERSIONS.get(package_name, "")
+    target_spec = base if "==" in base else f"{package_name}=={version}" if version else package_name
     tag = _cuda_tag_for_environment()
-    if tag:
-        if base.startswith("torch") or base.startswith("torchvision"):
-            return [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "--prefer-binary",
-                "--only-binary=:all:",
-                "--no-cache-dir",
-                f"{base}+{tag}",
-                "--extra-index-url",
-                f"https://download.pytorch.org/whl/{tag}",
-            ]
-        if base.startswith("torchaudio"):
-            return [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "--prefer-binary",
-                "--only-binary=:all:",
-                "--no-cache-dir",
-                f"{base}+{tag}",
-                "--extra-index-url",
-                f"https://download.pytorch.org/whl/{tag}",
-            ]
+    if tag and (base.startswith("torch") or base.startswith("torchvision") or base.startswith("torchaudio")):
+        return [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--force-reinstall",
+            "--upgrade",
+            "--prefer-binary",
+            "--only-binary=:all:",
+            "--no-cache-dir",
+            "--index-url",
+            f"https://download.pytorch.org/whl/{tag}",
+            target_spec,
+        ]
     return [
         sys.executable,
         "-m",
@@ -134,6 +136,7 @@ def _package_to_module_name(package_spec: str) -> str:
     normalized = _normalize_package_spec(package_spec).lower()
     mapping = {
         "groundingdino-py": "groundingdino",
+        "groundingdino": "groundingdino",
         "qdrant-client": "qdrant_client",
         "sentence-transformers": "sentence_transformers",
         "pydantic-settings": "pydantic_settings",
@@ -149,6 +152,10 @@ def _package_to_module_name(package_spec: str) -> str:
         "umap-learn": "umap",
         "nougat-ocr": "nougat",
         "pytesseract": "pytesseract",
+        "seqeval": "seqeval",
+        "blink": "blink",
+        "langgraph": "langgraph",
+        "node2vec": "node2vec",
     }
     for prefix, module_name in mapping.items():
         if normalized.startswith(prefix):
@@ -161,6 +168,13 @@ def _package_to_module_name(package_spec: str) -> str:
         return "pyarrow"
 
     return normalized.split("[", 1)[0].split("=", 1)[0].split(">", 1)[0].split("<", 1)[0].replace("-", "_")
+
+
+OPTIONAL_PACKAGE_MODULES = {_package_to_module_name(pkg) for pkg in OPTIONAL_PACKAGES}
+
+
+def _is_optional_package(package_spec: str) -> bool:
+    return _package_to_module_name(package_spec) in OPTIONAL_PACKAGE_MODULES
 
 
 def _is_kaggle_environment() -> bool:
@@ -187,6 +201,20 @@ def _is_package_satisfied(package_spec: str) -> bool:
                 return True
             import pyarrow
             return hasattr(pyarrow, "PyExtensionType")
+
+        if _is_pytorch_package(package_spec):
+            try:
+                import torch
+
+                try:
+                    gpu_visible = bool(torch.cuda.is_available())
+                except Exception:
+                    gpu_visible = False
+
+                if gpu_visible and not cuda_is_usable():
+                    return False
+            except Exception:
+                return False
 
         if Requirement is None:
             importlib.import_module(module_name)
@@ -219,29 +247,58 @@ def _is_package_satisfied(package_spec: str) -> bool:
 
 
 def parse_requirements_file(requirements_path: str | Path) -> list[str]:
-    requirements_file = Path(requirements_path)
+    requirements_file = Path(requirements_path).resolve()
     if not requirements_file.exists():
         raise FileNotFoundError(f"Requirements file not found: {requirements_file}")
 
     packages: list[str] = []
-    for raw_line in requirements_file.read_text().splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#"):
-            continue
-        if line.startswith(("-r", "--requirement", "-c", "--constraint")):
-            continue
-        packages.append(line)
+    seen_requirements: set[Path] = set()
+    seen_packages: set[str] = set()
+
+    def _parse_file(file_path: Path) -> None:
+        resolved_path = file_path.resolve()
+        if resolved_path in seen_requirements:
+            return
+        seen_requirements.add(resolved_path)
+
+        for raw_line in resolved_path.read_text().splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+
+            if line.startswith(("-r ", "--requirement ")):
+                include_path = line.split(maxsplit=1)[1].strip()
+                nested = (resolved_path.parent / include_path).resolve()
+                _parse_file(nested)
+                continue
+
+            if line.startswith(("-c ", "--constraint ")):
+                continue
+
+            if line not in seen_packages:
+                seen_packages.add(line)
+                packages.append(line)
+
+    _parse_file(requirements_file)
     return packages
 
 
 def find_missing_dependencies(required_packages: Sequence[str] | None = None, *, include_optional: bool = False) -> list[str]:
     """Return the package specs whose importable modules are not available in the current environment."""
-    packages = list(required_packages or DEFAULT_REQUIRED_PACKAGES)
+    packages = list(DEFAULT_REQUIRED_PACKAGES if required_packages is None else required_packages)
     if include_optional:
         packages.extend(OPTIONAL_PACKAGES)
     missing: list[str] = []
+    seen: set[str] = set()
 
     for package in packages:
+        if package in seen:
+            continue
+        seen.add(package)
+
+        if not include_optional and _is_optional_package(package):
+            continue
+
         if not _is_package_satisfied(package):
             missing.append(package)
 
@@ -264,7 +321,7 @@ def ensure_dependencies(
 
     requirements = parse_requirements_file(requirements_file)
 
-    install_targets = list(required_packages or requirements)
+    install_targets = list(requirements if required_packages is None else required_packages)
 
     if include_optional:
         install_targets.extend(
@@ -274,18 +331,8 @@ def ensure_dependencies(
 
     missing_packages = find_missing_dependencies(
         install_targets,
-        include_optional=False,
+        include_optional=include_optional,
     )
-
-    # Kaggle already provides CUDA-enabled PyTorch.
-    if _is_kaggle_environment():
-        missing_packages = [
-            pkg
-            for pkg in missing_packages
-            if not _normalize_package_spec(pkg).lower().startswith(
-                ("torch", "torchvision", "torchaudio")
-            )
-        ]
 
     if not missing_packages:
         return []
@@ -319,22 +366,20 @@ def ensure_dependencies(
                 "--prefer-binary",
                 "--only-binary=:all:",
                 "--no-cache-dir",
-                "pyarrow==15.0.2",
+                "pyarrow>=21.0.0,<26.0.0",
             ]
         elif _is_pytorch_package(package):
-            if _is_kaggle_environment():
-                install_cmd = [
-                    python_bin,
-                    "-m",
-                    "pip",
-                    "install",
-                    "--prefer-binary",
-                    "--only-binary=:all:",
-                    "--no-cache-dir",
-                    package,
-                ]
-            else:
-                install_cmd = _pytorch_install_cmd(package)
+            install_cmd = _pytorch_install_cmd(package)
+        elif _is_vcs_package(package):
+            install_cmd = [
+                python_bin,
+                "-m",
+                "pip",
+                "install",
+                "--prefer-binary",
+                "--no-cache-dir",
+                package,
+            ]
         result = subprocess.run(install_cmd, capture_output=True, text=True)
         if result.returncode != 0:
             failed_packages.append(package)
@@ -347,7 +392,7 @@ def ensure_dependencies(
     # Verify directly instead of importing scripts.ensure_dependencies
     remaining = find_missing_dependencies(
         install_targets,
-        include_optional=False,
+        include_optional=include_optional,
     )
 
     if remaining:

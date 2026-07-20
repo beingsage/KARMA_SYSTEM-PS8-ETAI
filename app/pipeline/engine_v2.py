@@ -14,11 +14,12 @@ from typing import Any, Callable, Dict, List, Optional
 
 from app.config import settings
 import torch
+from app.pipeline.runtime import cuda_is_usable, select_device
 
 
 def _is_cuda_available() -> bool:
     try:
-        return torch.cuda.is_available()
+        return cuda_is_usable()
     except Exception:
         return False
 
@@ -2273,7 +2274,7 @@ class IndustrialGraphPipeline:
                 except Exception:
                     pass
 
-            is_cuda = torch.cuda.is_available()
+            is_cuda = _is_cuda_available()
             pages_to_process = images[:1] if not is_cuda else images
             for page_idx, image in enumerate(pages_to_process, start=1):
                 page_boxes = boxes_by_page.get(page_idx, [])

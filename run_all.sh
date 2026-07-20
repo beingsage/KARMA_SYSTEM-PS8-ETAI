@@ -393,28 +393,23 @@ start_native_backends() {
 }
 
 install_torch_wheels() {
-  if [ -n "${KAGGLE_ENV:-}" ]; then
-    echo "  Kaggle environment detected; skipping explicit torch wheel installation."
-    return 0
-  fi
-
   local torch_version="2.10.0"
   local torchvision_version="0.25.0"
   local torchaudio_version="2.10.0"
   local cuda_tag="cpu"
 
   if [ "${EXECUTION_MODE:-gpu}" = "gpu" ] && command -v nvidia-smi >/dev/null 2>&1; then
-    cuda_tag="cu118"
+    cuda_tag="cu126"
   fi
 
   if [ "$cuda_tag" = "cpu" ]; then
     echo "  Installing CPU PyTorch wheels"
-    "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu \
-      "torch==${torch_version}+cpu" "torchvision==${torchvision_version}+cpu" "torchaudio==${torchaudio_version}" || true
+    "$PYTHON_BIN" -m pip install --force-reinstall --upgrade --prefer-binary --only-binary=:all: --no-cache-dir --index-url https://download.pytorch.org/whl/cpu \
+      "torch==${torch_version}" "torchvision==${torchvision_version}" "torchaudio==${torchaudio_version}" || true
   else
     echo "  Installing GPU PyTorch wheels ($cuda_tag)"
-    "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --extra-index-url https://download.pytorch.org/whl/${cuda_tag} \
-      "torch==${torch_version}+${cuda_tag}" "torchvision==${torchvision_version}+${cuda_tag}" "torchaudio==${torchaudio_version}" || true
+    "$PYTHON_BIN" -m pip install --force-reinstall --upgrade --prefer-binary --only-binary=:all: --no-cache-dir --index-url https://download.pytorch.org/whl/${cuda_tag} \
+      "torch==${torch_version}" "torchvision==${torchvision_version}" "torchaudio==${torchaudio_version}" || true
   fi
 }
 
@@ -542,7 +537,6 @@ echo "[3/6] Installing Python dependencies..."
 
 install_torch_wheels
 
-echo "  Installing GLiREL / seqeval / BLINK compatibility packages..."
 if ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --upgrade pip setuptools wheel >/dev/null 2>&1; then
   echo "  WARNING: pip toolchain upgrade failed; continuing with existing environment."
 fi
@@ -563,30 +557,12 @@ ver('transformers')
 sys.exit(0)
 PY
 
-
-if ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --no-build-isolation requests pyyaml >/dev/null 2>&1; then
-  echo "  WARNING: failed to install requests/pyyaml for BLINK compatibility; continuing."
+DEP_REQUIREMENTS_FILE="${RUN_ALL_REQUIREMENTS_FILE:-$ROOT_DIR/requirements.txt}"
+if [ ! -f "$DEP_REQUIREMENTS_FILE" ] && [ -f "$ROOT_DIR/requirements.full.txt" ]; then
+  DEP_REQUIREMENTS_FILE="$ROOT_DIR/requirements.full.txt"
 fi
 
-if [ -n "${KAGGLE_ENV:-}" ]; then
-  echo "  Kaggle mode: skipping GLiREL/seqeval/BLINK package installation and using fallbacks."
-elif ! "$PYTHON_BIN" -m pip install --prefer-binary --no-cache-dir --no-build-isolation "glirel==1.2.1" "seqeval>=1.0.0,<1.3.0" "blink>=0.2.0" >/dev/null 2>&1; then
-  echo "  WARNING: failed to install the GLiREL/seqeval/BLINK package set; continuing."
-fi
-
-DEP_REQUIREMENTS_FILE="$ROOT_DIR/requirements.lock"
-if [ ! -f "$DEP_REQUIREMENTS_FILE" ]; then
-  DEP_REQUIREMENTS_FILE="$ROOT_DIR/requirements.txt"
-  if [ -z "${KAGGLE_ENV:-}" ] && [ -f "$ROOT_DIR/requirements.full.txt" ]; then
-    DEP_REQUIREMENTS_FILE="$ROOT_DIR/requirements.full.txt"
-  fi
-fi
-
-if [ "$DEP_REQUIREMENTS_FILE" = "$ROOT_DIR/requirements.lock" ]; then
-  echo "  Using locked dependency file: requirements.lock"
-else
-  echo "  Using dependency file: $(basename "$DEP_REQUIREMENTS_FILE")"
-fi
+echo "  Using dependency file: $(basename "$DEP_REQUIREMENTS_FILE")"
 
 DEP_BOOTSTRAP_CMD=("$PYTHON_BIN" "$ROOT_DIR/scripts/ensure_dependencies.py" --requirements "$DEP_REQUIREMENTS_FILE" --python "$PYTHON_BIN")
 if [ "${RUN_ALL_INCLUDE_OPTIONAL:-0}" = "1" ]; then

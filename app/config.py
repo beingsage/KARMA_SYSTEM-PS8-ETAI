@@ -2,6 +2,8 @@ from pathlib import Path
 import os
 import sys
 
+from app.pipeline.runtime import cuda_is_usable
+
 
 def load_env_file(env_file: Path = None) -> dict:
     """Load configuration from .env.local file."""
@@ -161,9 +163,7 @@ class Settings:
     @staticmethod
     def _cuda_device_if_available() -> str:
         try:
-            import torch
-
-            return "cuda:0" if torch.cuda.is_available() else "cpu"
+            return "cuda:0" if cuda_is_usable() else "cpu"
         except Exception:
             return "cpu"
 

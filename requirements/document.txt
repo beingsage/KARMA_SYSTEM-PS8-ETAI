@@ -1,7 +1,7 @@
 -r base.txt
 PyMuPDF==1.24.10
 pytesseract==0.3.10
-docling==2.108.0
+docling>=2.113.0,<3.0.0
 surya-ocr==0.4.10
 nougat-ocr==0.1.17
 easyocr==1.7.2
