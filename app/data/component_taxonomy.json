@@ -1,0 +1,144 @@
+{
+  "component_keywords": {
+    "pump": {
+      "canonical_id": "pump_generic",
+      "category": "mechanical",
+      "keywords": ["pump", "centrifugal pump", "booster pump", "positive displacement pump"],
+      "variants": ["CR 120", "CR 150", "CR 200", "CR 280"],
+      "entity_types": ["equipment", "equipment_variant"],
+      "typical_specs": {
+        "pressure_range": "1-10 bar",
+        "flow_range": "0.5-5 m3/h"
+      }
+    },
+    "valve": {
+      "canonical_id": "valve_generic",
+      "category": "mechanical",
+      "keywords": ["valve", "check valve", "expansion valve", "pressure valve", "relief valve", "isolation valve"],
+      "entity_types": ["equipment"],
+      "typical_specs": {
+        "pressure_rating": "1-16 bar"
+      }
+    },
+    "motor": {
+      "canonical_id": "motor_generic",
+      "category": "mechanical",
+      "keywords": ["motor", "electric motor", "induction motor", "drive"],
+      "entity_types": ["equipment"],
+      "typical_specs": {
+        "power_range": "0.75-22 kW"
+      }
+    },
+    "sensor": {
+      "canonical_id": "sensor_generic",
+      "category": "electrical",
+      "keywords": ["sensor", "pressure sensor", "temperature sensor", "transmitter", "gauge", "pressure gauge", "level sensor"],
+      "entity_types": ["equipment"],
+      "typical_specs": {}
+    },
+    "control": {
+      "canonical_id": "control_generic",
+      "category": "electrical",
+      "keywords": ["control", "control variant", "control cabinet", "controller", "PLC", "control unit", "control panel"],
+      "entity_types": ["control_system", "equipment"],
+      "typical_specs": {}
+    },
+    "manifold": {
+      "canonical_id": "manifold_generic",
+      "category": "mechanical",
+      "keywords": ["manifold", "inlet manifold", "outlet manifold", "block"],
+      "entity_types": ["component"],
+      "typical_specs": {}
+    },
+    "expansion_joint": {
+      "canonical_id": "expansion_joint_generic",
+      "category": "accessory",
+      "keywords": ["expansion joint", "vibration dampener", "damper", "vibration damping", "expansion tank"],
+      "entity_types": ["accessory"],
+      "typical_specs": {
+        "purpose": "vibration damping and thermal expansion"
+      }
+    },
+    "sealing": {
+      "canonical_id": "sealing_generic",
+      "category": "consumable",
+      "keywords": ["seal", "sealing compound", "gasket", "O-ring", "packing"],
+      "entity_types": ["consumable"],
+      "typical_specs": {}
+    },
+    "pipe": {
+      "canonical_id": "pipe_generic",
+      "category": "mechanical",
+      "keywords": ["pipe", "inlet pipe", "outlet pipe", "tubing", "line", "connection"],
+      "entity_types": ["component"],
+      "typical_specs": {}
+    },
+    "pressure_tank": {
+      "canonical_id": "pressure_tank_generic",
+      "category": "mechanical",
+      "keywords": ["pressure tank", "tank", "accumulator", "storage tank", "buffer tank"],
+      "entity_types": ["equipment"],
+      "typical_specs": {}
+    }
+  },
+  "specific_components": {
+    "cr_120_pump": {
+      "canonical_id": "cr_120_pump",
+      "parent": "pump_generic",
+      "model_number": "CR 120",
+      "manufacturer": "Grundfos",
+      "keywords": ["CR 120", "CR120"],
+      "specifications": {
+        "type": "centrifugal",
+        "max_pressure_bar": 10,
+        "nominal_flow_m3h": 2.0,
+        "power_kw": 1.5
+      },
+      "related_to": ["hydro_mpc_booster"]
+    },
+    "cr_150_pump": {
+      "canonical_id": "cr_150_pump",
+      "parent": "pump_generic",
+      "model_number": "CR 150",
+      "manufacturer": "Grundfos",
+      "keywords": ["CR 150", "CR150"],
+      "specifications": {
+        "type": "centrifugal",
+        "max_pressure_bar": 10,
+        "nominal_flow_m3h": 3.0,
+        "power_kw": 2.2
+      },
+      "related_to": ["hydro_mpc_booster"]
+    },
+    "hydro_mpc_booster": {
+      "canonical_id": "hydro_mpc_booster",
+      "parent": null,
+      "model_number": "Hydro MPC",
+      "manufacturer": "Grundfos",
+      "product_type": "booster system",
+      "keywords": ["Hydro MPC", "hydro mpc", "Hydro MPC booster"],
+      "contains": ["pump", "motor", "control", "manifold", "sensor"],
+      "specifications": {}
+    },
+    "flexcon_expansion_tank": {
+      "canonical_id": "flexcon_expansion_tank",
+      "parent": "pressure_tank_generic",
+      "model_number": "FlexCon",
+      "manufacturer": "Flexcon",
+      "keywords": ["FlexCon", "flexcon", "expansion tank"],
+      "specifications": {}
+    }
+  },
+  "synonym_mappings": {
+    "compressor": "pump_generic",
+    "impeller": "pump_generic",
+    "pressure_transmitter": "sensor_generic",
+    "pressure_transducer": "sensor_generic",
+    "programmable_logic_controller": "control_generic",
+    "expansion_vessel": "pressure_tank_generic",
+    "accumulator": "pressure_tank_generic",
+    "vibration_damper": "expansion_joint_generic",
+    "vibration_dampening": "expansion_joint_generic",
+    "circuit_board": "control_generic"
+  }
+}

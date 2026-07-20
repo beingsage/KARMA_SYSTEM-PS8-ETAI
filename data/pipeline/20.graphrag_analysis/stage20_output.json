@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-07-15T12:25:19.011995",
+  "stage": "graphrag_analysis",
+  "full_output": {
+    "summary_method": "qwen-graphrag",
+    "reasoning": "dangerous situation which, if not avoided, will result in serious personal injury. <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!-- image --> <!--",
+    "anomalies_detected": [],
+    "failure_risks": [],
+    "maintenance_recommendations": [],
+    "compliance": [],
+    "confidence": 0.9
+  }
+}

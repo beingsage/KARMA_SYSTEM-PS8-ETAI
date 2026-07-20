@@ -7,14 +7,22 @@ This script ensures all models are available before starting the application.
 import sys
 from pathlib import Path
 
+# Ensure repo root is on sys.path before importing local modules
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from app.config import settings
+
+
 # Add parent directories to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
 
 from app.pipeline.model_helpers import (
     PIDSymbolDetector,
     GroundingDinoDetector,
     SamSegmenter,
     BgeEmbedder,
+    VisualLanguageCaptioner,
     BgeReranker,
     GLiRELRelationExtractor,
     BlinkEntityLinker,
@@ -43,11 +51,36 @@ def download_all_models():
         except Exception as exc:
             print(f"  ⚠ Failed to pre-download {filename}: {exc}")
     
+    # Optionally download Qwen (GraphRAG reasoning) into a local snapshot
+    try:
+        from huggingface_hub import snapshot_download
+
+        qwen_source = settings.qwen_model if hasattr(settings, "qwen_model") else "Qwen/Qwen2.5-0.5B-Instruct"
+        qwen_local = getattr(settings, "qwen_local", "models/qwen_local")
+        qwen_local_path = Path(qwen_local)
+
+        if not qwen_local_path.exists() or not any(qwen_local_path.iterdir()):
+            print(f"\n⬇ Downloading Qwen to local snapshot: {qwen_local_path} ({qwen_source})...")
+            qwen_local_path.mkdir(parents=True, exist_ok=True)
+            snapshot_download(
+                repo_id=qwen_source,
+                local_dir=str(qwen_local_path),
+                local_dir_use_symlinks=False,
+                resume_download=True,
+            )
+            print("✓ Qwen local snapshot downloaded")
+        else:
+            print(f"✓ Qwen local snapshot already exists: {qwen_local_path}")
+    except Exception as exc:
+        print(f"  ⚠ Qwen local download skipped/failed: {type(exc).__name__}: {exc}")
+
     models_to_download = [
+
         ("PID Symbol Detector (YOLOv12)", PIDSymbolDetector),
         ("GroundingDINO Zero-shot Detector", GroundingDinoDetector),
         ("SAM2 Segmenter", SamSegmenter),
         ("BGE-M3 Embedder", BgeEmbedder),
+        ("Visual-LM Captioner", VisualLanguageCaptioner),
         ("BGE-Reranker-v2", BgeReranker),
         ("GLiREL Relation Extractor", GLiRELRelationExtractor),
         ("BLINK Entity Linker", BlinkEntityLinker),

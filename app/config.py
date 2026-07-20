@@ -74,6 +74,17 @@ class Settings:
     
     # LLM models
     qwen_model: str = get_env("QWEN_MODEL", "Qwen/Qwen2.5-0.5B-Instruct", _env_config)
+    # Optional: local on-disk Qwen snapshot path (used for fully offline runs)
+    qwen_local: str = get_env("QWEN_LOCAL", "models/qwen_local", _env_config)
+    enable_prompt_zero_shot_extraction: bool = get_env(
+        "ENABLE_PROMPT_ZERO_SHOT",
+        "true",
+        _env_config,
+    ).lower() == "true"
+    ontology_pack_dirs: str = get_env("ONTOLOGY_PACK_DIRS", "app/data.models", _env_config)
+
+    visual_lm_model: str = get_env("VISUAL_LM_MODEL", "Salesforce/blip-image-captioning-base", _env_config)
+    visual_lm_local: str = get_env("VISUAL_LM_LOCAL", "models/visual_lm_blip_image_captioning_base", _env_config)
     
     # P&ID Symbol Detection - YOLOv12
     pid_yolo_weights: str = get_env("PID_YOLO_WEIGHTS", "", _env_config)

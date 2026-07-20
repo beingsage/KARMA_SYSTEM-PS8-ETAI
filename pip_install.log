@@ -1,0 +1,159 @@
+nohup: ignoring input
+Requirement already satisfied: gliner==0.2.27 in ./.venv/lib/python3.12/site-packages (0.2.27)
+Requirement already satisfied: glirel==1.2.1 in ./.venv/lib/python3.12/site-packages (1.2.1)
+Collecting groundingdino-py==0.4.0
+  Using cached groundingdino-py-0.4.0.tar.gz (82 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: segment_anything in ./.venv/lib/python3.12/site-packages (1.0)
+Requirement already satisfied: transformers in ./.venv/lib/python3.12/site-packages (4.57.6)
+Requirement already satisfied: neo4j in ./.venv/lib/python3.12/site-packages (6.2.0)
+Requirement already satisfied: doclayout_yolo in ./.venv/lib/python3.12/site-packages (0.0.4)
+Requirement already satisfied: torch>=2.0.0 in ./.venv/lib/python3.12/site-packages (from gliner==0.2.27) (2.10.0+cpu)
+Requirement already satisfied: huggingface_hub>=0.21.4 in ./.venv/lib/python3.12/site-packages (from gliner==0.2.27) (0.36.2)
+Requirement already satisfied: tqdm in ./.venv/lib/python3.12/site-packages (from gliner==0.2.27) (4.68.4)
+Requirement already satisfied: onnxruntime in ./.venv/lib/python3.12/site-packages (from gliner==0.2.27) (1.27.0)
+Requirement already satisfied: sentencepiece in ./.venv/lib/python3.12/site-packages (from gliner==0.2.27) (0.2.1)
+Requirement already satisfied: seqeval in ./.venv/lib/python3.12/site-packages (from glirel==1.2.1) (1.2.2)
+Requirement already satisfied: datasets in ./.venv/lib/python3.12/site-packages (from glirel==1.2.1) (2.14.4)
+Requirement already satisfied: torchvision in ./.venv/lib/python3.12/site-packages (from groundingdino-py==0.4.0) (0.25.0+cpu)
+Requirement already satisfied: addict in ./.venv/lib/python3.12/site-packages (from groundingdino-py==0.4.0) (2.4.0)
+Requirement already satisfied: yapf in ./.venv/lib/python3.12/site-packages (from groundingdino-py==0.4.0) (0.43.0)
+Requirement already satisfied: timm in ./.venv/lib/python3.12/site-packages (from groundingdino-py==0.4.0) (0.5.4)
+Requirement already satisfied: numpy in ./.venv/lib/python3.12/site-packages (from groundingdino-py==0.4.0) (1.26.4)
+Requirement already satisfied: opencv-python in ./.venv/lib/python3.12/site-packages (from groundingdino-py==0.4.0) (4.13.0.92)
+Collecting supervision==0.6.0 (from groundingdino-py==0.4.0)
+  Using cached supervision-0.6.0-py3-none-any.whl.metadata (6.2 kB)
+Requirement already satisfied: pycocotools in ./.venv/lib/python3.12/site-packages (from groundingdino-py==0.4.0) (2.0.11)
+Requirement already satisfied: matplotlib in ./.venv/lib/python3.12/site-packages (from supervision==0.6.0->groundingdino-py==0.4.0) (3.9.4)
+Requirement already satisfied: filelock in ./.venv/lib/python3.12/site-packages (from transformers) (3.29.4)
+Requirement already satisfied: packaging>=20.0 in ./.venv/lib/python3.12/site-packages (from transformers) (24.2)
+Requirement already satisfied: pyyaml>=5.1 in ./.venv/lib/python3.12/site-packages (from transformers) (6.0.3)
+Requirement already satisfied: regex!=2019.12.17 in ./.venv/lib/python3.12/site-packages (from transformers) (2026.6.28)
+Requirement already satisfied: requests in ./.venv/lib/python3.12/site-packages (from transformers) (2.31.0)
+Requirement already satisfied: tokenizers<=0.23.0,>=0.22.0 in ./.venv/lib/python3.12/site-packages (from transformers) (0.22.2)
+Requirement already satisfied: safetensors>=0.4.3 in ./.venv/lib/python3.12/site-packages (from transformers) (0.8.0)
+Requirement already satisfied: fsspec>=2023.5.0 in ./.venv/lib/python3.12/site-packages (from huggingface_hub>=0.21.4->gliner==0.2.27) (2026.6.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.1.3 in ./.venv/lib/python3.12/site-packages (from huggingface_hub>=0.21.4->gliner==0.2.27) (1.5.1)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./.venv/lib/python3.12/site-packages (from huggingface_hub>=0.21.4->gliner==0.2.27) (4.16.0)
+Requirement already satisfied: pytz in ./.venv/lib/python3.12/site-packages (from neo4j) (2026.2)
+Requirement already satisfied: pillow>=7.1.2 in ./.venv/lib/python3.12/site-packages (from doclayout_yolo) (10.4.0)
+Requirement already satisfied: scipy>=1.4.1 in ./.venv/lib/python3.12/site-packages (from doclayout_yolo) (1.13.1)
+Requirement already satisfied: psutil in ./.venv/lib/python3.12/site-packages (from doclayout_yolo) (7.2.2)
+Requirement already satisfied: py-cpuinfo in ./.venv/lib/python3.12/site-packages (from doclayout_yolo) (9.0.0)
+Requirement already satisfied: thop>=0.1.1 in ./.venv/lib/python3.12/site-packages (from doclayout_yolo) (0.1.1.post2209072238)
+Requirement already satisfied: pandas>=1.1.4 in ./.venv/lib/python3.12/site-packages (from doclayout_yolo) (2.2.3)
+Requirement already satisfied: seaborn>=0.11.0 in ./.venv/lib/python3.12/site-packages (from doclayout_yolo) (0.13.2)
+Requirement already satisfied: albumentations>=1.4.11 in ./.venv/lib/python3.12/site-packages (from doclayout_yolo) (1.4.24)
+Collecting pydantic>=2.9.2 (from albumentations>=1.4.11->doclayout_yolo)
+  Using cached pydantic-2.13.4-py3-none-any.whl.metadata (109 kB)
+Requirement already satisfied: albucore==0.0.23 in ./.venv/lib/python3.12/site-packages (from albumentations>=1.4.11->doclayout_yolo) (0.0.23)
+Requirement already satisfied: opencv-python-headless>=4.9.0.80 in ./.venv/lib/python3.12/site-packages (from albumentations>=1.4.11->doclayout_yolo) (4.13.0.92)
+Requirement already satisfied: stringzilla>=3.10.4 in ./.venv/lib/python3.12/site-packages (from albucore==0.0.23->albumentations>=1.4.11->doclayout_yolo) (4.6.2)
+Requirement already satisfied: simsimd>=5.9.2 in ./.venv/lib/python3.12/site-packages (from albucore==0.0.23->albumentations>=1.4.11->doclayout_yolo) (6.5.16)
+Requirement already satisfied: contourpy>=1.0.1 in ./.venv/lib/python3.12/site-packages (from matplotlib->supervision==0.6.0->groundingdino-py==0.4.0) (1.3.3)
+Requirement already satisfied: cycler>=0.10 in ./.venv/lib/python3.12/site-packages (from matplotlib->supervision==0.6.0->groundingdino-py==0.4.0) (0.12.1)
+Requirement already satisfied: fonttools>=4.22.0 in ./.venv/lib/python3.12/site-packages (from matplotlib->supervision==0.6.0->groundingdino-py==0.4.0) (4.63.0)
+Requirement already satisfied: kiwisolver>=1.3.1 in ./.venv/lib/python3.12/site-packages (from matplotlib->supervision==0.6.0->groundingdino-py==0.4.0) (1.5.0)
+Requirement already satisfied: pyparsing>=2.3.1 in ./.venv/lib/python3.12/site-packages (from matplotlib->supervision==0.6.0->groundingdino-py==0.4.0) (3.3.2)
+Requirement already satisfied: python-dateutil>=2.7 in ./.venv/lib/python3.12/site-packages (from matplotlib->supervision==0.6.0->groundingdino-py==0.4.0) (2.9.0.post0)
+Collecting numpy (from groundingdino-py==0.4.0)
+  Using cached numpy-2.5.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Requirement already satisfied: tzdata>=2022.7 in ./.venv/lib/python3.12/site-packages (from pandas>=1.1.4->doclayout_yolo) (2026.2)
+Requirement already satisfied: annotated-types>=0.6.0 in ./.venv/lib/python3.12/site-packages (from pydantic>=2.9.2->albumentations>=1.4.11->doclayout_yolo) (0.7.0)
+Collecting pydantic-core==2.46.4 (from pydantic>=2.9.2->albumentations>=1.4.11->doclayout_yolo)
+  Using cached pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)
+Requirement already satisfied: typing-inspection>=0.4.2 in ./.venv/lib/python3.12/site-packages (from pydantic>=2.9.2->albumentations>=1.4.11->doclayout_yolo) (0.4.2)
+Requirement already satisfied: six>=1.5 in ./.venv/lib/python3.12/site-packages (from python-dateutil>=2.7->matplotlib->supervision==0.6.0->groundingdino-py==0.4.0) (1.17.0)
+Requirement already satisfied: charset-normalizer<4,>=2 in ./.venv/lib/python3.12/site-packages (from requests->transformers) (3.4.7)
+Requirement already satisfied: idna<4,>=2.5 in ./.venv/lib/python3.12/site-packages (from requests->transformers) (3.18)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./.venv/lib/python3.12/site-packages (from requests->transformers) (2.7.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./.venv/lib/python3.12/site-packages (from requests->transformers) (2026.6.17)
+Collecting numpy (from groundingdino-py==0.4.0)
+  Downloading numpy-2.2.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (62 kB)
+Requirement already satisfied: setuptools in ./.venv/lib/python3.12/site-packages (from torch>=2.0.0->gliner==0.2.27) (83.0.0)
+Requirement already satisfied: sympy>=1.13.3 in ./.venv/lib/python3.12/site-packages (from torch>=2.0.0->gliner==0.2.27) (1.14.0)
+Requirement already satisfied: networkx>=2.5.1 in ./.venv/lib/python3.12/site-packages (from torch>=2.0.0->gliner==0.2.27) (3.0)
+Requirement already satisfied: jinja2 in ./.venv/lib/python3.12/site-packages (from torch>=2.0.0->gliner==0.2.27) (3.1.6)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in ./.venv/lib/python3.12/site-packages (from sympy>=1.13.3->torch>=2.0.0->gliner==0.2.27) (1.3.0)
+Requirement already satisfied: pyarrow>=8.0.0 in ./.venv/lib/python3.12/site-packages (from datasets->glirel==1.2.1) (22.0.0)
+Requirement already satisfied: dill<0.3.8,>=0.3.0 in ./.venv/lib/python3.12/site-packages (from datasets->glirel==1.2.1) (0.3.7)
+Requirement already satisfied: xxhash in ./.venv/lib/python3.12/site-packages (from datasets->glirel==1.2.1) (3.8.0)
+Requirement already satisfied: multiprocess in ./.venv/lib/python3.12/site-packages (from datasets->glirel==1.2.1) (0.70.15)
+Requirement already satisfied: aiohttp in ./.venv/lib/python3.12/site-packages (from datasets->glirel==1.2.1) (3.14.1)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in ./.venv/lib/python3.12/site-packages (from aiohttp->datasets->glirel==1.2.1) (2.7.1)
+Requirement already satisfied: aiosignal>=1.4.0 in ./.venv/lib/python3.12/site-packages (from aiohttp->datasets->glirel==1.2.1) (1.4.0)
+Requirement already satisfied: attrs>=17.3.0 in ./.venv/lib/python3.12/site-packages (from aiohttp->datasets->glirel==1.2.1) (26.1.0)
+Requirement already satisfied: frozenlist>=1.1.1 in ./.venv/lib/python3.12/site-packages (from aiohttp->datasets->glirel==1.2.1) (1.8.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in ./.venv/lib/python3.12/site-packages (from aiohttp->datasets->glirel==1.2.1) (6.7.1)
+Requirement already satisfied: propcache>=0.2.0 in ./.venv/lib/python3.12/site-packages (from aiohttp->datasets->glirel==1.2.1) (0.5.2)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in ./.venv/lib/python3.12/site-packages (from aiohttp->datasets->glirel==1.2.1) (1.24.2)
+Requirement already satisfied: MarkupSafe>=2.0 in ./.venv/lib/python3.12/site-packages (from jinja2->torch>=2.0.0->gliner==0.2.27) (3.0.3)
+Requirement already satisfied: flatbuffers in ./.venv/lib/python3.12/site-packages (from onnxruntime->gliner==0.2.27) (25.12.19)
+Requirement already satisfied: protobuf>=4.25.8 in ./.venv/lib/python3.12/site-packages (from onnxruntime->gliner==0.2.27) (7.35.1)
+Requirement already satisfied: scikit-learn>=0.21.3 in ./.venv/lib/python3.12/site-packages (from seqeval->glirel==1.2.1) (1.5.2)
+Requirement already satisfied: joblib>=1.2.0 in ./.venv/lib/python3.12/site-packages (from scikit-learn>=0.21.3->seqeval->glirel==1.2.1) (1.5.3)
+Requirement already satisfied: threadpoolctl>=3.1.0 in ./.venv/lib/python3.12/site-packages (from scikit-learn>=0.21.3->seqeval->glirel==1.2.1) (3.6.0)
+Requirement already satisfied: platformdirs>=3.5.1 in ./.venv/lib/python3.12/site-packages (from yapf->groundingdino-py==0.4.0) (4.10.0)
+Downloading supervision-0.6.0-py3-none-any.whl (31 kB)
+Using cached pydantic-2.13.4-py3-none-any.whl (472 kB)
+Using cached pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)
+Downloading numpy-2.2.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (16.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.5/16.5 MB 1.1 MB/s  0:00:14
+Building wheels for collected packages: groundingdino-py
+  Building wheel for groundingdino-py (pyproject.toml): started
+  Building wheel for groundingdino-py (pyproject.toml): finished with status 'done'
+  Created wheel for groundingdino-py: filename=groundingdino_py-0.4.0-py2.py3-none-any.whl size=88813 sha256=9ddcf2bf8f1861481fabd742b2740380424a71fee041ac54e8e7f809fa76050e
+  Stored in directory: /home/sagesujal/.cache/pip/wheels/74/c4/d6/2c6ded61819d391715b4f1ae483f2cfdc8f2eeb6bbb63e748b
+Successfully built groundingdino-py
+Installing collected packages: pydantic-core, numpy, pydantic, supervision, groundingdino-py
+  Attempting uninstall: pydantic-core
+    Found existing installation: pydantic_core 2.23.2
+    Uninstalling pydantic_core-2.23.2:
+      Successfully uninstalled pydantic_core-2.23.2
+  Attempting uninstall: numpy
+    Found existing installation: numpy 1.26.4
+    Uninstalling numpy-1.26.4:
+      Successfully uninstalled numpy-1.26.4
+  Attempting uninstall: pydantic
+    Found existing installation: pydantic 2.9.0
+    Uninstalling pydantic-2.9.0:
+      Successfully uninstalled pydantic-2.9.0
+  Attempting uninstall: supervision
+    Found existing installation: supervision 0.29.1
+    Uninstalling supervision-0.29.1:
+      Successfully uninstalled supervision-0.29.1
+
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+table-transformer 1.0.6 requires numpy~=2.1.1, but you have numpy 2.2.6 which is incompatible.
+table-transformer 1.0.6 requires packaging~=23.1, but you have packaging 24.2 which is incompatible.
+table-transformer 1.0.6 requires pandas==2.2.2, but you have pandas 2.2.3 which is incompatible.
+table-transformer 1.0.6 requires Pillow~=9.5.0, but you have pillow 10.4.0 which is incompatible.
+table-transformer 1.0.6 requires scipy~=1.14.1, but you have scipy 1.13.1 which is incompatible.
+table-transformer 1.0.6 requires torch~=2.4.1, but you have torch 2.10.0+cpu which is incompatible.
+table-transformer 1.0.6 requires torchvision~=0.19.1, but you have torchvision 0.25.0+cpu which is incompatible.
+table-transformer 1.0.6 requires tqdm==4.66.5, but you have tqdm 4.68.4 which is incompatible.
+table-transformer 1.0.6 requires wheel~=0.40.0, but you have wheel 0.47.0 which is incompatible.
+groundingdino 0.1.0 requires supervision>=0.22.0, but you have supervision 0.6.0 which is incompatible.
+graspologic 3.4.4 requires numpy<2.0.0,>=1.26.4, but you have numpy 2.2.6 which is incompatible.
+langchain-community 0.4.2 requires requests<3.0.0,>=2.32.5, but you have requests 2.31.0 which is incompatible.
+umap-learn 0.5.12 requires scikit-learn>=1.6, but you have scikit-learn 1.5.2 which is incompatible.
+litellm 1.86.2 requires httpx<1.0,>=0.28.0, but you have httpx 0.27.0 which is incompatible.
+hdbscan 0.8.44 requires scikit-learn>=1.6, but you have scikit-learn 1.5.2 which is incompatible.
+node2vec 0.5.0 requires networkx<4.0.0,>=3.1.0, but you have networkx 3.0 which is incompatible.
+node2vec 0.5.0 requires numpy<2.0.0,>=1.24.0, but you have numpy 2.2.6 which is incompatible.
+surya-ocr 0.4.10 requires pypdfium2<5.0.0,>=4.25.0, but you have pypdfium2 5.11.0 which is incompatible.
+langchain 0.3.0 requires langchain-core<0.4.0,>=0.3.0, but you have langchain-core 1.4.9 which is incompatible.
+langchain 0.3.0 requires langchain-text-splitters<0.4.0,>=0.3.0, but you have langchain-text-splitters 1.1.2 which is incompatible.
+langchain 0.3.0 requires langsmith<0.2.0,>=0.1.17, but you have langsmith 0.10.2 which is incompatible.
+langchain 0.3.0 requires numpy<2.0.0,>=1.26.0; python_version >= "3.12", but you have numpy 2.2.6 which is incompatible.
+docling-slim 2.108.0 requires requests<3.0.0,>=2.32.2, but you have requests 2.31.0 which is incompatible.
+graphrag-storage 3.1.0 requires pandas~=2.3, but you have pandas 2.2.3 which is incompatible.
+docling-core 2.85.0 requires typer<0.25.0,>=0.12.5, but you have typer 0.26.8 which is incompatible.
+graphrag 3.1.0 requires networkx~=3.4, but you have networkx 3.0 which is incompatible.
+graphrag 3.1.0 requires pandas~=2.3, but you have pandas 2.2.3 which is incompatible.
+Successfully installed groundingdino-py-0.4.0 numpy-2.2.6 pydantic-2.13.4 pydantic-core-2.46.4 supervision-0.6.0

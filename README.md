@@ -17,7 +17,7 @@ That's it! The script will:
 ✓ Start Neo4j database  
 ✓ Launch the backend server  
 
-Then visit: **http://localhost:8001/docs** to explore the API
+Then visit: **http://localhost:8001/docs** or **http://localhost:8001/swagger** to explore the API
 
 ---
 

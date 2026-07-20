@@ -1,0 +1,157 @@
+{
+  "timestamp": "2026-07-14T19:03:47.874456",
+  "stage": "doclayout_yolo_analysis",
+  "status": "completed",
+  "stage_1_input_text_length": 39649,
+  "full_output": {
+    "status": "completed",
+    "layout": [
+      {
+        "page": 1,
+        "label": "heading",
+        "confidence": 0.82,
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "text": "Hydro MPC"
+      },
+      {
+        "page": 1,
+        "label": "heading",
+        "confidence": 0.82,
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "text": "Installation and operating instructions"
+      },
+      {
+        "page": 1,
+        "label": "heading",
+        "confidence": 0.82,
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "text": "English (GB) Installation and operating instructions"
+      },
+      {
+        "page": 1,
+        "label": "heading",
+        "confidence": 0.82,
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "text": "Original installation and operating instructions"
+      },
+      {
+        "page": 1,
+        "label": "heading",
+        "confidence": 0.82,
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "text": "These installation and operating instructions apply to the Grundfos Hydro MPC bo"
+      },
+      {
+        "page": 1,
+        "label": "heading",
+        "confidence": 0.82,
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "text": "Sections 1-4 give the information necessary to be able to install the product in"
+      },
+      {
+        "page": 1,
+        "label": "heading",
+        "confidence": 0.82,
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "text": "Sections 5-16 give important information about the product as well as informatio"
+      },
+      {
+        "page": 1,
+        "label": "heading",
+        "confidence": 0.82,
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "text": "CONTENTS"
+      },
+      {
+        "page": 1,
+        "label": "heading",
+        "confidence": 0.82,
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "text": "|   2. | Receiving the product                                               |  "
+      },
+      {
+        "page": 1,
+        "label": "heading",
+        "confidence": 0.82,
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "text": "|  2.1 | Transporting the product                                            |  "
+      },
+      {
+        "page": 1,
+        "label": "heading",
+        "confidence": 0.82,
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "text": "|   3. | Installing the product                                              |  "
+      },
+      {
+        "page": 1,
+        "label": "heading",
+        "confidence": 0.82,
+        "bbox": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "text": "|  3.2 | Mechanical installation                                             |  "
+      }
+    ],
+    "source": "ocr_fallback",
+    "detected_objects": 12
+  }
+}

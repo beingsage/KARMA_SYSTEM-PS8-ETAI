@@ -70,6 +70,25 @@ class AdvancedPipelineStages:
             embeddings = pipeline_result.get("embeddings", [])
             entities = pipeline_result.get("entities", [])
             job_id = pipeline_result.get("job_id", "unknown")
+
+            def _entity_display_name(entity: Dict[str, Any]) -> str:
+                return str(
+                    entity.get("name")
+                    or entity.get("text")
+                    or entity.get("canonical_name")
+                    or entity.get("ontology_label")
+                    or entity.get("stable_id")
+                    or ""
+                ).strip()
+
+            def _entity_display_type(entity: Dict[str, Any]) -> str:
+                return str(
+                    entity.get("entity_type")
+                    or entity.get("type")
+                    or entity.get("ontology_label")
+                    or entity.get("ontology_type_id")
+                    or ""
+                ).strip()
             
             if not embeddings or not self.vector_store:
                 logger.warning("No embeddings to index or Qdrant unavailable")
@@ -79,9 +98,10 @@ class AdvancedPipelineStages:
             metadata_list = [
                 {
                     "job_id": job_id,
-                    "entity_id": i,
-                    "entity_name": entities[i].get("text", "") if i < len(entities) else "",
-                    "entity_type": entities[i].get("type", "") if i < len(entities) else "",
+                    "entity_id": entities[i].get("stable_id", entities[i].get("id", i)) if i < len(entities) else i,
+                    "entity_name": _entity_display_name(entities[i]) if i < len(entities) else "",
+                    "entity_type": _entity_display_type(entities[i]) if i < len(entities) else "",
+                    "ontology_type_id": entities[i].get("ontology_type_id") if i < len(entities) else None,
                     "timestamp": datetime.now().isoformat()
                 }
                 for i in range(len(embeddings))
@@ -99,14 +119,40 @@ class AdvancedPipelineStages:
             }
             
             logger.info(f"✓ Stored {len(embeddings)} vectors in Qdrant")
-            
         except Exception as e:
             logger.error(f"Error in semantic indexing: {e}")
             pipeline_result["stage_8_semantic_indexing"] = {
                 "status": "error",
                 "error": str(e)
             }
-        
+            return pipeline_result
+
+        text_chunks = pipeline_result.get("text_chunks") or []
+        if text_chunks:
+            try:
+                from app.pipeline.llamaindex_hybrid import LlamaIndexHybrid
+
+                llm_index = LlamaIndexHybrid()
+                llm_index.build_index(
+                    text_chunks=text_chunks,
+                    text_chunks_metadata=[{"chunk_id": i, "job_id": job_id} for i in range(len(text_chunks))],
+                )
+                pipeline_result["llama_indexed"] = True
+                pipeline_result["llama_index_chunks"] = len(text_chunks)
+                pipeline_result["stage_8_llama_indexing"] = {
+                    "status": "completed",
+                    "indexed_chunks": len(text_chunks),
+                    "timestamp": datetime.now().isoformat()
+                }
+            except Exception as e:
+                logger.warning(f"LlamaIndex indexing unavailable: {e}")
+                pipeline_result["llama_indexed"] = False
+                pipeline_result["stage_8_llama_indexing"] = {
+                    "status": "skipped",
+                    "reason": str(e),
+                    "timestamp": datetime.now().isoformat()
+                }
+
         return pipeline_result
     
     # ========================================================================
@@ -136,8 +182,15 @@ class AdvancedPipelineStages:
             # Get context for each entity
             entity_contexts = {}
             for entity in entities[:5]:  # Limit to first 5 for performance
-                context = self.graph_rag.get_entity_context(entity.get("id", ""))
-                entity_contexts[entity.get("id", "")] = context
+                entity_id = str(
+                    entity.get("stable_id")
+                    or entity.get("id")
+                    or entity.get("canonical_name")
+                    or entity.get("name")
+                    or ""
+                ).strip()
+                context = self.graph_rag.get_entity_context(entity_id)
+                entity_contexts[entity_id] = context
             
             pipeline_result["stage_9_graph_reasoning"] = {
                 "status": "completed",
@@ -183,7 +236,18 @@ class AdvancedPipelineStages:
             relations = pipeline_result.get("relations", [])
             
             # Prepare context for LLM
-            entity_names = [e.get("text", "") for e in entities[:10]]
+            entity_names = [
+                str(
+                    e.get("name")
+                    or e.get("text")
+                    or e.get("canonical_name")
+                    or e.get("ontology_label")
+                    or e.get("stable_id")
+                    or ""
+                ).strip()
+                for e in entities[:10]
+            ]
+            entity_names = [name for name in entity_names if name]
             context_text = f"Industrial system with entities: {', '.join(entity_names)}"
             
             # Analyze entities

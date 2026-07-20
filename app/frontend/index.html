@@ -3,127 +3,2136 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Industrial PDF Graph</title>
+  <meta name="color-scheme" content="dark" />
+  <title>Industrial Knowledge Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: Inter, system-ui, sans-serif; margin: 0; padding: 0; color: #111; background: #f7fafc; }
-    main { max-width: 900px; margin: 40px auto; padding: 24px; background: #fff; border-radius: 16px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08); }
-    h1 { margin-top: 0; font-size: 1.8rem; }
-    label { display: block; margin-bottom: 12px; font-weight: 600; }
-    input[type=file] { display: block; margin-bottom: 16px; }
-    button { border: none; border-radius: 999px; padding: 12px 20px; background: #2563eb; color: white; cursor: pointer; font-size: 1rem; }
-    button:disabled { background: #94a3b8; cursor: not-allowed; }
-    pre { background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 12px; overflow-x: auto; max-height: 420px; }
-    .pane { display: grid; gap: 24px; margin-top: 24px; }
-    .section { border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; background: #f8fafc; }
-    .section h2 { margin-top: 0; font-size: 1.1rem; }
+    :root {
+      --bg: #06111d;
+      --bg-soft: #0b1627;
+      --panel: rgba(11, 22, 39, 0.86);
+      --panel-strong: rgba(13, 26, 45, 0.96);
+      --line: rgba(148, 163, 184, 0.18);
+      --line-strong: rgba(148, 163, 184, 0.28);
+      --text: #e6eefb;
+      --muted: #93a4bc;
+      --dim: #6c7e96;
+      --accent: #5dd7ff;
+      --accent-2: #f4a261;
+      --accent-3: #34d399;
+      --accent-4: #f97316;
+      --danger: #ff7d7d;
+      --warning: #fbbf24;
+      --success: #69e6ae;
+      --shadow: 0 22px 80px rgba(0, 0, 0, 0.45);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --sans: "IBM Plex Sans", "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(93, 215, 255, 0.18), transparent 28%),
+        radial-gradient(circle at 80% 10%, rgba(244, 162, 97, 0.14), transparent 22%),
+        radial-gradient(circle at 20% 80%, rgba(52, 211, 153, 0.10), transparent 24%),
+        linear-gradient(180deg, #04101b 0%, #06111d 50%, #050d17 100%);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    textarea { resize: vertical; }
+
+    .orb {
+      position: fixed;
+      border-radius: 999px;
+      filter: blur(28px);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+    .orb.one { width: 320px; height: 320px; background: rgba(93, 215, 255, 0.18); top: -90px; right: -40px; }
+    .orb.two { width: 260px; height: 260px; background: rgba(244, 162, 97, 0.16); bottom: 8%; left: -70px; animation-duration: 24s; }
+    .orb.three { width: 180px; height: 180px; background: rgba(52, 211, 153, 0.12); bottom: 16%; right: 12%; animation-duration: 21s; }
+
+    @keyframes drift {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to { transform: translate3d(18px, -14px, 0) scale(1.06); }
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      width: min(1480px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 22px 0 40px;
+    }
+
+    .hero {
+      padding: 24px 22px 18px;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background:
+        linear-gradient(180deg, rgba(13, 26, 45, 0.95), rgba(9, 18, 33, 0.82)),
+        radial-gradient(circle at top right, rgba(93, 215, 255, 0.16), transparent 30%);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(93, 215, 255, 0.12);
+      border: 1px solid rgba(93, 215, 255, 0.24);
+      color: #b7efff;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin: 14px 0 10px;
+      font-family: "Space Grotesk", var(--sans);
+      font-size: clamp(2.1rem, 4vw, 4rem);
+      line-height: 0.96;
+      letter-spacing: -0.05em;
+      max-width: 11ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 72ch;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.09);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      color: var(--text);
+      font-size: 0.84rem;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .chip strong {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--accent);
+    }
+
+    .chip.link {
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+    .chip.link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(93, 215, 255, 0.36);
+      background: rgba(93, 215, 255, 0.1);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 0.95fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .panel-inner { padding: 18px; }
+
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .panel-title h2, .panel-title h3 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .panel-title p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 0.82rem;
+      color: #c9d8ea;
+      letter-spacing: 0.02em;
+    }
+
+    input[type="file"], input[type="text"], textarea, select {
+      width: 100%;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 14px;
+      background: rgba(4, 11, 19, 0.62);
+      color: var(--text);
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    }
+
+    input[type="file"] { padding: 10px 12px; }
+    textarea { min-height: 130px; line-height: 1.6; font-family: var(--mono); font-size: 0.88rem; }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(93, 215, 255, 0.42);
+      box-shadow: 0 0 0 4px rgba(93, 215, 255, 0.09);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 11px 15px;
+      font-weight: 600;
+      transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, opacity 150ms ease;
+      min-height: 42px;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-primary { background: linear-gradient(135deg, #69e6ae, #5dd7ff); color: #04101b; }
+    .btn-secondary { background: rgba(148, 163, 184, 0.1); border-color: rgba(148, 163, 184, 0.16); color: var(--text); }
+    .btn-warn { background: rgba(251, 191, 36, 0.12); border-color: rgba(251, 191, 36, 0.26); color: #ffd977; }
+    .btn-danger { background: rgba(255, 125, 125, 0.12); border-color: rgba(255, 125, 125, 0.24); color: #ffb1b1; }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .kpi {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(4, 11, 19, 0.45);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .kpi .label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .kpi .value {
+      font-family: "Space Grotesk", var(--sans);
+      font-size: 1.55rem;
+      letter-spacing: -0.04em;
+    }
+
+    .kpi .sub {
+      margin-top: 8px;
+      color: var(--dim);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 16px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .section {
+      padding: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-head p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.55;
+      max-width: 78ch;
+    }
+
+    .section-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .section-body { display: grid; gap: 12px; }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric-card, .data-card, .stage-card, .entity-card, .relation-card, .route-card, .mini-card {
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      background: rgba(4, 11, 19, 0.52);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .metric-card .label, .mini-card .label, .route-meta, .status-line, .hint {
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .metric-card .value {
+      margin-top: 10px;
+      font-family: "Space Grotesk", var(--sans);
+      font-size: 1.4rem;
+      letter-spacing: -0.03em;
+    }
+
+    .metric-card .value.status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .metric-card .value small {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      color: var(--text);
+      font-size: 0.78rem;
+      line-height: 1;
+    }
+
+    .pill .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.9;
+    }
+
+    .status-active { color: var(--success); }
+    .status-completed { color: var(--success); }
+    .status-running { color: var(--accent); }
+    .status-processing { color: var(--accent); }
+    .status-queued { color: #a7b9cc; }
+    .status-failed { color: var(--danger); }
+    .status-skipped { color: var(--warning); }
+    .status-proposed { color: var(--warning); }
+
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.12);
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .bar > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(93, 215, 255, 0.9), rgba(52, 211, 153, 0.9));
+    }
+
+    .progress-block {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stage-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(93, 215, 255, 0.9), rgba(52, 211, 153, 0.6));
+      opacity: 0.75;
+    }
+
+    .stage-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .stage-top h3, .entity-card h3, .relation-card h3, .route-card h3 {
+      margin: 0;
+      font-size: 0.98rem;
+      line-height: 1.2;
+    }
+
+    .stage-subtitle, .card-subtitle {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .stage-meta, .entity-meta, .relation-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .stage-output {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .substep-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .substep {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(148, 163, 184, 0.06);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .substep .name {
+      font-size: 0.86rem;
+      color: var(--text);
+    }
+
+    .substep .desc {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+
+    .entity-grid, .relation-grid, .route-grid, .job-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .entity-card h3, .relation-card h3, .route-card h3 { font-size: 0.92rem; }
+
+    .entity-card .confidence, .relation-card .confidence, .route-card .confidence {
+      margin-top: 10px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .entity-card .confidence .num, .relation-card .confidence .num {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: #cfe0f4;
+    }
+
+    .route-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .method {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 54px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+    }
+    .method.get { background: rgba(93, 215, 255, 0.12); color: #9de9ff; border-color: rgba(93, 215, 255, 0.25); }
+    .method.post { background: rgba(244, 162, 97, 0.12); color: #ffd0aa; border-color: rgba(244, 162, 97, 0.25); }
+    .method.danger { background: rgba(255, 125, 125, 0.1); color: #ffb5b5; border-color: rgba(255, 125, 125, 0.22); }
+
+    .route-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      align-items: center;
+    }
+
+    .route-controls input, .route-controls textarea {
+      width: 100%;
+    }
+
+    .route-card .payload {
+      margin-top: 10px;
+      display: none;
+    }
+    .route-card.open .payload { display: grid; gap: 10px; }
+
+    details {
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 16px;
+      background: rgba(4, 11, 19, 0.36);
+      overflow: hidden;
+    }
+    details summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 12px 14px;
+      color: var(--text);
+      font-weight: 600;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details .details-body { padding: 0 14px 14px; }
+
+    .data-card {
+      display: grid;
+      gap: 10px;
+    }
+
+    .data-card .title, .mini-card .title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .data-card .title strong, .mini-card .title strong {
+      font-size: 0.9rem;
+      letter-spacing: -0.01em;
+    }
+
+    .tree {
+      display: grid;
+      gap: 8px;
+    }
+
+    .tree-row {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      padding: 8px 0;
+      border-top: 1px solid rgba(148, 163, 184, 0.08);
+    }
+    .tree-row:first-child { border-top: 0; padding-top: 0; }
+    .tree-row .key {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: #c5d4e8;
+      word-break: break-word;
+    }
+    .tree-row .value {
+      color: var(--text);
+      font-size: 0.86rem;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .value-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .code {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: #d9e7f7;
+    }
+
+    .muted { color: var(--muted); }
+    .dim { color: var(--dim); }
+
+    .job-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .job-card {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      background: rgba(4, 11, 19, 0.5);
+    }
+
+    .job-card .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .job-card .name {
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .job-card .meta {
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .log {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      line-height: 1.6;
+      max-height: 180px;
+      overflow: auto;
+      padding-right: 6px;
+      white-space: pre-wrap;
+    }
+
+    .log-line {
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.06);
+    }
+
+    .empty {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px dashed rgba(148, 163, 184, 0.18);
+      color: var(--dim);
+      text-align: center;
+      background: rgba(4, 11, 19, 0.34);
+    }
+
+    .loading {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(148, 163, 184, 0.25);
+      border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .footer-note {
+      color: var(--dim);
+      font-size: 0.8rem;
+      line-height: 1.55;
+      margin-top: 8px;
+    }
+
+    .section-anchor {
+      scroll-margin-top: 22px;
+    }
+
+    .response-panel {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      margin-top: 10px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .response-panel.error {
+      border-color: rgba(255, 125, 125, 0.24);
+      background: rgba(255, 125, 125, 0.06);
+    }
+
+    .response-panel pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: #d9e7f7;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1180px) {
+      .hero-grid, .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .card-grid, .kpi-grid, .job-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      .app { width: min(100% - 16px, 1480px); padding-top: 10px; }
+      .hero, .section, .panel-inner { padding: 16px; }
+      .card-grid, .kpi-grid, .job-grid, .entity-grid, .relation-grid, .route-grid { grid-template-columns: 1fr; }
+      .tree-row { grid-template-columns: 1fr; }
+      .button-row, .section-actions, .route-controls { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; }
+    }
   </style>
 </head>
 <body>
-<main>
-  <h1>Industrial PDF Graph</h1>
-  <p>A minimal frontend for uploading a PDF and seeing the pipeline output.</p>
+  <div class="orb one"></div>
+  <div class="orb two"></div>
+  <div class="orb three"></div>
 
-  <form id="uploadForm">
-    <label for="pdfFile">Select a PDF file</label>
-    <input id="pdfFile" type="file" accept="application/pdf" required />
-    <button id="submitBtn" type="submit">Process PDF</button>
-  </form>
+  <div class="app">
+    <header class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">Industrial Knowledge Intelligence</div>
+          <h1>One workflow console for the full backend.</h1>
+          <p>
+            The primary flow stays narrow: analyze once, then render the pipeline, ontology, reasoning, analytics, and
+            graph outputs as structured, human-readable cards. The domain APIs remain available in the explorer below
+            for direct invocation and validation.
+          </p>
+          <div class="hero-actions">
+            <a class="chip link" href="#dashboard"><strong>Dashboard</strong> bundle and stage trace</a>
+            <a class="chip link" href="#api-explorer"><strong>APIs</strong> grouped backend routes</a>
+            <a class="chip link" href="#jobs-panel"><strong>Jobs</strong> recent analyses</a>
+          </div>
+        </div>
+        <div class="panel" style="min-width:min(340px, 100%);">
+          <div class="panel-inner">
+            <div class="panel-title">
+              <div>
+                <h2>Control Surface</h2>
+                <p>Limited frontend-facing triggers plus structured access to the rest of the backend.</p>
+              </div>
+              <span class="chip"><strong id="runtimeMode">...</strong> runtime</span>
+            </div>
+            <div class="pill-row" id="runtimeChips"></div>
+            <div class="progress-block">
+              <div class="progress-row">
+                <span>Workflow health</span>
+                <span id="healthText">Loading...</span>
+              </div>
+              <div class="bar"><span id="healthBar" style="width: 0%"></span></div>
+            </div>
+            <div class="footer-note" id="runtimeNote">Fetching backend status and routing catalog.</div>
+          </div>
+        </div>
+      </div>
 
-  <div class="pane">
-    <div class="section">
-      <h2>Logs</h2>
-      <pre id="logs">Ready to upload.</pre>
-    </div>
-    <div class="section">
-      <h2>Output</h2>
-      <pre id="output">No output yet.</pre>
+      <div class="hero-grid">
+        <form id="analyzeForm" class="panel">
+          <div class="panel-inner">
+            <div class="panel-title">
+              <div>
+                <h2>Primary Workflow Trigger</h2>
+                <p>Use the consolidated analysis route for PDFs or raw text. The backend handles the full pipeline.</p>
+              </div>
+              <span class="chip"><strong>POST</strong> /api/v1/workflows/analyze</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="field full">
+                <label for="workflowFile">Document file</label>
+                <input id="workflowFile" type="file" accept=".pdf,.txt,.md,.doc,.docx,.json,image/*,application/pdf" />
+              </div>
+              <div class="field full">
+                <label for="workflowText">Or raw text</label>
+                <textarea id="workflowText" placeholder="Paste document text here when you want to bypass upload parsing."></textarea>
+              </div>
+              <div class="field">
+                <label for="workflowName">File name override</label>
+                <input id="workflowName" type="text" placeholder="plant-report-q3.pdf" />
+              </div>
+              <div class="field">
+                <label for="workflowMime">MIME type override</label>
+                <input id="workflowMime" type="text" placeholder="application/pdf" />
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button class="btn btn-primary" id="runWorkflowBtn" type="submit">Analyze end to end</button>
+              <button class="btn btn-secondary" id="loadLatestBtn" type="button">Load latest job</button>
+              <button class="btn btn-secondary" id="refreshCatalogBtn" type="button">Refresh catalog</button>
+              <button class="btn btn-secondary" id="reasoningStackBtn" type="button">Run reasoning stack</button>
+            </div>
+
+            <div class="footer-note">
+              Main route: <span class="code">/api/v1/workflows/analyze</span>. The report and API explorer below use
+              the returned job id to pull stage traces, bundle sections, and supporting reasoning.
+            </div>
+          </div>
+        </form>
+
+        <div class="panel">
+          <div class="panel-inner">
+            <div class="panel-title">
+              <div>
+                <h2>Active Job</h2>
+                <p>Current pipeline state and the latest normalized bundle summary.</p>
+              </div>
+              <span class="chip"><strong id="jobStatusPill">idle</strong></span>
+            </div>
+            <div class="kpi-grid" id="activeJobKpis"></div>
+            <div class="progress-block">
+              <div class="progress-row">
+                <span>Stage completion</span>
+                <span id="stageProgressText">No job loaded</span>
+              </div>
+              <div class="bar"><span id="stageProgressBar" style="width: 0%"></span></div>
+            </div>
+            <div class="pill-row" id="activeJobPills"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <section class="panel" id="statusPanel">
+          <div class="panel-inner">
+            <div class="panel-title">
+              <div>
+                <h2>Backend Status</h2>
+                <p>Live health, runtime mode, and model availability.</p>
+              </div>
+              <button class="btn btn-secondary" id="refreshStatusBtn" type="button">Refresh</button>
+            </div>
+            <div class="status-line" id="statusSummary">Loading backend state...</div>
+            <div class="pill-row" id="statusPills"></div>
+            <div class="progress-block">
+              <div class="progress-row">
+                <span>Component availability</span>
+                <span id="componentText">...</span>
+              </div>
+              <div class="bar"><span id="componentBar" style="width: 0%"></span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="jobs-panel">
+          <div class="panel-inner">
+            <div class="panel-title">
+              <div>
+                <h2>Recent Jobs</h2>
+                <p>Fast entry points into prior analyses.</p>
+              </div>
+              <span class="chip"><strong id="jobCount">0</strong></span>
+            </div>
+            <div class="job-grid" id="jobList"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-inner">
+            <div class="panel-title">
+              <div>
+                <h2>Activity</h2>
+                <p>Execution notes and route responses.</p>
+              </div>
+            </div>
+            <div class="log" id="activityLog">Ready.</div>
+          </div>
+        </section>
+      </aside>
+
+      <main class="stack">
+        <section class="panel section section-anchor" id="dashboard">
+          <div class="section-head">
+            <div>
+              <h2>Workflow Dashboard</h2>
+              <p>
+                This is the normalized layer returned by the backend bundle endpoint. It merges stage trace, ontology
+                evolution, entity and relation samples, and downstream reasoning into structured cards.
+              </p>
+            </div>
+            <div class="section-actions">
+              <button class="btn btn-secondary" id="reloadCurrentBtn" type="button">Reload current job</button>
+              <button class="btn btn-secondary" id="loadBundleBtn" type="button">Fetch bundle</button>
+            </div>
+          </div>
+          <div class="section-body" id="dashboardBody">
+            <div class="empty">Run a workflow or load a job to see the full stage-by-stage dashboard.</div>
+          </div>
+        </section>
+
+        <section class="panel section section-anchor" id="api-explorer">
+          <div class="section-head">
+            <div>
+              <h2>API Explorer</h2>
+              <p>
+                These cards are grouped by backend domain. The workflow triggers remain limited, but every public route
+                is still reachable here with structured output and a reusable payload template.
+              </p>
+            </div>
+            <div class="section-actions">
+              <button class="btn btn-secondary" id="refreshApiCatalogBtn" type="button">Refresh catalog</button>
+              <button class="btn btn-secondary" id="runCopilotGroupBtn" type="button">Run copilot group</button>
+            </div>
+          </div>
+          <div class="section-body" id="apiExplorerBody">
+            <div class="empty">API catalog loading...</div>
+          </div>
+        </section>
+
+        <section class="panel section section-anchor" id="raw-panel">
+          <div class="section-head">
+            <div>
+              <h2>Raw Payloads</h2>
+              <p>Expandable raw job and bundle views for debugging and validation.</p>
+            </div>
+          </div>
+          <div class="section-body">
+            <details open>
+              <summary>Current job JSON</summary>
+              <div class="details-body" id="rawJobPanel">
+                <div class="empty">No job loaded.</div>
+              </div>
+            </details>
+            <details>
+              <summary>Normalized bundle JSON</summary>
+              <div class="details-body" id="rawBundlePanel">
+                <div class="empty">No bundle loaded.</div>
+              </div>
+            </details>
+          </div>
+        </section>
+      </main>
     </div>
   </div>
-</main>
-<script>
-const form = document.getElementById('uploadForm');
-const fileInput = document.getElementById('pdfFile');
-const logs = document.getElementById('logs');
-const output = document.getElementById('output');
-const submitBtn = document.getElementById('submitBtn');
-let pollTimer = null;
 
-function appendLog(message) {
-  logs.textContent += '\n' + message;
-  logs.scrollTop = logs.scrollHeight;
-}
+  <script>
+    const state = {
+      health: null,
+      workflowCatalog: null,
+      modelStatus: null,
+      advancedModelStatus: null,
+      jobs: [],
+      currentJobId: null,
+      currentJob: null,
+      currentBundle: null,
+      apiResults: {},
+      pollTimer: null,
+      loading: false,
+    };
 
-async function pollJob(jobId) {
-  if (pollTimer) {
-    clearInterval(pollTimer);
-    pollTimer = null;
-  }
+    const $ = (id) => document.getElementById(id);
 
-  appendLog(`Tracking job ${jobId}`);
-  pollTimer = setInterval(async () => {
-    try {
-      const response = await fetch(`/api/v1/jobs/${jobId}`);
-      const data = await response.json();
-      appendLog(`Job status: ${data.status}`);
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
 
-      if (data.status === 'completed' || data.status === 'failed') {
-        clearInterval(pollTimer);
-        pollTimer = null;
-        output.textContent = JSON.stringify(data, null, 2);
-        submitBtn.disabled = false;
+    function isObject(value) {
+      return value !== null && typeof value === "object" && !Array.isArray(value);
+    }
+
+    function formatNumber(value) {
+      if (value === null || value === undefined || Number.isNaN(value)) return "n/a";
+      if (typeof value === "number" && Number.isFinite(value)) {
+        if (Math.abs(value) >= 1000) return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+        return value.toFixed(Number.isInteger(value) ? 0 : 2);
       }
-    } catch (error) {
-      appendLog('Polling failed: ' + error.message);
-      clearInterval(pollTimer);
-      pollTimer = null;
-      submitBtn.disabled = false;
-    }
-  }, 3000);
-}
-
-form.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  if (!fileInput.files.length) return;
-  submitBtn.disabled = true;
-  logs.textContent = 'Uploading file...';
-  output.textContent = '';
-
-  const file = fileInput.files[0];
-  const formData = new FormData();
-  formData.append('file', file);
-
-  try {
-    appendLog('Sending request to /api/v1/process-pdf');
-    const response = await fetch('/api/v1/process-pdf', {
-      method: 'POST',
-      body: formData,
-    });
-    appendLog(`Response status: ${response.status}`);
-    const data = await response.json();
-
-    appendLog(`Received job ${data.job_id} with status ${data.status}.`);
-    output.textContent = JSON.stringify(data, null, 2);
-
-    if (data.status === 'completed' || data.status === 'failed') {
-      submitBtn.disabled = false;
-      return;
+      return String(value);
     }
 
-    if (data.job_id) {
-      await pollJob(data.job_id);
-    } else {
-      submitBtn.disabled = false;
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
     }
-  } catch (error) {
-    appendLog('Request failed: ' + error.message);
-    output.textContent = error.stack || String(error);
-    submitBtn.disabled = false;
-  } finally {
-    if (!pollTimer && submitBtn.disabled) {
-      submitBtn.disabled = false;
+
+    function formatPct(value) {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return "0%";
+      const pct = numeric <= 1 ? numeric * 100 : numeric;
+      return `${clamp(pct, 0, 100).toFixed(0)}%`;
     }
-  }
-});
-</script>
+
+    function statusClass(status) {
+      const value = String(status || "").toLowerCase();
+      if (["completed", "active", "ready", "ok", "success", "healthy"].includes(value)) return "status-completed";
+      if (["running", "processing", "loading", "in_progress"].includes(value)) return "status-running";
+      if (["queued", "pending", "idle"].includes(value)) return "status-queued";
+      if (["failed", "error", "unhealthy", "blocked"].includes(value)) return "status-failed";
+      if (["skipped", "proposed", "draft", "candidate"].includes(value)) return "status-proposed";
+      return "";
+    }
+
+    function shortText(value, limit = 120) {
+      const text = String(value ?? "").trim().replace(/\s+/g, " ");
+      return text.length > limit ? `${text.slice(0, limit)}...` : text;
+    }
+
+    function timestampLabel(value) {
+      if (!value) return "unknown";
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return shortText(value, 24);
+      return parsed.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+    }
+
+    function toList(value) {
+      if (Array.isArray(value)) return value;
+      if (value === null || value === undefined) return [];
+      return [value];
+    }
+
+    function escapeSelector(value) {
+      const text = String(value ?? "");
+      if (window.CSS && typeof window.CSS.escape === "function") {
+        return window.CSS.escape(text);
+      }
+      return text.replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+    }
+
+    function sanitizeTitle(value) {
+      return escapeHtml(String(value || "Untitled").replace(/_/g, " "));
+    }
+
+    function previewValue(value, depth = 0) {
+      if (value === null || value === undefined) return '<span class="muted">null</span>';
+      if (typeof value === "boolean") return `<span class="code">${value}</span>`;
+      if (typeof value === "number") return `<span class="code">${formatNumber(value)}</span>`;
+      if (typeof value === "string") {
+        const text = shortText(value, depth > 0 ? 90 : 180);
+        return `<span title="${escapeHtml(value)}">${escapeHtml(text)}</span>`;
+      }
+      if (Array.isArray(value)) {
+        if (!value.length) return '<span class="muted">[]</span>';
+        const items = value.slice(0, depth > 0 ? 3 : 5).map((item) => {
+          if (typeof item === "string" || typeof item === "number" || typeof item === "boolean") {
+            return `<span class="pill">${escapeHtml(shortText(item, 32))}</span>`;
+          }
+          return `<div class="mini-card">${renderCompactObject(item, depth + 1)}</div>`;
+        }).join("");
+        return `<div class="pill-row">${items}${value.length > (depth > 0 ? 3 : 5) ? `<span class="pill">+${value.length - (depth > 0 ? 3 : 5)} more</span>` : ""}</div>`;
+      }
+      if (isObject(value)) {
+        return renderCompactObject(value, depth);
+      }
+      return `<span class="code">${escapeHtml(String(value))}</span>`;
+    }
+
+    function renderCompactObject(obj, depth = 0) {
+      const entries = Object.entries(obj || {});
+      if (!entries.length) return '<span class="muted">{}</span>';
+      const preferred = [];
+      const preferredKeys = ["summary", "reason", "message", "status", "confidence", "score", "label", "count", "total", "entity_count", "relation_count", "output_type"];
+      for (const key of preferredKeys) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) preferred.push([key, obj[key]]);
+      }
+      for (const entry of entries) {
+        if (!preferred.some(([key]) => key === entry[0])) preferred.push(entry);
+      }
+      const rows = preferred.slice(0, depth > 0 ? 4 : 7).map(([key, value]) => `
+        <div class="tree-row">
+          <div class="key">${escapeHtml(key)}</div>
+          <div class="value">${previewValue(value, depth + 1)}</div>
+        </div>
+      `).join("");
+      const more = entries.length > (depth > 0 ? 4 : 7) ? `<div class="hint">+${entries.length - (depth > 0 ? 4 : 7)} more keys</div>` : "";
+      return `<div class="tree">${rows}${more}</div>`;
+    }
+
+    function renderMetric(label, value, sub = "") {
+      return `
+        <div class="metric-card">
+          <div class="label">${escapeHtml(label)}</div>
+          <div class="value">${escapeHtml(String(value ?? "n/a"))}</div>
+          ${sub ? `<div class="card-subtitle">${escapeHtml(sub)}</div>` : ""}
+        </div>
+      `;
+    }
+
+    function renderPill(label, status = "") {
+      const cls = statusClass(status);
+      return `<span class="pill ${cls}"><span class="dot"></span>${escapeHtml(label)}</span>`;
+    }
+
+    function renderStatusLine(label, value, status = "") {
+      const cls = statusClass(status);
+      return `<span class="pill ${cls}"><span class="dot"></span>${escapeHtml(label)}: ${escapeHtml(String(value ?? "n/a"))}</span>`;
+    }
+
+    function renderNarrative(value, depth = 0) {
+      if (value === null || value === undefined || value === "") {
+        return '<div class="empty">No data available.</div>';
+      }
+      if (Array.isArray(value)) {
+        if (!value.length) return '<div class="empty">Empty list.</div>';
+        return `
+          <div class="pill-row">
+            ${value.slice(0, depth > 0 ? 4 : 8).map((item) => renderPill(shortText(item, 40))).join("")}
+            ${value.length > (depth > 0 ? 4 : 8) ? `<span class="pill">+${value.length - (depth > 0 ? 4 : 8)} more</span>` : ""}
+          </div>
+        `;
+      }
+      if (!isObject(value)) {
+        return `<div class="data-card"><div class="card-subtitle">${escapeHtml(String(value))}</div></div>`;
+      }
+      return `<div class="data-card">${renderCompactObject(value, depth)}</div>`;
+    }
+
+    function renderEntityCard(entity) {
+      const confidence = Number(entity.confidence ?? 0);
+      const bar = `${clamp(confidence * 100, 0, 100).toFixed(0)}%`;
+      const tags = [
+        entity.ontology_label ? `ontology:${entity.ontology_label}` : null,
+        entity.ontology_type_id ? `type:${entity.ontology_type_id}` : null,
+        entity.status ? `status:${entity.status}` : null,
+        entity.stable_id ? `id:${shortText(entity.stable_id, 24)}` : null,
+      ].filter(Boolean);
+      return `
+        <article class="entity-card">
+          <div class="route-head">
+            <div>
+              <h3>${escapeHtml(entity.name || "Unnamed entity")}</h3>
+              <div class="card-subtitle">${escapeHtml(entity.entity_type || "unknown")} ${entity.canonical_name ? `- ${escapeHtml(entity.canonical_name)}` : ""}</div>
+            </div>
+            <span class="pill ${statusClass(entity.status || "active")}"><span class="dot"></span>${escapeHtml(entity.status || "active")}</span>
+          </div>
+          <div class="confidence">
+            <div class="progress-row"><span>Confidence</span><span class="num">${confidence.toFixed(3)}</span></div>
+            <div class="bar"><span style="width:${bar}"></span></div>
+          </div>
+          <div class="pill-row">${tags.map((tag) => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}</div>
+          ${entity.unknown_candidate ? `<div class="mini-card" style="margin-top:10px;"><div class="label">Unknown candidate</div>${renderCompactObject(entity.unknown_candidate)}</div>` : ""}
+          ${entity.evidence_span ? `<div class="mini-card" style="margin-top:10px;"><div class="label">Evidence</div>${renderCompactObject(entity.evidence_span)}</div>` : ""}
+        </article>
+      `;
+    }
+
+    function renderRelationCard(relation) {
+      const confidence = Number(relation.confidence ?? 0);
+      const bar = `${clamp(confidence * 100, 0, 100).toFixed(0)}%`;
+      const tags = [
+        relation.ontology_label ? `ontology:${relation.ontology_label}` : null,
+        relation.ontology_relation_id ? `rel:${relation.ontology_relation_id}` : null,
+        relation.status ? `status:${relation.status}` : null,
+        relation.stable_id ? `id:${shortText(relation.stable_id, 24)}` : null,
+      ].filter(Boolean);
+      return `
+        <article class="relation-card">
+          <div class="route-head">
+            <div>
+              <h3>${escapeHtml(relation.source || "unknown")} <span class="dim">-></span> ${escapeHtml(relation.target || "unknown")}</h3>
+              <div class="card-subtitle">${escapeHtml(relation.relation_type || "related_to")}</div>
+            </div>
+            <span class="pill ${statusClass(relation.status || "active")}"><span class="dot"></span>${escapeHtml(relation.status || "active")}</span>
+          </div>
+          <div class="confidence">
+            <div class="progress-row"><span>Confidence</span><span class="num">${confidence.toFixed(3)}</span></div>
+            <div class="bar"><span style="width:${bar}"></span></div>
+          </div>
+          <div class="pill-row">${tags.map((tag) => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}</div>
+          ${relation.unknown_candidate ? `<div class="mini-card" style="margin-top:10px;"><div class="label">Unknown candidate</div>${renderCompactObject(relation.unknown_candidate)}</div>` : ""}
+          ${relation.evidence_span ? `<div class="mini-card" style="margin-top:10px;"><div class="label">Evidence</div>${renderCompactObject(relation.evidence_span)}</div>` : ""}
+        </article>
+      `;
+    }
+
+    function renderStageCard(stage, index) {
+      const elapsed = stage.elapsed_seconds ?? stage.elapsed ?? stage.duration ?? stage.duration_seconds;
+      const output = stage.output ?? stage.summary ?? stage.result ?? null;
+      const outputType = stage.output_type || (output && Array.isArray(output) ? "array" : typeof output);
+      const outputKeys = stage.output_keys || (isObject(output) ? Object.keys(output).slice(0, 8) : []);
+      const substeps = toList(stage.substeps || stage.steps || stage.sub_stages || stage.children);
+      const title = stage.label || stage.stage || `Stage ${index + 1}`;
+      const summary = stage.summary || stage.message || stage.reason || stage.status || "";
+      const timestamp = stage.timestamp || stage.started_at || stage.completed_at || stage.time || "";
+      const progress = stage.status ? statusClass(stage.status) : "";
+      return `
+        <article class="stage-card">
+          <div class="stage-top">
+            <div>
+              <h3>${escapeHtml(title)}</h3>
+              <div class="stage-subtitle">${escapeHtml(summary || "Pipeline stage execution")}</div>
+            </div>
+            <span class="pill ${progress}"><span class="dot"></span>${escapeHtml(stage.status || "unknown")}</span>
+          </div>
+          <div class="stage-meta">
+            ${stage.stage ? `<span class="pill">stage:${escapeHtml(stage.stage)}</span>` : ""}
+            ${timestamp ? `<span class="pill">time:${escapeHtml(timestampLabel(timestamp))}</span>` : ""}
+            ${elapsed !== undefined && elapsed !== null ? `<span class="pill">elapsed:${escapeHtml(String(elapsed))}s</span>` : ""}
+            ${outputType ? `<span class="pill">output:${escapeHtml(String(outputType))}</span>` : ""}
+            ${Array.isArray(outputKeys) && outputKeys.length ? `<span class="pill">keys:${escapeHtml(outputKeys.join(", "))}</span>` : ""}
+          </div>
+          ${output ? `<div class="stage-output"><div class="label">Stage output</div>${renderNarrative(output, 1)}</div>` : ""}
+          ${substeps.length ? `
+            <div class="substep-list">
+              ${substeps.slice(0, 8).map((step, stepIndex) => {
+                const subLabel = isObject(step) ? (step.label || step.name || step.stage || `Substep ${stepIndex + 1}`) : step;
+                const subStatus = isObject(step) ? (step.status || step.state || "") : "";
+                const subDesc = isObject(step) ? (step.summary || step.reason || step.output || step.message || "") : "";
+                return `
+                  <div class="substep">
+                    <span class="pill ${statusClass(subStatus)}"><span class="dot"></span>${escapeHtml(subStatus || "step")}</span>
+                    <div>
+                      <div class="name">${escapeHtml(String(subLabel || "step"))}</div>
+                      ${subDesc ? `<div class="desc">${escapeHtml(shortText(subDesc, 160))}</div>` : ""}
+                    </div>
+                    <span class="dim">${stepIndex + 1}</span>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          ` : ""}
+        </article>
+      `;
+    }
+
+    function renderSection(section) {
+      const cards = Array.isArray(section.cards) ? section.cards : [];
+      const cardGrid = cards.length ? `<div class="card-grid">${cards.map((card) => renderMetric(card.label, card.value, card.kind || "")).join("")}</div>` : "";
+      let body = "";
+      if (section.kind === "timeline") {
+        const items = Array.isArray(section.items) ? section.items : [];
+        body = items.length ? `<div class="timeline">${items.map((item, index) => renderStageCard(item, index)).join("")}</div>` : '<div class="empty">No stage trace available.</div>';
+      } else if (section.kind === "table") {
+        const items = Array.isArray(section.items) ? section.items : [];
+        if (section.id === "entities") {
+          body = items.length ? `<div class="entity-grid">${items.map(renderEntityCard).join("")}</div>` : '<div class="empty">No entities extracted.</div>';
+        } else if (section.id === "relations") {
+          body = items.length ? `<div class="relation-grid">${items.map(renderRelationCard).join("")}</div>` : '<div class="empty">No relations extracted.</div>';
+        } else {
+          body = items.length ? `<div class="entity-grid">${items.map((item) => `<div class="data-card">${renderCompactObject(item)}</div>`).join("")}</div>` : '<div class="empty">No tabular data.</div>';
+        }
+      } else if (section.kind === "metrics") {
+        body = section.items ? renderNarrative(section.items) : "";
+      } else if (section.kind === "catalog") {
+        const groups = Object.entries(section.items || {});
+        body = groups.length ? groups.map(([group, routes]) => `
+          <div class="data-card">
+            <div class="title">
+              <strong>${escapeHtml(group)}</strong>
+              <span class="route-meta">${Array.isArray(routes) ? `${routes.length} routes` : "group"}</span>
+            </div>
+            ${Array.isArray(routes) ? routes.map((route) => `
+              <div class="mini-card" style="margin-top:10px;">
+                <div class="route-head">
+                  <div>
+                    <h3>${escapeHtml(route.method || "GET")} ${escapeHtml(route.path || "")}</h3>
+                    <div class="card-subtitle">${escapeHtml(route.purpose || "")}</div>
+                  </div>
+                  <span class="pill"><span class="dot"></span>${escapeHtml(group)}</span>
+                </div>
+              </div>
+            `).join("") : renderCompactObject(routes)}
+          </div>
+        `).join("") : '<div class="empty">No catalog data.</div>';
+      } else {
+        body = renderNarrative(section.items);
+      }
+
+      const responseId = `section-${section.id}`;
+      return `
+        <article class="panel section" id="${responseId}">
+          <div class="section-head">
+            <div>
+              <h2>${escapeHtml(section.title || section.id)}</h2>
+              <p>${escapeHtml(section.summary || "")}</p>
+            </div>
+            <div class="section-actions">
+              <button class="btn btn-secondary" type="button" data-copy-section="${escapeHtml(section.id)}">Copy raw</button>
+              <button class="btn btn-secondary" type="button" data-toggle-raw="${escapeHtml(section.id)}">Toggle raw</button>
+            </div>
+          </div>
+          <div class="section-body">
+            ${cardGrid}
+            ${body}
+            <details class="hidden" id="raw-${escapeHtml(section.id)}">
+              <summary>Raw section data</summary>
+              <div class="details-body"><pre>${escapeHtml(JSON.stringify(section.items, null, 2))}</pre></div>
+            </details>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderBundle(bundle) {
+      if (!bundle) {
+        $("dashboardBody").innerHTML = '<div class="empty">No bundle available.</div>';
+        $("rawBundlePanel").innerHTML = '<div class="empty">No bundle loaded.</div>';
+        return;
+      }
+
+      const summary = bundle.summary || {};
+      const timeline = Array.isArray(bundle.timeline) ? bundle.timeline : [];
+      const highlights = bundle.highlights || {};
+      const sections = Array.isArray(bundle.sections) ? bundle.sections : [];
+      const stageOutputs = Array.isArray(highlights.stage_outputs) ? highlights.stage_outputs : [];
+      const completionPct = timeline.length ? Math.round(((summary.completed_stages || 0) / Math.max(timeline.length, 1)) * 100) : 0;
+      const failedPct = timeline.length ? Math.round(((summary.failed_stages || 0) / Math.max(timeline.length, 1)) * 100) : 0;
+
+      const topCards = [
+        { label: "Job", value: shortText(summary.job_id || state.currentJobId || "n/a", 18), sub: summary.uploaded_filename || "current analysis" },
+        { label: "Status", value: summary.status || "unknown", sub: summary.message || "" },
+        { label: "Entities", value: summary.entity_count ?? 0, sub: `Proposed: ${summary.proposed_entities ?? 0}` },
+        { label: "Relations", value: summary.relation_count ?? 0, sub: `Proposed: ${summary.proposed_relations ?? 0}` },
+        { label: "Stages", value: summary.stage_count ?? timeline.length ?? 0, sub: `Completed: ${summary.completed_stages ?? 0}` },
+        { label: "Ontology", value: `${formatPct(summary.ontology_coverage ?? 0)}`, sub: "Coverage estimate" },
+        { label: "Neo4j", value: summary.neo4j_status || "n/a", sub: "Graph persistence" },
+        { label: "Updated", value: timestampLabel(summary.timestamp), sub: "Latest backend write" },
+      ];
+
+      const stageTape = stageOutputs.length ? `
+        <div class="panel" style="margin-top:12px;">
+          <div class="panel-inner">
+            <div class="panel-title">
+              <div>
+                <h3>Stage output tape</h3>
+                <p>Compact summaries emitted by the engine for every stage and substage.</p>
+              </div>
+            </div>
+            <div class="route-grid">
+              ${stageOutputs.slice(0, 8).map((item) => `
+                <div class="mini-card">
+                  <div class="route-head">
+                    <div>
+                      <h3>${escapeHtml(item.label || item.stage || "stage")}</h3>
+                      <div class="card-subtitle">${escapeHtml(shortText(item.summary || item.output || item.message || "", 120))}</div>
+                    </div>
+                    <span class="pill ${statusClass(item.status || "unknown")}"><span class="dot"></span>${escapeHtml(item.status || "unknown")}</span>
+                  </div>
+                  <div class="pill-row">
+                    ${item.output_type ? `<span class="pill">type:${escapeHtml(String(item.output_type))}</span>` : ""}
+                    ${item.output_count !== undefined ? `<span class="pill">count:${escapeHtml(String(item.output_count))}</span>` : ""}
+                    ${item.elapsed_seconds !== undefined ? `<span class="pill">elapsed:${escapeHtml(String(item.elapsed_seconds))}s</span>` : ""}
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </div>
+      ` : "";
+
+      const highlightsBlock = `
+        <div class="panel" style="margin-top:12px;">
+          <div class="panel-inner">
+            <div class="panel-title">
+              <div>
+                <h3>Highlights</h3>
+                <p>Sampled entities, relations, and reasoning pivots.</p>
+              </div>
+            </div>
+            <div class="entity-grid">
+              <div class="mini-card">
+                <div class="label">Entities</div>
+                ${renderNarrative(highlights.entities || [])}
+              </div>
+              <div class="mini-card">
+                <div class="label">Relations</div>
+                ${renderNarrative(highlights.relations || [])}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const timelineBlock = `
+        <div class="panel" style="margin-top:12px;">
+          <div class="panel-inner">
+            <div class="panel-title">
+              <div>
+                <h3>Timeline</h3>
+                <p>Stage-by-stage execution with nested substages and compact outputs.</p>
+              </div>
+              <div class="pill-row">
+                <span class="pill">Completed ${summary.completed_stages || 0}</span>
+                <span class="pill">Failed ${summary.failed_stages || 0}</span>
+                <span class="pill">Progress ${completionPct}%</span>
+              </div>
+            </div>
+            <div class="timeline">
+              ${timeline.length ? timeline.map((stage, index) => renderStageCard(stage, index)).join("") : '<div class="empty">No stage trace present in this job.</div>'}
+            </div>
+          </div>
+        </div>
+      `;
+
+      const sectionBlocks = sections.map(renderSection).join("");
+
+      $("dashboardBody").innerHTML = `
+        <div class="card-grid">${topCards.map((card) => renderMetric(card.label, card.value, card.sub)).join("")}</div>
+        <div class="card-grid" style="margin-top:12px;">
+          ${renderMetric("Completed", completionPct + "%", "Stages finished")}
+          ${renderMetric("Failed ratio", failedPct + "%", "Stages failed / total")}
+          ${renderMetric("Stage tape", stageOutputs.length, "Compact outputs captured")}
+          ${renderMetric("Bundle sections", sections.length, "Normalized views")}
+        </div>
+        ${stageTape}
+        ${highlightsBlock}
+        ${timelineBlock}
+        ${sectionBlocks}
+      `;
+
+      $("rawBundlePanel").innerHTML = `<pre>${escapeHtml(JSON.stringify(bundle, null, 2))}</pre>`;
+    }
+
+    function renderRawJob(job) {
+      if (!job) {
+        $("rawJobPanel").innerHTML = '<div class="empty">No job loaded.</div>';
+        return;
+      }
+      $("rawJobPanel").innerHTML = `<pre>${escapeHtml(JSON.stringify(job, null, 2))}</pre>`;
+    }
+
+    function renderActiveJob(job, bundle) {
+      const summary = bundle?.summary || job || {};
+      const timeline = Array.isArray(bundle?.timeline) ? bundle.timeline : [];
+      const stageCount = summary.stage_count ?? timeline.length ?? 0;
+      const completed = summary.completed_stages ?? 0;
+      const failed = summary.failed_stages ?? 0;
+      const completionPct = stageCount ? Math.round((completed / stageCount) * 100) : 0;
+
+      $("jobStatusPill").textContent = summary.status || job?.status || "idle";
+      $("jobStatusPill").className = `chip ${statusClass(summary.status || job?.status || "idle")}`;
+      $("stageProgressText").textContent = stageCount ? `${completed}/${stageCount} stages complete` : "No stages";
+      $("stageProgressBar").style.width = `${clamp(completionPct, 0, 100)}%`;
+
+      const cards = [
+        ["Job", shortText(summary.job_id || job?.job_id || "n/a", 18)],
+        ["Entities", summary.entity_count ?? job?.entities?.length ?? 0],
+        ["Relations", summary.relation_count ?? job?.relations?.length ?? 0],
+        ["Stages", stageCount],
+      ];
+      $("activeJobKpis").innerHTML = cards.map(([label, value]) => `
+        <div class="kpi">
+          <div class="label">${escapeHtml(label)}</div>
+          <div class="value">${escapeHtml(String(value))}</div>
+        </div>
+      `).join("");
+
+      const pills = [
+        summary.uploaded_filename ? `file:${summary.uploaded_filename}` : null,
+        summary.neo4j_status ? `neo4j:${summary.neo4j_status}` : null,
+        summary.ontology_coverage !== undefined ? `ontology:${formatPct(summary.ontology_coverage)}` : null,
+        summary.timestamp ? `updated:${timestampLabel(summary.timestamp)}` : null,
+      ].filter(Boolean);
+      $("activeJobPills").innerHTML = pills.map((pill) => `<span class="pill">${escapeHtml(pill)}</span>`).join("") || '<span class="pill">No metadata yet</span>';
+    }
+
+    function renderStatusPanel() {
+      const health = state.health || {};
+      const modelStatus = state.modelStatus || {};
+      const advanced = state.advancedModelStatus || {};
+      const components = health.components || {};
+      const loaded = modelStatus.loaded_components || {};
+      const componentValues = Object.values(components).filter(Boolean).length || Object.values(loaded).filter(Boolean).length;
+      const componentTotal = Math.max(Object.keys(components).length, Object.keys(loaded).length, 1);
+      const pct = Math.round((componentValues / componentTotal) * 100);
+      const status = health.status || "unknown";
+      $("runtimeMode").textContent = health.runtime_mode || modelStatus.runtime_mode || "unknown";
+      $("healthText").textContent = `${status} / ${health.service || "service"}`;
+      $("healthBar").style.width = `${clamp(pct, 0, 100)}%`;
+      $("runtimeNote").textContent = health.status ? `Stage status tracked for ${Array.isArray(health.stages) ? health.stages.length : 0} stages.` : "Waiting on backend health.";
+      $("statusSummary").textContent = `${health.service || "backend"} is ${status}.`;
+      $("componentText").textContent = `${componentValues}/${componentTotal}`;
+      $("componentBar").style.width = `${clamp(pct, 0, 100)}%`;
+
+      const chips = [
+        health.runtime_mode ? `runtime:${health.runtime_mode}` : null,
+        health.service ? `service:${health.service}` : null,
+        modelStatus.ready !== undefined ? `models:${modelStatus.ready ? "ready" : "partial"}` : null,
+        advanced.models_initialized !== undefined ? `advanced:${advanced.models_initialized}/${advanced.total_models}` : null,
+      ].filter(Boolean);
+      $("runtimeChips").innerHTML = chips.map((chip) => `<span class="pill">${escapeHtml(chip)}</span>`).join("");
+
+      const statusChips = [
+        health.status ? renderPill(health.status, health.status) : null,
+        health.runtime_mode ? renderPill(health.runtime_mode, health.runtime_mode) : null,
+        health.model_counts ? renderPill(`${Object.keys(health.model_counts || {}).length} model groups`, "active") : null,
+        advanced.features ? renderPill(`${Object.keys(advanced.features || {}).length} advanced features`, "active") : null,
+      ].filter(Boolean).join("");
+      $("statusPills").innerHTML = statusChips || '<span class="pill">Status unavailable</span>';
+    }
+
+    function renderJobList() {
+      const jobs = Array.isArray(state.jobs) ? state.jobs : [];
+      $("jobCount").textContent = String(jobs.length);
+      if (!jobs.length) {
+        $("jobList").innerHTML = '<div class="empty" style="grid-column:1/-1;">No jobs yet.</div>';
+        return;
+      }
+
+      $("jobList").innerHTML = jobs.slice(0, 6).map((job) => `
+        <button class="job-card" type="button" data-job-id="${escapeHtml(job.job_id)}">
+          <div class="row">
+            <div class="name">${escapeHtml(shortText(job.uploaded_filename || job.job_id || "job", 30))}</div>
+            <span class="pill ${statusClass(job.status)}"><span class="dot"></span>${escapeHtml(job.status || "unknown")}</span>
+          </div>
+          <div class="meta">Job ${escapeHtml(shortText(job.job_id, 12))}</div>
+          <div class="meta">${escapeHtml(timestampLabel(job.timestamp || job.created_at || job.updated_at))}</div>
+        </button>
+      `).join("");
+    }
+
+    function renderApiExplorer() {
+      const catalog = state.workflowCatalog?.api_catalog || {};
+      const groups = ["trigger", "copilot", "advanced", "admin"];
+      if (!Object.keys(catalog).length) {
+        $("apiExplorerBody").innerHTML = '<div class="empty">API catalog unavailable.</div>';
+        return;
+      }
+
+      const groupHtml = groups.map((group) => {
+        const routes = Array.isArray(catalog[group]) ? catalog[group] : [];
+        const routesHtml = routes.map((route) => renderRouteCard(group, route)).join("");
+        return `
+          <section class="panel" style="border-radius:20px;">
+            <div class="panel-inner">
+              <div class="panel-title">
+                <div>
+                  <h3>${escapeHtml(group.toUpperCase())}</h3>
+                  <p>${escapeHtml(group === "trigger" ? "Limited frontend-facing routes that trigger the pipeline and fetch its bundle." : group === "copilot" ? "Job-aware reasoning routes." : group === "advanced" ? "Exploratory analytics and model endpoints." : "Backfill and migration endpoints.")}</p>
+                </div>
+                <span class="chip"><strong>${routes.length}</strong> routes</span>
+              </div>
+              <div class="route-grid">${routesHtml}</div>
+            </div>
+          </section>
+        `;
+      }).join("");
+
+      $("apiExplorerBody").innerHTML = groupHtml;
+    }
+
+    function routeKey(route) {
+      return `${route.method || "GET"} ${route.path || ""}`;
+    }
+
+    function defaultBodyForRoute(path) {
+      const currentJobId = state.currentJobId || "";
+      const summary = state.currentBundle?.summary || {};
+      const sampleText = shortText(summary.message || state.currentJob?.message || "Summarize the document and surface the strongest evidence.", 160);
+      if (path.includes("/copilot/")) {
+        return null;
+      }
+      if (path === "/api/v1/advanced/vector-search") {
+        return { query_embedding: [0.12, 0.18, 0.27, 0.31, 0.44, 0.55], top_k: 5 };
+      }
+      if (path === "/api/v1/advanced/graph-reasoning") {
+        return { query: "Explain the strongest industrial relationships, failure signals, and ontology links in this job." };
+      }
+      if (path === "/api/v1/advanced/doc-query" || path === "/api/v1/advanced/llama-query") {
+        return { query: "Summarize the most important evidence and uncertainties.", job_id: currentJobId || null, top_k: 5 };
+      }
+      if (path === "/api/v1/advanced/llm-analysis") {
+        return { prompt: "Summarize the pipeline reasoning, ontology evolution, and next actions.", max_tokens: 320 };
+      }
+      if (path === "/api/v1/advanced/anomaly-detection") {
+        return { time_series: [1, 1.4, 1.8, 2.1, 3.2, 5.4, 5.7], threshold: 2.0 };
+      }
+      if (path === "/api/v1/advanced/rul-prediction") {
+        return { machine_id: "demo-machine-01", sensor_data: { temperature: [70, 74, 78, 83], vibration: [0.12, 0.15, 0.18, 0.24] } };
+      }
+      if (path === "/api/v1/advanced/root-cause-analysis") {
+        return { incident: "Unexpected shutdown", logs: ["pressure spike", "alarm escalation", "operator intervention"], sensor_data: { pressure: [3, 4, 6, 9], temperature: [71, 75, 80, 86] } };
+      }
+      if (path === "/api/v1/advanced/failure-prediction") {
+        return { machine_id: "demo-machine-01", sensor_data: { temperature: [70, 74, 78, 83], vibration: [0.12, 0.15, 0.18, 0.24] } };
+      }
+      if (path === "/api/v1/advanced/lessons-learned") {
+        return { documents: [sampleText, "Stage outputs", "Ontology proposals"], top_n: 5 };
+      }
+      if (path === "/api/v1/advanced/clustering") {
+        return { embeddings: [[0.1, 0.2], [0.12, 0.18], [0.9, 0.88]], min_cluster_size: 2 };
+      }
+      if (path === "/api/v1/advanced/graph-embeddings") {
+        return { node_walk_length: 80, dimensions: 64, num_walks: 20 };
+      }
+      if (path === "/api/v1/admin/neo4j/migrate-ontology") {
+        return { dry_run: true, limit: 100, include_all_nodes: true, create_typed_labels: false };
+      }
+      return null;
+    }
+
+    function renderRouteCard(group, route) {
+      const key = `${group}:${routeKey(route)}`;
+      const result = state.apiResults[key];
+      const body = defaultBodyForRoute(route.path);
+      const canRun = Boolean(route.path);
+      const isJobAware = route.path && route.path.includes("{job_id}");
+      const isDanger = group === "admin";
+      const defaultPayload = body ? JSON.stringify(body, null, 2) : "";
+      return `
+        <article class="route-card ${isDanger ? "danger" : ""}" data-route-key="${escapeHtml(key)}" data-route-path="${escapeHtml(route.path)}" data-route-method="${escapeHtml(route.method || "GET")}">
+          <div class="route-head">
+            <div>
+              <h3>${escapeHtml(route.method || "GET")} ${escapeHtml(route.path || "")}</h3>
+              <div class="card-subtitle">${escapeHtml(route.purpose || "")}</div>
+            </div>
+            <span class="method ${(route.method || "GET").toLowerCase() === "post" ? "post" : "get"}">${escapeHtml(route.method || "GET")}</span>
+          </div>
+          <div class="pill-row">
+            ${renderPill(group, group)}
+            ${isJobAware ? renderPill("job aware", "running") : ""}
+            ${isDanger ? renderPill("admin", "failed") : ""}
+          </div>
+          ${body ? `
+            <div class="payload">
+              <label>Payload template</label>
+              <textarea data-route-payload="${escapeHtml(key)}">${escapeHtml(defaultPayload)}</textarea>
+            </div>
+          ` : ""}
+          <div class="route-controls">
+            <button class="btn btn-secondary" type="button" data-route-run="${escapeHtml(key)}" ${canRun ? "" : "disabled"}>Run</button>
+            ${body ? `<button class="btn btn-secondary" type="button" data-route-toggle="${escapeHtml(key)}">Edit payload</button>` : ""}
+            ${isJobAware && !state.currentJobId ? `<span class="pill status-proposed"><span class="dot"></span>Load a job first</span>` : ""}
+          </div>
+          <div class="response-panel ${result && !result.ok ? "error" : ""}" id="response-${escapeHtml(key)}">
+            ${result ? renderRouteResult(result) : '<div class="muted">Awaiting run.</div>'}
+          </div>
+        </article>
+      `;
+    }
+
+    function renderRouteResult(result) {
+      const status = result.ok ? "completed" : "failed";
+      const payload = result.data;
+      return `
+        <div class="route-meta">
+          <span class="pill ${statusClass(status)}"><span class="dot"></span>${escapeHtml(result.method || "GET")} ${escapeHtml(result.path || "")}</span>
+          <span class="pill"><span class="dot"></span>${escapeHtml(String(result.status))}</span>
+          ${result.ms !== undefined ? `<span class="pill"><span class="dot"></span>${escapeHtml(String(result.ms))} ms</span>` : ""}
+        </div>
+        <div>${renderNarrative(payload)}</div>
+        <details>
+          <summary>Raw response</summary>
+          <div class="details-body"><pre>${escapeHtml(JSON.stringify(payload, null, 2))}</pre></div>
+        </details>
+      `;
+    }
+
+    async function fetchJson(url, options = {}) {
+      const response = await fetch(url, options);
+      const text = await response.text();
+      let data = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch (error) {
+        data = text;
+      }
+      if (!response.ok) {
+        const detail = isObject(data) ? data.detail || data.message || JSON.stringify(data) : String(data || response.statusText);
+        throw new Error(`${response.status} ${detail}`);
+      }
+      return data;
+    }
+
+    function log(message) {
+      const stamp = new Date().toLocaleTimeString();
+      const line = `[${stamp}] ${message}`;
+      const node = document.createElement("div");
+      node.className = "log-line";
+      node.textContent = line;
+      const logBox = $("activityLog");
+      logBox.prepend(node);
+      while (logBox.children.length > 30) {
+        logBox.removeChild(logBox.lastChild);
+      }
+    }
+
+    function setLoading(loading, message = "") {
+      state.loading = loading;
+      $("runWorkflowBtn").disabled = loading;
+      $("loadLatestBtn").disabled = loading;
+      $("refreshCatalogBtn").disabled = loading;
+      $("reasoningStackBtn").disabled = loading;
+      if (loading) {
+        $("runtimeNote").innerHTML = `<span class="loading"><span class="spinner"></span>${escapeHtml(message || "Working...")}</span>`;
+      }
+    }
+
+    async function loadStatus() {
+      const tasks = await Promise.allSettled([
+        fetchJson("/health"),
+        fetchJson("/api/v1/workflows/catalog"),
+        fetchJson("/api/v1/models/status"),
+        fetchJson("/api/v1/advanced/models/status"),
+        fetchJson("/api/v1/jobs"),
+      ]);
+
+      if (tasks[0].status === "fulfilled") state.health = tasks[0].value;
+      if (tasks[1].status === "fulfilled") state.workflowCatalog = tasks[1].value;
+      if (tasks[2].status === "fulfilled") state.modelStatus = tasks[2].value;
+      if (tasks[3].status === "fulfilled") state.advancedModelStatus = tasks[3].value;
+      if (tasks[4].status === "fulfilled") state.jobs = tasks[4].value || [];
+
+      renderStatusPanel();
+      renderJobList();
+      renderApiExplorer();
+      updateReasoningStackButtons();
+    }
+
+    function updateReasoningStackButtons() {
+      const hasJob = Boolean(state.currentJobId);
+      $("reasoningStackBtn").disabled = state.loading || !hasJob;
+      $("runCopilotGroupBtn").disabled = state.loading || !hasJob;
+      $("reloadCurrentBtn").disabled = state.loading || !hasJob;
+      $("loadBundleBtn").disabled = state.loading || !hasJob;
+    }
+
+    async function loadJob(jobId, { fromPoll = false } = {}) {
+      if (!jobId) return;
+      state.currentJobId = jobId;
+      log(`Loading job ${jobId}`);
+      try {
+        const [job, bundle] = await Promise.allSettled([
+          fetchJson(`/api/v1/jobs/${encodeURIComponent(jobId)}`),
+          fetchJson(`/api/v1/workflows/${encodeURIComponent(jobId)}/bundle?include_raw=true`),
+        ]);
+
+        if (job.status === "fulfilled") {
+          state.currentJob = job.value;
+          renderRawJob(state.currentJob);
+        }
+        if (bundle.status === "fulfilled") {
+          state.currentBundle = bundle.value;
+          renderBundle(state.currentBundle);
+        } else if (job.status === "fulfilled") {
+          state.currentBundle = { summary: state.currentJob, timeline: [], sections: [] };
+          renderBundle(state.currentBundle);
+        }
+
+        renderActiveJob(state.currentJob, state.currentBundle);
+        updateReasoningStackButtons();
+        if (!fromPoll) startPolling();
+      } catch (error) {
+        log(`Failed to load job ${jobId}: ${error.message}`);
+      }
+    }
+
+    function startPolling() {
+      stopPolling();
+      if (!state.currentJobId) return;
+      state.pollTimer = setInterval(async () => {
+        try {
+          const job = await fetchJson(`/api/v1/jobs/${encodeURIComponent(state.currentJobId)}`);
+          state.currentJob = job;
+          renderRawJob(job);
+          const bundle = await fetchJson(`/api/v1/workflows/${encodeURIComponent(state.currentJobId)}/bundle?include_raw=false`);
+          state.currentBundle = bundle;
+          renderBundle(bundle);
+          renderActiveJob(job, bundle);
+          if (["completed", "failed"].includes(String(job.status || "").toLowerCase())) {
+            stopPolling();
+            log(`Job ${state.currentJobId} reached terminal status ${job.status}`);
+          }
+        } catch (error) {
+          log(`Polling error: ${error.message}`);
+          stopPolling();
+        }
+      }, 3000);
+    }
+
+    function stopPolling() {
+      if (state.pollTimer) {
+        clearInterval(state.pollTimer);
+        state.pollTimer = null;
+      }
+    }
+
+    async function runWorkflow(formEvent) {
+      formEvent.preventDefault();
+      if (state.loading) return;
+      const file = $("workflowFile").files[0];
+      const text = $("workflowText").value.trim();
+      const fileName = $("workflowName").value.trim();
+      const mimeType = $("workflowMime").value.trim();
+
+      if (!file && !text) {
+        log("Provide a file or raw text before running the workflow.");
+        return;
+      }
+
+      setLoading(true, "Submitting workflow...");
+      stopPolling();
+      try {
+        const formData = new FormData();
+        if (file) formData.append("file", file);
+        if (text) formData.append("text", text);
+        if (fileName) formData.append("file_name", fileName);
+        if (mimeType) formData.append("mime_type", mimeType);
+
+        const job = await fetchJson("/api/v1/workflows/analyze", {
+          method: "POST",
+          body: formData,
+        });
+
+        state.currentJobId = job.job_id;
+        state.currentJob = job;
+        renderRawJob(job);
+        renderActiveJob(job, state.currentBundle);
+        log(`Workflow accepted as ${job.job_id} (${job.status})`);
+        await loadJob(job.job_id);
+      } catch (error) {
+        log(`Workflow submission failed: ${error.message}`);
+      } finally {
+        setLoading(false);
+        renderStatusPanel();
+        updateReasoningStackButtons();
+      }
+    }
+
+    async function runReasoningStack() {
+      if (!state.currentJobId) {
+        log("Load a job first to run the reasoning stack.");
+        return;
+      }
+
+      const jobId = state.currentJobId;
+      const tasks = [
+        { group: "copilot", route: { method: "GET", path: `/api/v1/copilot/analyze/${jobId}` } },
+        { group: "copilot", route: { method: "GET", path: `/api/v1/copilot/rca/${jobId}` } },
+        { group: "copilot", route: { method: "GET", path: `/api/v1/copilot/maintenance/${jobId}` } },
+        { group: "copilot", route: { method: "GET", path: `/api/v1/copilot/compliance/${jobId}` } },
+        { group: "copilot", route: { method: "GET", path: `/api/v1/copilot/risk/${jobId}` } },
+        { group: "advanced", route: { method: "GET", path: "/api/v1/advanced/models/status" } },
+        { group: "advanced", route: { method: "GET", path: "/api/v1/advanced/pipeline-stages" } },
+      ];
+
+      log(`Running reasoning stack for job ${jobId}`);
+      setLoading(true, "Running reasoning stack...");
+      try {
+        const results = await Promise.allSettled(tasks.map((task) => runRoute(task.group, task.route, { silent: true })));
+        const failures = results.filter((result) => result.status === "rejected").length;
+        log(`Reasoning stack finished with ${failures} failures.`);
+      } finally {
+        setLoading(false);
+        updateReasoningStackButtons();
+      }
+    }
+
+    function resolveRouteUrl(route) {
+      let url = route.path;
+      if (url.includes("{job_id}")) {
+        if (!state.currentJobId) throw new Error("Load a job first for job-aware routes.");
+        url = url.replace("{job_id}", encodeURIComponent(state.currentJobId));
+      }
+      return url;
+    }
+
+    function readPayloadTemplate(key) {
+      const textarea = document.querySelector(`[data-route-payload="${escapeSelector(key)}"]`);
+      if (!textarea) return null;
+      const raw = textarea.value.trim();
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch (error) {
+        throw new Error(`Invalid JSON payload for ${key}: ${error.message}`);
+      }
+    }
+
+    async function runRoute(group, route, { silent = false } = {}) {
+      const key = `${group}:${routeKey(route)}`;
+      const method = String(route.method || "GET").toUpperCase();
+      const isAdminBackfill = route.path === "/api/v1/ontology/backfill";
+      const isAdminMigrate = route.path === "/api/v1/admin/neo4j/migrate-ontology";
+      let url = resolveRouteUrl(route);
+      const init = { method, headers: {} };
+      let payload = null;
+
+      if (method === "POST" || method === "PUT" || method === "PATCH") {
+        if (isAdminBackfill) {
+          url = `${url}?dry_run=true&limit=100`;
+        } else {
+          payload = readPayloadTemplate(key) || defaultBodyForRoute(route.path);
+          if (payload !== null) {
+            init.headers["Content-Type"] = "application/json";
+            init.body = JSON.stringify(payload);
+          }
+        }
+      }
+
+      const startedAt = performance.now();
+      const response = await fetch(url, init);
+      const text = await response.text();
+      let data = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch (error) {
+        data = text;
+      }
+      const elapsed = Math.round(performance.now() - startedAt);
+      const result = {
+        ok: response.ok,
+        status: response.status,
+        ms: elapsed,
+        method,
+        path: route.path,
+        data,
+      };
+      state.apiResults[key] = result;
+      const responseNode = document.getElementById(`response-${escapeSelector(key)}`);
+      if (responseNode) responseNode.innerHTML = renderRouteResult(result);
+      if (!silent) {
+        const payloadLabel = payload ? shortText(JSON.stringify(payload), 120) : "no payload";
+        log(`${method} ${route.path} -> ${response.status} in ${elapsed} ms (${payloadLabel})`);
+      }
+      if (!response.ok) {
+        throw new Error(`${method} ${route.path} failed with ${response.status}`);
+      }
+      return data;
+    }
+
+    async function loadLatestJob() {
+      try {
+        const jobs = await fetchJson("/api/v1/jobs");
+        state.jobs = jobs || [];
+        renderJobList();
+        if (!state.jobs.length) {
+          log("No jobs available yet.");
+          return;
+        }
+        const latest = [...state.jobs].sort((a, b) => String(b.timestamp || b.updated_at || "").localeCompare(String(a.timestamp || a.updated_at || "")))[0];
+        if (latest && latest.job_id) {
+          await loadJob(latest.job_id);
+        }
+      } catch (error) {
+        log(`Could not load latest job: ${error.message}`);
+      }
+    }
+
+    function attachTopActions() {
+      $("analyzeForm").addEventListener("submit", runWorkflow);
+      $("refreshStatusBtn").addEventListener("click", async () => {
+        log("Refreshing backend status.");
+        await loadStatus();
+      });
+      $("refreshCatalogBtn").addEventListener("click", async () => {
+        log("Refreshing catalog.");
+        await loadStatus();
+      });
+      $("refreshApiCatalogBtn").addEventListener("click", async () => {
+        log("Refreshing API catalog.");
+        await loadStatus();
+      });
+      $("loadLatestBtn").addEventListener("click", loadLatestJob);
+      $("reloadCurrentBtn").addEventListener("click", () => state.currentJobId && loadJob(state.currentJobId));
+      $("loadBundleBtn").addEventListener("click", () => state.currentJobId && loadJob(state.currentJobId));
+      $("reasoningStackBtn").addEventListener("click", runReasoningStack);
+      $("runCopilotGroupBtn").addEventListener("click", runReasoningStack);
+      $("apiExplorerBody").addEventListener("click", async (event) => {
+        const runButton = event.target.closest("[data-route-run]");
+        if (runButton) {
+          const key = runButton.getAttribute("data-route-run");
+          const card = document.querySelector(`[data-route-key="${escapeSelector(key)}"]`);
+          if (!card) return;
+          const group = key.split(":")[0];
+          const path = card.getAttribute("data-route-path");
+          const method = card.getAttribute("data-route-method");
+          try {
+            await runRoute(group, { path, method });
+          } catch (error) {
+            log(error.message);
+          }
+          return;
+        }
+
+        const toggleButton = event.target.closest("[data-route-toggle]");
+        if (toggleButton) {
+          const key = toggleButton.getAttribute("data-route-toggle");
+          const card = document.querySelector(`[data-route-key="${escapeSelector(key)}"]`);
+          if (card) {
+            card.classList.toggle("open");
+            const payload = card.querySelector(".payload");
+            if (payload) payload.style.display = card.classList.contains("open") ? "grid" : "none";
+          }
+        }
+      });
+      $("jobList").addEventListener("click", (event) => {
+        const card = event.target.closest("[data-job-id]");
+        if (!card) return;
+        loadJob(card.getAttribute("data-job-id"));
+      });
+      $("dashboardBody").addEventListener("click", async (event) => {
+        const toggle = event.target.closest("[data-toggle-raw]");
+        if (toggle) {
+          const sectionId = toggle.getAttribute("data-toggle-raw");
+          const raw = document.getElementById(`raw-${escapeSelector(sectionId)}`);
+          if (raw) raw.classList.toggle("hidden");
+          return;
+        }
+        const copy = event.target.closest("[data-copy-section]");
+        if (copy && state.currentBundle) {
+          const sectionId = copy.getAttribute("data-copy-section");
+          const section = (state.currentBundle.sections || []).find((item) => item.id === sectionId);
+          if (!section) return;
+          try {
+            await navigator.clipboard.writeText(JSON.stringify(section.items, null, 2));
+            log(`Copied raw data for section ${sectionId}.`);
+          } catch (error) {
+            log(`Copy failed: ${error.message}`);
+          }
+        }
+      });
+    }
+
+    async function bootstrap() {
+      attachTopActions();
+      setLoading(true, "Loading backend metadata...");
+      try {
+        await loadStatus();
+        renderRawJob(null);
+        $("rawBundlePanel").innerHTML = '<div class="empty">No bundle loaded.</div>';
+        renderActiveJob(null, null);
+        if (state.jobs.length) {
+          const latest = [...state.jobs].sort((a, b) => String(b.timestamp || b.updated_at || "").localeCompare(String(a.timestamp || a.updated_at || "")))[0];
+          if (latest && latest.job_id) {
+            await loadJob(latest.job_id, { fromPoll: false });
+          }
+        }
+      } catch (error) {
+        log(`Bootstrap failed: ${error.message}`);
+      } finally {
+        setLoading(false);
+        updateReasoningStackButtons();
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", bootstrap);
+  </script>
 </body>
 </html>

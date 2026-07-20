@@ -1,0 +1,9 @@
+{
+  "stage": "sam2_segmentation",
+  "stage_index": 7,
+  "total_stages": 7,
+  "status": "running",
+  "elapsed_seconds": 0.0,
+  "estimated_time_remaining_seconds": 35.0,
+  "timestamp": "2026-07-14T19:16:28.158356"
+}

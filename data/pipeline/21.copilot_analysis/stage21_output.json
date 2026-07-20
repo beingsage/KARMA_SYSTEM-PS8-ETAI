@@ -1,0 +1,173 @@
+{
+  "timestamp": "2026-07-15T12:25:19.012476",
+  "stage": "copilot_analysis",
+  "full_output": {
+    "agent": "industrial-copilot",
+    "reasoning_chain": {
+      "root_cause_analysis": {
+        "failure_indicators": [
+          "corrosion",
+          "seal",
+          "vibration",
+          "temperature",
+          "pressure",
+          "alarm",
+          "fault"
+        ],
+        "root_causes": [
+          "material incompatibility or corrosive fluid exposure",
+          "shaft imbalance or misalignment",
+          "cooling failure or excessive friction"
+        ],
+        "contributing_factors": [
+          "fault finding is associated with fault",
+          "pressure is associated with pressure",
+          "Temperatures is associated with temperature",
+          "sealing compound is associated with seal",
+          "vibration dampening is associated with vibration",
+          "vibrations is associated with vibration",
+          "vibration is associated with vibration",
+          "Vibration dampers is associated with vibration",
+          "vibration level is associated with vibration",
+          "minimum pressure loss is associated with pressure",
+          "Pressure transmitter and pressure gauge is associated with pressure",
+          "Maximum operating pressure is associated with pressure",
+          "Liquid temperature is associated with temperature",
+          "pressure rating is associated with pressure",
+          "precharge pressure is associated with pressure",
+          "constant pressure is associated with pressure",
+          "fault is associated with fault",
+          "cut-out pressure is associated with pressure",
+          "alarm is associated with alarm"
+        ],
+        "failure_chain": []
+      },
+      "maintenance_plan": {
+        "maintenance_type": "preventive",
+        "priority_equipment": [
+          {
+            "equipment": "Hydro MPC",
+            "priority": "medium",
+            "interval_days": 90,
+            "tasks": [
+              "Visual inspection",
+              "Performance testing"
+            ]
+          },
+          {
+            "equipment": "product",
+            "priority": "medium",
+            "interval_days": 90,
+            "tasks": [
+              "Visual inspection",
+              "Performance testing"
+            ]
+          },
+          {
+            "equipment": "equipment",
+            "priority": "medium",
+            "interval_days": 90,
+            "tasks": [
+              "Visual inspection",
+              "Performance testing"
+            ]
+          },
+          {
+            "equipment": "booster system",
+            "priority": "medium",
+            "interval_days": 90,
+            "tasks": [
+              "Visual inspection",
+              "Performance testing"
+            ]
+          },
+          {
+            "equipment": "forklift truck",
+            "priority": "medium",
+            "interval_days": 90,
+            "tasks": [
+              "Visual inspection",
+              "Performance testing"
+            ]
+          }
+        ],
+        "schedule": [
+          {
+            "order": 1,
+            "equipment": "Hydro MPC",
+            "planned_date": "Day 90",
+            "estimated_duration_hours": 1
+          },
+          {
+            "order": 2,
+            "equipment": "product",
+            "planned_date": "Day 90",
+            "estimated_duration_hours": 1
+          },
+          {
+            "order": 3,
+            "equipment": "equipment",
+            "planned_date": "Day 90",
+            "estimated_duration_hours": 1
+          },
+          {
+            "order": 4,
+            "equipment": "booster system",
+            "planned_date": "Day 90",
+            "estimated_duration_hours": 1
+          },
+          {
+            "order": 5,
+            "equipment": "forklift truck",
+            "planned_date": "Day 90",
+            "estimated_duration_hours": 1
+          }
+        ],
+        "estimated_cost": 0,
+        "estimated_downtime_hours": 0
+      },
+      "compliance_status": {
+        "iso_55000_asset_management": {
+          "standard": "ISO 55000",
+          "score": 0.9,
+          "status": "compliant"
+        },
+        "osha_safety": {
+          "standard": "OSHA",
+          "score": 0.85,
+          "status": "compliant"
+        },
+        "environmental": {
+          "standard": "Environmental",
+          "score": 0.8,
+          "status": "compliant"
+        },
+        "overall_compliance_score": 0.85,
+        "violations": [],
+        "recommendations": []
+      },
+      "risk_assessment": {
+        "total_risk_score": 0.0,
+        "identified_risks": [],
+        "risk_level": "medium"
+      },
+      "llm_insights": {
+        "summary": "Installation and operating instructions for the Grundfos Hydro MPC booster systems",
+        "anomalies": [],
+        "risks": [],
+        "recommendations": {
+          "Recommendation 1": "Install the product according to the instructions provided.",
+          "Recommendation 2": "Ensure that all safety measures are in place before starting the installation."
+        },
+        "compliance": {
+          "Compliance Level": "Good",
+          "Compliance Status": "Compliant"
+        },
+        "confidence": "High",
+        "raw_response": "Ensure the generated JSON is formatted correctly.\n\n```json\n{\n  \"summary\": \"Installation and operating instructions for the Grundfos Hydro MPC booster systems\",\n  \"anomalies\": [],\n  \"risks\": [],\n  \"recommendations\": {\n    \"Recommendation 1\": \"Install the product according to the instructions provided.\",\n    \"Recommendation 2\": \"Ensure that all safety measures are in place before starting the installation.\"\n  },\n  \"compliance\": {\n    \"Compliance Level\": \"Good\",\n    \"Compliance Status\": \"Compliant\"\n  },\n  \"confidence\": \"High\"\n}\n``` ```json\n{\n  \"summary\": \"Installation and operating instructions for the Grundfos Hydro MPC booster systems\",\n  \"anomalies\": [],\n  \"risks\": [],\n  \"recommendations\": {\n    \"Recommendation 1\": \"Install the product according to the instructions provided.\",\n    \"Recommendation 2\": \"Ensure that all safety measures are in place before starting the installation.\"\n  },\n  \"compliance\": {\n    \"Compliance Level\": \"Good\",\n    \"Compliance Status\": \"Compliant\"\n  },\n  \"confidence\": \"High\"\n}\n``` ```json\n{\n  \"summary\": \"Installation and operating instructions for"
+      }
+    },
+    "executive_summary": "Installation and operating instructions for the Grundfos Hydro MPC booster systems",
+    "confidence": "High"
+  }
+}

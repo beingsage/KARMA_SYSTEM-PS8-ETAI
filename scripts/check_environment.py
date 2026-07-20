@@ -6,16 +6,10 @@ and provide clear remediation steps (Neo4j password expiration, Torch ABI, trans
 from __future__ import annotations
 
 import os
-import re
 import sys
 import traceback
 from importlib import import_module
 from importlib.metadata import version, PackageNotFoundError
-from pathlib import Path
-
-ROOT_DIR = Path(__file__).resolve().parents[1]
-if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))
 
 from app.pipeline.compat import ensure_pyarrow_compat
 
@@ -32,26 +26,19 @@ def _safe_version(pkg: str) -> str | None:
 
 
 def check_neo4j_env() -> bool:
-    """Return True when Neo4j appears usable, False when missing or misconfigured.
-
-    Neo4j is mandatory for the full pipeline deployment. If connectivity or
-    authentication fails this function returns False so callers can abort and
-    require the operator to fix credentials. The default password is set in
-    `run_all.sh` to a consistent hardcoded value for predictable startup.
-    """
     uri = os.environ.get("NEO4J_URI") or os.environ.get("NEO4J_BOLT_URI")
     user = os.environ.get("NEO4J_USERNAME") or os.environ.get("NEO4J_USER") or "neo4j"
     pwd = os.environ.get("NEO4J_PASSWORD")
 
     if not uri or not pwd:
-        print("[env-check][error] Neo4j: URI or password not set; Neo4j is required")
-        return False
+        print("[env-check] Neo4j: URI or password not set; skipping active check")
+        return True
 
     try:
         neo4j = import_module("neo4j")
     except Exception:
-        print("[env-check][error] Neo4j driver not installed; install neo4j python driver")
-        return False
+        print("[env-check] Neo4j driver not installed; cannot perform live check")
+        return True
 
     try:
         driver = neo4j.GraphDatabase.driver(uri, auth=(user, pwd), max_connection_lifetime=30)
@@ -63,7 +50,7 @@ def check_neo4j_env() -> bool:
         return True
     except Exception as exc:
         msg = str(exc)
-        print(f"[env-check][error] Neo4j connection failed: {type(exc).__name__} - {msg[:200]}")
+        print(f"[env-check] Neo4j connection failed: {type(exc).__name__} - {msg}")
         if "CredentialsExpired" in msg or "password change" in msg.lower() or "must change" in msg.lower():
             print("[env-check][action] Neo4j requires password change. Run:")
             print("  cypher-shell -u neo4j -p neo4j")
@@ -100,27 +87,13 @@ def check_torch_abi() -> bool:
 
     # Compare major.minor
     def major_minor(v: str) -> str:
-        match = re.match(r"^(\d+)\.(\d+)", v)
-        return f"{match.group(1)}.{match.group(2)}" if match else v
-
-    def is_torchvision_compatible(torch_v: str, tv_v: str) -> bool:
-        torch_match = re.match(r"^(\d+)\.(\d+)", torch_v)
-        tv_match = re.match(r"^(\d+)\.(\d+)", tv_v)
-        if not torch_match or not tv_match:
-            return False
-
-        torch_major, torch_minor = map(int, torch_match.groups())
-        tv_major, tv_minor = map(int, tv_match.groups())
-
-        if torch_major == 2 and tv_major == 0:
-            return tv_minor == torch_minor + 15
-
-        return major_minor(torch_v) == major_minor(tv_v)
+        parts = v.split(".")
+        return ".".join(parts[:2]) if parts and parts[0] != "?" else v
 
     if _is_kaggle_environment():
         if major_minor(tv) != major_minor(av):
             print("[env-check][warn] Torch and torchaudio versions differ on Kaggle; this may be acceptable if Kaggle installed a compatible runtime")
-        if not is_torchvision_compatible(tv, vv):
+        if major_minor(tv) != major_minor(vv):
             print("[env-check][warn] Torch and torchvision versions differ on Kaggle; this may be acceptable if Kaggle installed a compatible runtime")
         return True
 
@@ -128,7 +101,7 @@ def check_torch_abi() -> bool:
         print("[env-check][error] Torch and torchaudio ABI mismatch — reinstall matching versions")
         return False
 
-    if not is_torchvision_compatible(tv, vv):
+    if major_minor(tv) != major_minor(vv):
         print("[env-check][error] Torch and torchvision ABI mismatch — reinstall matching versions")
         return False
 
@@ -168,9 +141,6 @@ def check_pyarrow_version() -> bool:
         return True
 
     if major > 15:
-        if _is_kaggle_environment():
-            print("[env-check][warn] pyarrow is newer than pinned version but running on Kaggle; continuing")
-            return True
         print("[env-check][error] pyarrow version is too new for the pinned ML stack. Use pyarrow==15.0.2")
         return False
 

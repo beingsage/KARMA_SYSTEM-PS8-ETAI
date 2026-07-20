@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-07-15T11:41:08.936057",
+  "stage": "pid_symbol_detection",
+  "status": "completed",
+  "full_output": {
+    "symbols": [
+      {
+        "page": 3,
+        "label": "book",
+        "confidence": 0.40705618262290955,
+        "bbox": [
+          [
+            46.21623992919922,
+            185.77554321289062,
+            1907.3143310546875,
+            2367.45361328125
+          ]
+        ],
+        "source": "pid_yolo"
+      },
+      {
+        "page": 5,
+        "label": "book",
+        "confidence": 0.4464244842529297,
+        "bbox": [
+          [
+            137.0404815673828,
+            17.884944915771484,
+            1917.645263671875,
+            2506.441162109375
+          ]
+        ],
+        "source": "pid_yolo"
+      }
+    ],
+    "source": "pid_yolo",
+    "count": 2
+  }
+}

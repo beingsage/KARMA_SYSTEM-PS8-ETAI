@@ -1,0 +1,52 @@
+{
+  "timestamp": "2026-07-14T21:28:05.947890",
+  "stage": "sam2_segmentation",
+  "status": "completed",
+  "text_length": 0,
+  "full_output": {
+    "segments": [
+      {
+        "page": 1,
+        "bbox": [
+          240.0,
+          279.0,
+          346.0,
+          325.0
+        ],
+        "area": 2057.0,
+        "predicted_iou": 0.9125823378562927,
+        "stability_score": 0.0,
+        "source": "sam2_prompted"
+      },
+      {
+        "page": 1,
+        "bbox": [
+          241.0,
+          279.0,
+          320.0,
+          325.0
+        ],
+        "area": 1510.0,
+        "predicted_iou": 0.9162154793739319,
+        "stability_score": 0.0,
+        "source": "sam2_prompted"
+      },
+      {
+        "page": 1,
+        "bbox": [
+          242.0,
+          280.0,
+          317.0,
+          325.0
+        ],
+        "area": 1045.0,
+        "predicted_iou": 0.86881422996521,
+        "stability_score": 0.0,
+        "source": "sam2_prompted"
+      }
+    ],
+    "source": "sam2",
+    "count": 3,
+    "stage4_context": 0
+  }
+}

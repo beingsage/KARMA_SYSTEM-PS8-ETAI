@@ -1,0 +1,2158 @@
+{
+  "timestamp": "2026-07-15T12:10:08.255988",
+  "stage": "entity_extraction",
+  "status": "completed",
+  "full_output": [
+    {
+      "name": "Hydro MPC",
+      "entity_type": "equipment",
+      "confidence": 0.914,
+      "canonical_name": "hydro_mpc",
+      "start": 3,
+      "end": 12,
+      "source": "gliner"
+    },
+    {
+      "name": "product",
+      "entity_type": "equipment",
+      "confidence": 0.655,
+      "canonical_name": "product",
+      "start": 144,
+      "end": 151,
+      "source": "gliner"
+    },
+    {
+      "name": "service",
+      "entity_type": "maintenance",
+      "confidence": 0.555,
+      "canonical_name": "service",
+      "start": 178,
+      "end": 185,
+      "source": "gliner"
+    },
+    {
+      "name": "fault finding",
+      "entity_type": "maintenance",
+      "confidence": 0.607,
+      "canonical_name": "fault_finding",
+      "start": 190,
+      "end": 203,
+      "source": "gliner"
+    },
+    {
+      "name": "Receiving the product",
+      "entity_type": "process",
+      "confidence": 0.471,
+      "canonical_name": "receiving_the_product",
+      "start": 163,
+      "end": 184,
+      "source": "gliner"
+    },
+    {
+      "name": "Transporting the product",
+      "entity_type": "process",
+      "confidence": 0.641,
+      "canonical_name": "transporting_the_product",
+      "start": 199,
+      "end": 223,
+      "source": "gliner"
+    },
+    {
+      "name": "Location",
+      "entity_type": "location",
+      "confidence": 0.879,
+      "canonical_name": "location",
+      "start": 39,
+      "end": 47,
+      "source": "gliner"
+    },
+    {
+      "name": "Mechanical installation",
+      "entity_type": "process",
+      "confidence": 0.947,
+      "canonical_name": "mechanical_installation",
+      "start": 62,
+      "end": 85,
+      "source": "gliner"
+    },
+    {
+      "name": "Electrical installation",
+      "entity_type": "process",
+      "confidence": 0.965,
+      "canonical_name": "electrical_installation",
+      "start": 150,
+      "end": 173,
+      "source": "gliner"
+    },
+    {
+      "name": "Control variant",
+      "entity_type": "control_system",
+      "confidence": 0.92,
+      "canonical_name": "control_variant",
+      "start": 183,
+      "end": 198,
+      "source": "gliner"
+    },
+    {
+      "name": "Settings",
+      "entity_type": "parameter",
+      "confidence": 0.338,
+      "canonical_name": "settings",
+      "start": 204,
+      "end": 212,
+      "source": "gliner"
+    },
+    {
+      "name": "Servicing the product",
+      "entity_type": "maintenance",
+      "confidence": 0.453,
+      "canonical_name": "servicing_the_product",
+      "start": 265,
+      "end": 286,
+      "source": "gliner"
+    },
+    {
+      "name": "Maintaining the product",
+      "entity_type": "maintenance",
+      "confidence": 0.651,
+      "canonical_name": "maintaining_the_product",
+      "start": 302,
+      "end": 325,
+      "source": "gliner"
+    },
+    {
+      "name": "Protecting the product against frost",
+      "entity_type": "process",
+      "confidence": 0.347,
+      "canonical_name": "protecting_the_product_against_frost",
+      "start": 2,
+      "end": 38,
+      "source": "gliner"
+    },
+    {
+      "name": "Taking the product out of operation",
+      "entity_type": "maintenance",
+      "confidence": 0.512,
+      "canonical_name": "taking_the_product_out_of_operation",
+      "start": 54,
+      "end": 89,
+      "source": "gliner"
+    },
+    {
+      "name": "pressure",
+      "entity_type": "parameter",
+      "confidence": 0.867,
+      "canonical_name": "pressure",
+      "start": 259,
+      "end": 267,
+      "source": "gliner"
+    },
+    {
+      "name": "Temperatures",
+      "entity_type": "parameter",
+      "confidence": 0.772,
+      "canonical_name": "temperatures",
+      "start": 190,
+      "end": 202,
+      "source": "gliner"
+    },
+    {
+      "name": "Relative humidity",
+      "entity_type": "parameter",
+      "confidence": 0.906,
+      "canonical_name": "relative_humidity",
+      "start": 219,
+      "end": 236,
+      "source": "gliner"
+    },
+    {
+      "name": "install",
+      "entity_type": "process",
+      "confidence": 0.656,
+      "canonical_name": "install",
+      "start": 72,
+      "end": 79,
+      "source": "gliner"
+    },
+    {
+      "name": "Installation",
+      "entity_type": "process",
+      "confidence": 0.867,
+      "canonical_name": "installation",
+      "start": 93,
+      "end": 105,
+      "source": "gliner"
+    },
+    {
+      "name": "operation",
+      "entity_type": "process",
+      "confidence": 0.642,
+      "canonical_name": "operation",
+      "start": 222,
+      "end": 231,
+      "source": "gliner"
+    },
+    {
+      "name": "local",
+      "entity_type": "location",
+      "confidence": 0.401,
+      "canonical_name": "local",
+      "start": 137,
+      "end": 142,
+      "source": "gliner"
+    },
+    {
+      "name": "action",
+      "entity_type": "process",
+      "confidence": 0.392,
+      "canonical_name": "action",
+      "start": 161,
+      "end": 167,
+      "source": "gliner"
+    },
+    {
+      "name": "malfunction",
+      "entity_type": "failure_mode",
+      "confidence": 0.389,
+      "canonical_name": "malfunction",
+      "start": 61,
+      "end": 72,
+      "source": "gliner"
+    },
+    {
+      "name": "equipment",
+      "entity_type": "equipment",
+      "confidence": 0.58,
+      "canonical_name": "equipment",
+      "start": 90,
+      "end": 99,
+      "source": "gliner"
+    },
+    {
+      "name": "booster system",
+      "entity_type": "equipment",
+      "confidence": 0.882,
+      "canonical_name": "booster_system",
+      "start": 213,
+      "end": 227,
+      "source": "gliner"
+    },
+    {
+      "name": "wooden box",
+      "entity_type": "material",
+      "confidence": 0.621,
+      "canonical_name": "wooden_box",
+      "start": 120,
+      "end": 130,
+      "source": "gliner"
+    },
+    {
+      "name": "cardboard box",
+      "entity_type": "material",
+      "confidence": 0.619,
+      "canonical_name": "cardboard_box",
+      "start": 144,
+      "end": 157,
+      "source": "gliner"
+    },
+    {
+      "name": "forklift truck",
+      "entity_type": "equipment",
+      "confidence": 0.969,
+      "canonical_name": "forklift_truck",
+      "start": 238,
+      "end": 252,
+      "source": "gliner"
+    },
+    {
+      "name": "forks",
+      "entity_type": "equipment",
+      "confidence": 0.419,
+      "canonical_name": "forks",
+      "start": 225,
+      "end": 230,
+      "source": "gliner"
+    },
+    {
+      "name": "booster systems",
+      "entity_type": "equipment",
+      "confidence": 0.753,
+      "canonical_name": "booster_systems",
+      "start": 3,
+      "end": 18,
+      "source": "gliner"
+    },
+    {
+      "name": "CR 120",
+      "entity_type": "equipment",
+      "confidence": 0.474,
+      "canonical_name": "cr_120",
+      "start": 50,
+      "end": 56,
+      "source": "gliner"
+    },
+    {
+      "name": "CR 150",
+      "entity_type": "equipment",
+      "confidence": 0.442,
+      "canonical_name": "cr_150",
+      "start": 60,
+      "end": 66,
+      "source": "gliner"
+    },
+    {
+      "name": "transport straps",
+      "entity_type": "equipment",
+      "confidence": 0.715,
+      "canonical_name": "transport_straps",
+      "start": 135,
+      "end": 151,
+      "source": "gliner"
+    },
+    {
+      "name": "well-ventilated room",
+      "entity_type": "location",
+      "confidence": 0.778,
+      "canonical_name": "well_ventilated_room",
+      "start": 80,
+      "end": 100,
+      "source": "gliner"
+    },
+    {
+      "name": "control cabinet",
+      "entity_type": "control_system",
+      "confidence": 0.968,
+      "canonical_name": "control_cabinet",
+      "start": 215,
+      "end": 230,
+      "source": "gliner"
+    },
+    {
+      "name": "front",
+      "entity_type": "location",
+      "confidence": 0.325,
+      "canonical_name": "front",
+      "start": 49,
+      "end": 54,
+      "source": "gliner"
+    },
+    {
+      "name": "two sides",
+      "entity_type": "location",
+      "confidence": 0.313,
+      "canonical_name": "two_sides",
+      "start": 66,
+      "end": 75,
+      "source": "gliner"
+    },
+    {
+      "name": "inspection and removal",
+      "entity_type": "maintenance",
+      "confidence": 0.583,
+      "canonical_name": "inspection_and_removal",
+      "start": 80,
+      "end": 102,
+      "source": "gliner"
+    },
+    {
+      "name": "pump",
+      "entity_type": "equipment",
+      "confidence": 0.81,
+      "canonical_name": "pump",
+      "start": 73,
+      "end": 77,
+      "source": "gliner"
+    },
+    {
+      "name": "sealing compound",
+      "entity_type": "material",
+      "confidence": 0.536,
+      "canonical_name": "sealing_compound",
+      "start": 88,
+      "end": 104,
+      "source": "gliner"
+    },
+    {
+      "name": "vibration dampening",
+      "entity_type": "parameter",
+      "confidence": 0.316,
+      "canonical_name": "vibration_dampening",
+      "start": 95,
+      "end": 114,
+      "source": "gliner"
+    },
+    {
+      "name": "rotations",
+      "entity_type": "process",
+      "confidence": 0.443,
+      "canonical_name": "rotations",
+      "start": 179,
+      "end": 188,
+      "source": "gliner"
+    },
+    {
+      "name": "motor and pump",
+      "entity_type": "equipment",
+      "confidence": 0.706,
+      "canonical_name": "motor_and_pump",
+      "start": 196,
+      "end": 210,
+      "source": "gliner"
+    },
+    {
+      "name": "pipes and fittings",
+      "entity_type": "material",
+      "confidence": 0.359,
+      "canonical_name": "pipes_and_fittings",
+      "start": 230,
+      "end": 248,
+      "source": "gliner"
+    },
+    {
+      "name": "correct installation",
+      "entity_type": "process",
+      "confidence": 0.428,
+      "canonical_name": "correct_installation",
+      "start": 59,
+      "end": 79,
+      "source": "gliner"
+    },
+    {
+      "name": "blocks of flats",
+      "entity_type": "location",
+      "confidence": 0.742,
+      "canonical_name": "blocks_of_flats",
+      "start": 36,
+      "end": 51,
+      "source": "gliner"
+    },
+    {
+      "name": "vibrations",
+      "entity_type": "failure_mode",
+      "confidence": 0.508,
+      "canonical_name": "vibrations",
+      "start": 207,
+      "end": 217,
+      "source": "gliner"
+    },
+    {
+      "name": "expansion joints",
+      "entity_type": "equipment",
+      "confidence": 0.849,
+      "canonical_name": "expansion_joints",
+      "start": 34,
+      "end": 50,
+      "source": "gliner"
+    },
+    {
+      "name": "pipe supports",
+      "entity_type": "equipment",
+      "confidence": 0.779,
+      "canonical_name": "pipe_supports",
+      "start": 235,
+      "end": 248,
+      "source": "gliner"
+    },
+    {
+      "name": "machine shoes",
+      "entity_type": "equipment",
+      "confidence": 0.933,
+      "canonical_name": "machine_shoes",
+      "start": 253,
+      "end": 266,
+      "source": "gliner"
+    },
+    {
+      "name": "Pipe support",
+      "entity_type": "equipment",
+      "confidence": 0.505,
+      "canonical_name": "pipe_support",
+      "start": 166,
+      "end": 178,
+      "source": "gliner"
+    },
+    {
+      "name": "Machine shoe",
+      "entity_type": "equipment",
+      "confidence": 0.764,
+      "canonical_name": "machine_shoe",
+      "start": 187,
+      "end": 199,
+      "source": "gliner"
+    },
+    {
+      "name": "standard booster system",
+      "entity_type": "control_system",
+      "confidence": 0.523,
+      "canonical_name": "standard_booster_system",
+      "start": 305,
+      "end": 328,
+      "source": "gliner"
+    },
+    {
+      "name": "foundation",
+      "entity_type": "location",
+      "confidence": 0.529,
+      "canonical_name": "foundation",
+      "start": 132,
+      "end": 142,
+      "source": "gliner"
+    },
+    {
+      "name": "concrete foundation",
+      "entity_type": "material",
+      "confidence": 0.606,
+      "canonical_name": "concrete_foundation",
+      "start": 212,
+      "end": 231,
+      "source": "gliner"
+    },
+    {
+      "name": "vibration",
+      "entity_type": "failure_mode",
+      "confidence": 0.491,
+      "canonical_name": "vibration",
+      "start": 48,
+      "end": 57,
+      "source": "gliner"
+    },
+    {
+      "name": "normal strain",
+      "entity_type": "failure_mode",
+      "confidence": 0.406,
+      "canonical_name": "normal_strain",
+      "start": 59,
+      "end": 72,
+      "source": "gliner"
+    },
+    {
+      "name": "shock",
+      "entity_type": "failure_mode",
+      "confidence": 0.623,
+      "canonical_name": "shock",
+      "start": 76,
+      "end": 81,
+      "source": "gliner"
+    },
+    {
+      "name": "Weight",
+      "entity_type": "parameter",
+      "confidence": 0.737,
+      "canonical_name": "weight",
+      "start": 335,
+      "end": 341,
+      "source": "gliner"
+    },
+    {
+      "name": "h f",
+      "entity_type": "parameter",
+      "confidence": 0.646,
+      "canonical_name": "h_f",
+      "start": 66,
+      "end": 69,
+      "source": "gliner"
+    },
+    {
+      "name": "density \u03b4",
+      "entity_type": "parameter",
+      "confidence": 0.443,
+      "canonical_name": "density",
+      "start": 131,
+      "end": 140,
+      "source": "gliner"
+    },
+    {
+      "name": "concrete",
+      "entity_type": "material",
+      "confidence": 0.88,
+      "canonical_name": "concrete",
+      "start": 144,
+      "end": 152,
+      "source": "gliner"
+    },
+    {
+      "name": "Vibration dampers",
+      "entity_type": "equipment",
+      "confidence": 0.955,
+      "canonical_name": "vibration_dampers",
+      "start": 9,
+      "end": 26,
+      "source": "gliner"
+    },
+    {
+      "name": "building parts",
+      "entity_type": "location",
+      "confidence": 0.57,
+      "canonical_name": "building_parts",
+      "start": 148,
+      "end": 162,
+      "source": "gliner"
+    },
+    {
+      "name": "vibration level",
+      "entity_type": "parameter",
+      "confidence": 0.544,
+      "canonical_name": "vibration_level",
+      "start": 289,
+      "end": 304,
+      "source": "gliner"
+    },
+    {
+      "name": "base frame",
+      "entity_type": "location",
+      "confidence": 0.546,
+      "canonical_name": "base_frame",
+      "start": 99,
+      "end": 109,
+      "source": "gliner"
+    },
+    {
+      "name": "manifolds",
+      "entity_type": "material",
+      "confidence": 0.453,
+      "canonical_name": "manifolds",
+      "start": 169,
+      "end": 178,
+      "source": "gliner"
+    },
+    {
+      "name": "pipes",
+      "entity_type": "material",
+      "confidence": 0.46,
+      "canonical_name": "pipes",
+      "start": 250,
+      "end": 255,
+      "source": "gliner"
+    },
+    {
+      "name": "rubber bellows",
+      "entity_type": "material",
+      "confidence": 0.627,
+      "canonical_name": "rubber_bellows",
+      "start": 14,
+      "end": 28,
+      "source": "gliner"
+    },
+    {
+      "name": "centre displacement",
+      "entity_type": "parameter",
+      "confidence": 0.524,
+      "canonical_name": "centre_displacement",
+      "start": 99,
+      "end": 118,
+      "source": "gliner"
+    },
+    {
+      "name": "nominal flange diameter",
+      "entity_type": "parameter",
+      "confidence": 0.684,
+      "canonical_name": "nominal_flange_diameter",
+      "start": 198,
+      "end": 221,
+      "source": "gliner"
+    },
+    {
+      "name": "manifold",
+      "entity_type": "equipment",
+      "confidence": 0.418,
+      "canonical_name": "manifold",
+      "start": 231,
+      "end": 239,
+      "source": "gliner"
+    },
+    {
+      "name": "inlet",
+      "entity_type": "location",
+      "confidence": 0.665,
+      "canonical_name": "inlet",
+      "start": 247,
+      "end": 252,
+      "source": "gliner"
+    },
+    {
+      "name": "outlet side",
+      "entity_type": "location",
+      "confidence": 0.621,
+      "canonical_name": "outlet_side",
+      "start": 271,
+      "end": 282,
+      "source": "gliner"
+    },
+    {
+      "name": "turbulence",
+      "entity_type": "failure_mode",
+      "confidence": 0.371,
+      "canonical_name": "turbulence",
+      "start": 33,
+      "end": 43,
+      "source": "gliner"
+    },
+    {
+      "name": "better inlet conditions",
+      "entity_type": "parameter",
+      "confidence": 0.425,
+      "canonical_name": "better_inlet_conditions",
+      "start": 82,
+      "end": 105,
+      "source": "gliner"
+    },
+    {
+      "name": "minimum pressure loss",
+      "entity_type": "parameter",
+      "confidence": 0.493,
+      "canonical_name": "minimum_pressure_loss",
+      "start": 112,
+      "end": 133,
+      "source": "gliner"
+    },
+    {
+      "name": "Follow the supplier's instructions",
+      "entity_type": "maintenance",
+      "confidence": 0.368,
+      "canonical_name": "follow_the_supplier_s_instructions",
+      "start": 79,
+      "end": 113,
+      "source": "gliner"
+    },
+    {
+      "name": "diaphragm tank",
+      "entity_type": "equipment",
+      "confidence": 0.562,
+      "canonical_name": "diaphragm_tank",
+      "start": 58,
+      "end": 72,
+      "source": "gliner"
+    },
+    {
+      "name": "system",
+      "entity_type": "control_system",
+      "confidence": 0.51,
+      "canonical_name": "system",
+      "start": 248,
+      "end": 254,
+      "source": "gliner"
+    },
+    {
+      "name": "prefill",
+      "entity_type": "process",
+      "confidence": 0.31,
+      "canonical_name": "prefill",
+      "start": 101,
+      "end": 108,
+      "source": "gliner"
+    },
+    {
+      "name": "nitrogen",
+      "entity_type": "material",
+      "confidence": 0.433,
+      "canonical_name": "nitrogen",
+      "start": 123,
+      "end": 131,
+      "source": "gliner"
+    },
+    {
+      "name": "Hydro MPC-E",
+      "entity_type": "control_system",
+      "confidence": 0.784,
+      "canonical_name": "hydro_mpc_e",
+      "start": 17,
+      "end": 28,
+      "source": "gliner"
+    },
+    {
+      "name": "setpoint",
+      "entity_type": "parameter",
+      "confidence": 0.844,
+      "canonical_name": "setpoint",
+      "start": 213,
+      "end": 221,
+      "source": "gliner"
+    },
+    {
+      "name": "Hydro MPC-S",
+      "entity_type": "control_system",
+      "confidence": 0.717,
+      "canonical_name": "hydro_mpc_s",
+      "start": 190,
+      "end": 201,
+      "source": "gliner"
+    },
+    {
+      "name": "power supply",
+      "entity_type": "equipment",
+      "confidence": 0.665,
+      "canonical_name": "power_supply",
+      "start": 17,
+      "end": 29,
+      "source": "gliner"
+    },
+    {
+      "name": "frequency",
+      "entity_type": "parameter",
+      "confidence": 0.89,
+      "canonical_name": "frequency",
+      "start": 34,
+      "end": 43,
+      "source": "gliner"
+    },
+    {
+      "name": "supply disconnecting device",
+      "entity_type": "control_system",
+      "confidence": 0.44,
+      "canonical_name": "supply_disconnecting_device",
+      "start": 168,
+      "end": 195,
+      "source": "gliner"
+    },
+    {
+      "name": "service level",
+      "entity_type": "location",
+      "confidence": 0.648,
+      "canonical_name": "service_level",
+      "start": 101,
+      "end": 114,
+      "source": "gliner"
+    },
+    {
+      "name": "ground level",
+      "entity_type": "location",
+      "confidence": 0.798,
+      "canonical_name": "ground_level",
+      "start": 116,
+      "end": 128,
+      "source": "gliner"
+    },
+    {
+      "name": "OFF",
+      "entity_type": "failure_mode",
+      "confidence": 0.643,
+      "canonical_name": "off",
+      "start": 319,
+      "end": 322,
+      "source": "gliner"
+    },
+    {
+      "name": "device",
+      "entity_type": "equipment",
+      "confidence": 0.482,
+      "canonical_name": "device",
+      "start": 71,
+      "end": 77,
+      "source": "gliner"
+    },
+    {
+      "name": "position",
+      "entity_type": "location",
+      "confidence": 0.819,
+      "canonical_name": "position",
+      "start": 132,
+      "end": 140,
+      "source": "gliner"
+    },
+    {
+      "name": "external emergency stop device",
+      "entity_type": "equipment",
+      "confidence": 0.542,
+      "canonical_name": "external_emergency_stop_device",
+      "start": 187,
+      "end": 217,
+      "source": "gliner"
+    },
+    {
+      "name": "emergency switchoff device",
+      "entity_type": "equipment",
+      "confidence": 0.534,
+      "canonical_name": "emergency_switchoff_device",
+      "start": 224,
+      "end": 250,
+      "source": "gliner"
+    },
+    {
+      "name": "CU 352",
+      "entity_type": "equipment",
+      "confidence": 0.753,
+      "canonical_name": "cu_352",
+      "start": 15,
+      "end": 21,
+      "source": "gliner"
+    },
+    {
+      "name": "startup wizard",
+      "entity_type": "control_system",
+      "confidence": 0.574,
+      "canonical_name": "startup_wizard",
+      "start": 40,
+      "end": 54,
+      "source": "gliner"
+    },
+    {
+      "name": "basic settings",
+      "entity_type": "parameter",
+      "confidence": 0.39,
+      "canonical_name": "basic_settings",
+      "start": 83,
+      "end": 97,
+      "source": "gliner"
+    },
+    {
+      "name": "pumps",
+      "entity_type": "equipment",
+      "confidence": 0.778,
+      "canonical_name": "pumps",
+      "start": 255,
+      "end": 260,
+      "source": "gliner"
+    },
+    {
+      "name": "Auto",
+      "entity_type": "parameter",
+      "confidence": 0.634,
+      "canonical_name": "auto",
+      "start": 209,
+      "end": 213,
+      "source": "gliner"
+    },
+    {
+      "name": "status",
+      "entity_type": "parameter",
+      "confidence": 0.612,
+      "canonical_name": "status",
+      "start": 74,
+      "end": 80,
+      "source": "gliner"
+    },
+    {
+      "name": "Normal",
+      "entity_type": "failure_mode",
+      "confidence": 0.764,
+      "canonical_name": "normal",
+      "start": 298,
+      "end": 304,
+      "source": "gliner"
+    },
+    {
+      "name": "handling",
+      "entity_type": "process",
+      "confidence": 0.694,
+      "canonical_name": "handling",
+      "start": 174,
+      "end": 182,
+      "source": "gliner"
+    },
+    {
+      "name": "Hydro MPC booster systems",
+      "entity_type": "equipment",
+      "confidence": 0.366,
+      "canonical_name": "hydro_mpc_booster_systems",
+      "start": 71,
+      "end": 96,
+      "source": "gliner"
+    },
+    {
+      "name": "CR 120 or 150 pumps",
+      "entity_type": "equipment",
+      "confidence": 0.71,
+      "canonical_name": "cr_120_or_150_pumps",
+      "start": 102,
+      "end": 121,
+      "source": "gliner"
+    },
+    {
+      "name": "eyebolts",
+      "entity_type": "equipment",
+      "confidence": 0.375,
+      "canonical_name": "eyebolts",
+      "start": 127,
+      "end": 135,
+      "source": "gliner"
+    },
+    {
+      "name": "lifting point",
+      "entity_type": "location",
+      "confidence": 0.752,
+      "canonical_name": "lifting_point",
+      "start": 188,
+      "end": 201,
+      "source": "gliner"
+    },
+    {
+      "name": "centre of gravity",
+      "entity_type": "parameter",
+      "confidence": 0.384,
+      "canonical_name": "centre_of_gravity",
+      "start": 227,
+      "end": 244,
+      "source": "gliner"
+    },
+    {
+      "name": "Each lifting strap",
+      "entity_type": "equipment",
+      "confidence": 0.447,
+      "canonical_name": "each_lifting_strap",
+      "start": 268,
+      "end": 286,
+      "source": "gliner"
+    },
+    {
+      "name": "Hydro MPC XL",
+      "entity_type": "equipment",
+      "confidence": 0.402,
+      "canonical_name": "hydro_mpc_xl",
+      "start": 21,
+      "end": 33,
+      "source": "gliner"
+    },
+    {
+      "name": "suitable lifting equipment",
+      "entity_type": "equipment",
+      "confidence": 0.882,
+      "canonical_name": "suitable_lifting_equipment",
+      "start": 268,
+      "end": 294,
+      "source": "gliner"
+    },
+    {
+      "name": "CR 120 or CR 150 pumps",
+      "entity_type": "equipment",
+      "confidence": 0.467,
+      "canonical_name": "cr_120_or_cr_150_pumps",
+      "start": 127,
+      "end": 149,
+      "source": "gliner"
+    },
+    {
+      "name": "motors",
+      "entity_type": "equipment",
+      "confidence": 0.383,
+      "canonical_name": "motors",
+      "start": 174,
+      "end": 180,
+      "source": "gliner"
+    },
+    {
+      "name": "common base frame",
+      "entity_type": "equipment",
+      "confidence": 0.411,
+      "canonical_name": "common_base_frame",
+      "start": 164,
+      "end": 181,
+      "source": "gliner"
+    },
+    {
+      "name": "Hydro MPC booster system",
+      "entity_type": "equipment",
+      "confidence": 0.463,
+      "canonical_name": "hydro_mpc_booster_system",
+      "start": 2,
+      "end": 26,
+      "source": "gliner"
+    },
+    {
+      "name": "Pos",
+      "entity_type": "location",
+      "confidence": 0.881,
+      "canonical_name": "pos",
+      "start": 29,
+      "end": 32,
+      "source": "gliner"
+    },
+    {
+      "name": "Inlet manifold",
+      "entity_type": "equipment",
+      "confidence": 0.357,
+      "canonical_name": "inlet_manifold",
+      "start": 149,
+      "end": 163,
+      "source": "gliner"
+    },
+    {
+      "name": "stainless steel",
+      "entity_type": "material",
+      "confidence": 0.991,
+      "canonical_name": "stainless_steel",
+      "start": 165,
+      "end": 180,
+      "source": "gliner"
+    },
+    {
+      "name": "Isolating valve",
+      "entity_type": "equipment",
+      "confidence": 0.315,
+      "canonical_name": "isolating_valve",
+      "start": 193,
+      "end": 208,
+      "source": "gliner"
+    },
+    {
+      "name": "Non-return valve",
+      "entity_type": "equipment",
+      "confidence": 0.365,
+      "canonical_name": "non_return_valve",
+      "start": 0,
+      "end": 16,
+      "source": "gliner"
+    },
+    {
+      "name": "Outlet manifold",
+      "entity_type": "equipment",
+      "confidence": 0.636,
+      "canonical_name": "outlet_manifold",
+      "start": 38,
+      "end": 53,
+      "source": "gliner"
+    },
+    {
+      "name": "Pressure transmitter and pressure gauge",
+      "entity_type": "equipment",
+      "confidence": 0.443,
+      "canonical_name": "pressure_transmitter_and_pressure_gauge",
+      "start": 83,
+      "end": 122,
+      "source": "gliner"
+    },
+    {
+      "name": "Two to six electronically speed-controlled pumps",
+      "entity_type": "equipment",
+      "confidence": 0.787,
+      "canonical_name": "two_to_six_electronically_speed_controlled_pumps",
+      "start": 79,
+      "end": 127,
+      "source": "gliner"
+    },
+    {
+      "name": "CR(I)E pumps",
+      "entity_type": "equipment",
+      "confidence": 0.831,
+      "canonical_name": "cr_i_e_pumps",
+      "start": 49,
+      "end": 61,
+      "source": "gliner"
+    },
+    {
+      "name": "integrated frequency converter",
+      "entity_type": "equipment",
+      "confidence": 0.507,
+      "canonical_name": "integrated_frequency_converter",
+      "start": 67,
+      "end": 97,
+      "source": "gliner"
+    },
+    {
+      "name": "CR pumps",
+      "entity_type": "equipment",
+      "confidence": 0.73,
+      "canonical_name": "cr_pumps",
+      "start": 136,
+      "end": 144,
+      "source": "gliner"
+    },
+    {
+      "name": "Grundfos CUE frequency converters",
+      "entity_type": "equipment",
+      "confidence": 0.7,
+      "canonical_name": "grundfos_cue_frequency_converters",
+      "start": 165,
+      "end": 198,
+      "source": "gliner"
+    },
+    {
+      "name": "one per pump",
+      "entity_type": "equipment",
+      "confidence": 0.304,
+      "canonical_name": "one_per_pump",
+      "start": 200,
+      "end": 212,
+      "source": "gliner"
+    },
+    {
+      "name": "CR(I) pumps",
+      "entity_type": "equipment",
+      "confidence": 0.662,
+      "canonical_name": "cr_i_pumps",
+      "start": 235,
+      "end": 246,
+      "source": "gliner"
+    },
+    {
+      "name": "Grundfos CUE frequency converter",
+      "entity_type": "equipment",
+      "confidence": 0.717,
+      "canonical_name": "grundfos_cue_frequency_converter",
+      "start": 259,
+      "end": 291,
+      "source": "gliner"
+    },
+    {
+      "name": "speed-controlled operation",
+      "entity_type": "process",
+      "confidence": 0.785,
+      "canonical_name": "speed_controlled_operation",
+      "start": 4,
+      "end": 30,
+      "source": "gliner"
+    },
+    {
+      "name": "CR(I)",
+      "entity_type": "equipment",
+      "confidence": 0.302,
+      "canonical_name": "cr_i",
+      "start": 96,
+      "end": 101,
+      "source": "gliner"
+    },
+    {
+      "name": "E-I",
+      "entity_type": "control_system",
+      "confidence": 0.753,
+      "canonical_name": "e_i",
+      "start": 264,
+      "end": 267,
+      "source": "gliner"
+    },
+    {
+      "name": "CUE frequency converters",
+      "entity_type": "control_system",
+      "confidence": 0.429,
+      "canonical_name": "cue_frequency_converters",
+      "start": 167,
+      "end": 191,
+      "source": "gliner"
+    },
+    {
+      "name": "position 2",
+      "entity_type": "location",
+      "confidence": 0.782,
+      "canonical_name": "position_2",
+      "start": 229,
+      "end": 239,
+      "source": "gliner"
+    },
+    {
+      "name": "Product type",
+      "entity_type": "equipment",
+      "confidence": 0.403,
+      "canonical_name": "product_type",
+      "start": 62,
+      "end": 74,
+      "source": "gliner"
+    },
+    {
+      "name": "Mains supply",
+      "entity_type": "equipment",
+      "confidence": 0.47,
+      "canonical_name": "mains_supply",
+      "start": 128,
+      "end": 140,
+      "source": "gliner"
+    },
+    {
+      "name": "Maximum operating pressure",
+      "entity_type": "parameter",
+      "confidence": 0.894,
+      "canonical_name": "maximum_operating_pressure",
+      "start": 149,
+      "end": 175,
+      "source": "gliner"
+    },
+    {
+      "name": "Liquid temperature",
+      "entity_type": "parameter",
+      "confidence": 0.855,
+      "canonical_name": "liquid_temperature",
+      "start": 184,
+      "end": 202,
+      "source": "gliner"
+    },
+    {
+      "name": "Nominal flow rate [m 3 /h]",
+      "entity_type": "parameter",
+      "confidence": 0.781,
+      "canonical_name": "nominal_flow_rate_m_3_h",
+      "start": 211,
+      "end": 237,
+      "source": "gliner"
+    },
+    {
+      "name": "Maximum flow rate [m 3 /h]",
+      "entity_type": "parameter",
+      "confidence": 0.79,
+      "canonical_name": "maximum_flow_rate_m_3_h",
+      "start": 246,
+      "end": 272,
+      "source": "gliner"
+    },
+    {
+      "name": "Enclosure class",
+      "entity_type": "equipment",
+      "confidence": 0.548,
+      "canonical_name": "enclosure_class",
+      "start": 310,
+      "end": 325,
+      "source": "gliner"
+    },
+    {
+      "name": "Company address",
+      "entity_type": "location",
+      "confidence": 0.577,
+      "canonical_name": "company_address",
+      "start": 149,
+      "end": 164,
+      "source": "gliner"
+    },
+    {
+      "name": "CU 352 control unit",
+      "entity_type": "control_system",
+      "confidence": 0.861,
+      "canonical_name": "cu_352_control_unit",
+      "start": 239,
+      "end": 258,
+      "source": "gliner"
+    },
+    {
+      "name": "Control MPC",
+      "entity_type": "control_system",
+      "confidence": 0.872,
+      "canonical_name": "control_mpc",
+      "start": 136,
+      "end": 147,
+      "source": "gliner"
+    },
+    {
+      "name": "HydroMPC",
+      "entity_type": "control_system",
+      "confidence": 0.736,
+      "canonical_name": "hydrompc",
+      "start": 22,
+      "end": 30,
+      "source": "gliner"
+    },
+    {
+      "name": "C-MPC options",
+      "entity_type": "parameter",
+      "confidence": 0.727,
+      "canonical_name": "c_mpc_options",
+      "start": 169,
+      "end": 182,
+      "source": "gliner"
+    },
+    {
+      "name": "H-MPC options",
+      "entity_type": "parameter",
+      "confidence": 0.783,
+      "canonical_name": "h_mpc_options",
+      "start": 188,
+      "end": 201,
+      "source": "gliner"
+    },
+    {
+      "name": "Pump data",
+      "entity_type": "parameter",
+      "confidence": 0.734,
+      "canonical_name": "pump_data",
+      "start": 207,
+      "end": 216,
+      "source": "gliner"
+    },
+    {
+      "name": "GSC file number",
+      "entity_type": "parameter",
+      "confidence": 0.33,
+      "canonical_name": "gsc_file_number",
+      "start": 112,
+      "end": 127,
+      "source": "gliner"
+    },
+    {
+      "name": "GSC file numbers",
+      "entity_type": "parameter",
+      "confidence": 0.538,
+      "canonical_name": "gsc_file_numbers",
+      "start": 158,
+      "end": 174,
+      "source": "gliner"
+    },
+    {
+      "name": "CR",
+      "entity_type": "equipment",
+      "confidence": 0.732,
+      "canonical_name": "cr",
+      "start": 21,
+      "end": 23,
+      "source": "gliner"
+    },
+    {
+      "name": "CRI",
+      "entity_type": "equipment",
+      "confidence": 0.693,
+      "canonical_name": "cri",
+      "start": 25,
+      "end": 28,
+      "source": "gliner"
+    },
+    {
+      "name": "CRN",
+      "entity_type": "equipment",
+      "confidence": 0.628,
+      "canonical_name": "crn",
+      "start": 30,
+      "end": 33,
+      "source": "gliner"
+    },
+    {
+      "name": "CRE",
+      "entity_type": "equipment",
+      "confidence": 0.618,
+      "canonical_name": "cre",
+      "start": 35,
+      "end": 38,
+      "source": "gliner"
+    },
+    {
+      "name": "CRIE",
+      "entity_type": "equipment",
+      "confidence": 0.512,
+      "canonical_name": "crie",
+      "start": 43,
+      "end": 47,
+      "source": "gliner"
+    },
+    {
+      "name": "E",
+      "entity_type": "parameter",
+      "confidence": 0.312,
+      "canonical_name": "e",
+      "start": 48,
+      "end": 49,
+      "source": "gliner"
+    },
+    {
+      "name": "A",
+      "entity_type": "parameter",
+      "confidence": 0.825,
+      "canonical_name": "a",
+      "start": 75,
+      "end": 76,
+      "source": "gliner"
+    },
+    {
+      "name": "ABCD",
+      "entity_type": "parameter",
+      "confidence": 0.845,
+      "canonical_name": "abcd",
+      "start": 90,
+      "end": 94,
+      "source": "gliner"
+    },
+    {
+      "name": "All pumps",
+      "entity_type": "equipment",
+      "confidence": 0.707,
+      "canonical_name": "all_pumps",
+      "start": 151,
+      "end": 160,
+      "source": "gliner"
+    },
+    {
+      "name": "E-motor",
+      "entity_type": "control_system",
+      "confidence": 0.309,
+      "canonical_name": "e_motor",
+      "start": 162,
+      "end": 169,
+      "source": "gliner"
+    },
+    {
+      "name": "CUE",
+      "entity_type": "control_system",
+      "confidence": 0.534,
+      "canonical_name": "cue",
+      "start": 173,
+      "end": 176,
+      "source": "gliner"
+    },
+    {
+      "name": "Fixed-speed pumps",
+      "entity_type": "equipment",
+      "confidence": 0.888,
+      "canonical_name": "fixed_speed_pumps",
+      "start": 205,
+      "end": 222,
+      "source": "gliner"
+    },
+    {
+      "name": "Customised-system pumps",
+      "entity_type": "equipment",
+      "confidence": 0.804,
+      "canonical_name": "customised_system_pumps",
+      "start": 306,
+      "end": 329,
+      "source": "gliner"
+    },
+    {
+      "name": "3 x 380-415 V",
+      "entity_type": "parameter",
+      "confidence": 0.315,
+      "canonical_name": "3_x_380_415_v",
+      "start": 211,
+      "end": 224,
+      "source": "gliner"
+    },
+    {
+      "name": "N",
+      "entity_type": "parameter",
+      "confidence": 0.87,
+      "canonical_name": "n",
+      "start": 47,
+      "end": 48,
+      "source": "gliner"
+    },
+    {
+      "name": "50/60 Hz",
+      "entity_type": "parameter",
+      "confidence": 0.709,
+      "canonical_name": "50_60_hz",
+      "start": 63,
+      "end": 71,
+      "source": "gliner"
+    },
+    {
+      "name": "50 Hz",
+      "entity_type": "parameter",
+      "confidence": 0.563,
+      "canonical_name": "50_hz",
+      "start": 20,
+      "end": 25,
+      "source": "gliner"
+    },
+    {
+      "name": "PE",
+      "entity_type": "material",
+      "confidence": 0.976,
+      "canonical_name": "pe",
+      "start": 50,
+      "end": 52,
+      "source": "gliner"
+    },
+    {
+      "name": "60 Hz",
+      "entity_type": "parameter",
+      "confidence": 0.648,
+      "canonical_name": "60_hz",
+      "start": 174,
+      "end": 179,
+      "source": "gliner"
+    },
+    {
+      "name": "floor",
+      "entity_type": "location",
+      "confidence": 0.481,
+      "canonical_name": "floor",
+      "start": 163,
+      "end": 168,
+      "source": "gliner"
+    },
+    {
+      "name": "mounting",
+      "entity_type": "process",
+      "confidence": 0.816,
+      "canonical_name": "mounting",
+      "start": 285,
+      "end": 293,
+      "source": "gliner"
+    },
+    {
+      "name": "wall",
+      "entity_type": "location",
+      "confidence": 0.892,
+      "canonical_name": "wall",
+      "start": 278,
+      "end": 282,
+      "source": "gliner"
+    },
+    {
+      "name": "DOL SD",
+      "entity_type": "equipment",
+      "confidence": 0.316,
+      "canonical_name": "dol_sd",
+      "start": 97,
+      "end": 103,
+      "source": "gliner"
+    },
+    {
+      "name": "Stainless-steel manifold",
+      "entity_type": "material",
+      "confidence": 0.819,
+      "canonical_name": "stainless_steel_manifold",
+      "start": 266,
+      "end": 290,
+      "source": "gliner"
+    },
+    {
+      "name": "Galvanised-steel manifold",
+      "entity_type": "material",
+      "confidence": 0.796,
+      "canonical_name": "galvanised_steel_manifold",
+      "start": 244,
+      "end": 269,
+      "source": "gliner"
+    },
+    {
+      "name": "nless-steel manifold",
+      "entity_type": "material",
+      "confidence": 0.445,
+      "canonical_name": "nless_steel_manifold",
+      "start": 0,
+      "end": 20,
+      "source": "gliner"
+    },
+    {
+      "name": "galvanised steel",
+      "entity_type": "material",
+      "confidence": 0.708,
+      "canonical_name": "galvanised_steel",
+      "start": 168,
+      "end": 184,
+      "source": "gliner"
+    },
+    {
+      "name": "Customised material combination",
+      "entity_type": "equipment",
+      "confidence": 0.454,
+      "canonical_name": "customised_material_combination",
+      "start": 170,
+      "end": 201,
+      "source": "gliner"
+    },
+    {
+      "name": "Standard hydraulics",
+      "entity_type": "equipment",
+      "confidence": 0.652,
+      "canonical_name": "standard_hydraulics",
+      "start": 266,
+      "end": 285,
+      "source": "gliner"
+    },
+    {
+      "name": "Pilot pump",
+      "entity_type": "equipment",
+      "confidence": 0.766,
+      "canonical_name": "pilot_pump",
+      "start": 314,
+      "end": 324,
+      "source": "gliner"
+    },
+    {
+      "name": "Bypass Non-return valve",
+      "entity_type": "equipment",
+      "confidence": 0.595,
+      "canonical_name": "bypass_non_return_valve",
+      "start": 86,
+      "end": 109,
+      "source": "gliner"
+    },
+    {
+      "name": "Elbow manifold",
+      "entity_type": "equipment",
+      "confidence": 0.586,
+      "canonical_name": "elbow_manifold",
+      "start": 140,
+      "end": 154,
+      "source": "gliner"
+    },
+    {
+      "name": "Dry-running protection",
+      "entity_type": "equipment",
+      "confidence": 0.399,
+      "canonical_name": "dry_running_protection",
+      "start": 272,
+      "end": 294,
+      "source": "gliner"
+    },
+    {
+      "name": "Repair switch",
+      "entity_type": "control_system",
+      "confidence": 0.422,
+      "canonical_name": "repair_switch",
+      "start": 323,
+      "end": 336,
+      "source": "gliner"
+    },
+    {
+      "name": "Redundant sensor",
+      "entity_type": "control_system",
+      "confidence": 0.549,
+      "canonical_name": "redundant_sensor",
+      "start": 95,
+      "end": 111,
+      "source": "gliner"
+    },
+    {
+      "name": "PN 10",
+      "entity_type": "parameter",
+      "confidence": 0.633,
+      "canonical_name": "pn_10",
+      "start": 256,
+      "end": 261,
+      "source": "gliner"
+    },
+    {
+      "name": "pressure rating",
+      "entity_type": "parameter",
+      "confidence": 0.923,
+      "canonical_name": "pressure_rating",
+      "start": 312,
+      "end": 327,
+      "source": "gliner"
+    },
+    {
+      "name": "PN 25",
+      "entity_type": "parameter",
+      "confidence": 0.407,
+      "canonical_name": "pn_25",
+      "start": 35,
+      "end": 40,
+      "source": "gliner"
+    },
+    {
+      "name": "PN 40",
+      "entity_type": "parameter",
+      "confidence": 0.452,
+      "canonical_name": "pn_40",
+      "start": 328,
+      "end": 333,
+      "source": "gliner"
+    },
+    {
+      "name": "precharge pressure",
+      "entity_type": "parameter",
+      "confidence": 0.462,
+      "canonical_name": "precharge_pressure",
+      "start": 133,
+      "end": 151,
+      "source": "gliner"
+    },
+    {
+      "name": "Customised",
+      "entity_type": "control_system",
+      "confidence": 0.351,
+      "canonical_name": "customised",
+      "start": 220,
+      "end": 230,
+      "source": "gliner"
+    },
+    {
+      "name": "controls",
+      "entity_type": "control_system",
+      "confidence": 0.521,
+      "canonical_name": "controls",
+      "start": 47,
+      "end": 55,
+      "source": "gliner"
+    },
+    {
+      "name": "Standard options",
+      "entity_type": "parameter",
+      "confidence": 0.343,
+      "canonical_name": "standard_options",
+      "start": 89,
+      "end": 105,
+      "source": "gliner"
+    },
+    {
+      "name": "Customised controls",
+      "entity_type": "control_system",
+      "confidence": 0.7,
+      "canonical_name": "customised_controls",
+      "start": 106,
+      "end": 125,
+      "source": "gliner"
+    },
+    {
+      "name": "X",
+      "entity_type": "parameter",
+      "confidence": 0.337,
+      "canonical_name": "x",
+      "start": 194,
+      "end": 195,
+      "source": "gliner"
+    },
+    {
+      "name": "selected countries",
+      "entity_type": "location",
+      "confidence": 0.668,
+      "canonical_name": "selected_countries",
+      "start": 289,
+      "end": 307,
+      "source": "gliner"
+    },
+    {
+      "name": "CUE frequency converter",
+      "entity_type": "equipment",
+      "confidence": 0.416,
+      "canonical_name": "cue_frequency_converter",
+      "start": 54,
+      "end": 77,
+      "source": "gliner"
+    },
+    {
+      "name": "Hydro MPC-F System",
+      "entity_type": "control_system",
+      "confidence": 0.596,
+      "canonical_name": "hydro_mpc_f_system",
+      "start": 81,
+      "end": 99,
+      "source": "gliner"
+    },
+    {
+      "name": "CR(I)E pump",
+      "entity_type": "equipment",
+      "confidence": 0.345,
+      "canonical_name": "cr_i_e_pump",
+      "start": 274,
+      "end": 285,
+      "source": "gliner"
+    },
+    {
+      "name": "Hydro MPC-S System",
+      "entity_type": "control_system",
+      "confidence": 0.734,
+      "canonical_name": "hydro_mpc_s_system",
+      "start": 40,
+      "end": 58,
+      "source": "gliner"
+    },
+    {
+      "name": "mains-operated CR(I) pumps",
+      "entity_type": "equipment",
+      "confidence": 0.742,
+      "canonical_name": "mains_operated_cr_i_pumps",
+      "start": 186,
+      "end": 212,
+      "source": "gliner"
+    },
+    {
+      "name": "One CR pump",
+      "entity_type": "equipment",
+      "confidence": 0.491,
+      "canonical_name": "one_cr_pump",
+      "start": 113,
+      "end": 124,
+      "source": "gliner"
+    },
+    {
+      "name": "mains-operated CR(I) pump",
+      "entity_type": "equipment",
+      "confidence": 0.676,
+      "canonical_name": "mains_operated_cr_i_pump",
+      "start": 193,
+      "end": 218,
+      "source": "gliner"
+    },
+    {
+      "name": "constant pressure",
+      "entity_type": "parameter",
+      "confidence": 0.49,
+      "canonical_name": "constant_pressure",
+      "start": 41,
+      "end": 58,
+      "source": "gliner"
+    },
+    {
+      "name": "speed",
+      "entity_type": "parameter",
+      "confidence": 0.714,
+      "canonical_name": "speed",
+      "start": 96,
+      "end": 101,
+      "source": "gliner"
+    },
+    {
+      "name": "performance",
+      "entity_type": "parameter",
+      "confidence": 0.301,
+      "canonical_name": "performance",
+      "start": 129,
+      "end": 140,
+      "source": "gliner"
+    },
+    {
+      "name": "demand",
+      "entity_type": "parameter",
+      "confidence": 0.394,
+      "canonical_name": "demand",
+      "start": 160,
+      "end": 166,
+      "source": "gliner"
+    },
+    {
+      "name": "Pump changeover",
+      "entity_type": "maintenance",
+      "confidence": 0.585,
+      "canonical_name": "pump_changeover",
+      "start": 103,
+      "end": 118,
+      "source": "gliner"
+    },
+    {
+      "name": "load",
+      "entity_type": "parameter",
+      "confidence": 0.696,
+      "canonical_name": "load",
+      "start": 46,
+      "end": 50,
+      "source": "gliner"
+    },
+    {
+      "name": "operating hours",
+      "entity_type": "parameter",
+      "confidence": 0.65,
+      "canonical_name": "operating_hours",
+      "start": 52,
+      "end": 67,
+      "source": "gliner"
+    },
+    {
+      "name": "fault",
+      "entity_type": "parameter",
+      "confidence": 0.59,
+      "canonical_name": "fault",
+      "start": 72,
+      "end": 77,
+      "source": "gliner"
+    },
+    {
+      "name": "one Grundfos CUE frequency converter",
+      "entity_type": "equipment",
+      "confidence": 0.426,
+      "canonical_name": "one_grundfos_cue_frequency_converter",
+      "start": 169,
+      "end": 205,
+      "source": "gliner"
+    },
+    {
+      "name": "mains-operated CR pumps",
+      "entity_type": "equipment",
+      "confidence": 0.69,
+      "canonical_name": "mains_operated_cr_pumps",
+      "start": 61,
+      "end": 84,
+      "source": "gliner"
+    },
+    {
+      "name": "Hydro MPC-F",
+      "entity_type": "equipment",
+      "confidence": 0.379,
+      "canonical_name": "hydro_mpc_f",
+      "start": 17,
+      "end": 28,
+      "source": "gliner"
+    },
+    {
+      "name": "CR pump",
+      "entity_type": "equipment",
+      "confidence": 0.831,
+      "canonical_name": "cr_pump",
+      "start": 109,
+      "end": 116,
+      "source": "gliner"
+    },
+    {
+      "name": "speedcontrolled operation",
+      "entity_type": "process",
+      "confidence": 0.342,
+      "canonical_name": "speedcontrolled_operation",
+      "start": 172,
+      "end": 197,
+      "source": "gliner"
+    },
+    {
+      "name": "cutting in/ out",
+      "entity_type": "maintenance",
+      "confidence": 0.484,
+      "canonical_name": "cutting_in_out",
+      "start": 302,
+      "end": 317,
+      "source": "gliner"
+    },
+    {
+      "name": "operating range",
+      "entity_type": "parameter",
+      "confidence": 0.564,
+      "canonical_name": "operating_range",
+      "start": 6,
+      "end": 21,
+      "source": "gliner"
+    },
+    {
+      "name": "H set",
+      "entity_type": "parameter",
+      "confidence": 0.672,
+      "canonical_name": "h_set",
+      "start": 52,
+      "end": 57,
+      "source": "gliner"
+    },
+    {
+      "name": "H stop",
+      "entity_type": "parameter",
+      "confidence": 0.63,
+      "canonical_name": "h_stop",
+      "start": 62,
+      "end": 68,
+      "source": "gliner"
+    },
+    {
+      "name": "cut-out pressure",
+      "entity_type": "parameter",
+      "confidence": 0.531,
+      "canonical_name": "cut_out_pressure",
+      "start": 70,
+      "end": 86,
+      "source": "gliner"
+    },
+    {
+      "name": "Operating panel",
+      "entity_type": "control_system",
+      "confidence": 0.937,
+      "canonical_name": "operating_panel",
+      "start": 174,
+      "end": 189,
+      "source": "gliner"
+    },
+    {
+      "name": "monitoring",
+      "entity_type": "process",
+      "confidence": 0.331,
+      "canonical_name": "monitoring",
+      "start": 47,
+      "end": 57,
+      "source": "gliner"
+    },
+    {
+      "name": "Display",
+      "entity_type": "equipment",
+      "confidence": 0.364,
+      "canonical_name": "display",
+      "start": 333,
+      "end": 340,
+      "source": "gliner"
+    },
+    {
+      "name": "Plus",
+      "entity_type": "parameter",
+      "confidence": 0.406,
+      "canonical_name": "plus",
+      "start": 150,
+      "end": 154,
+      "source": "gliner"
+    },
+    {
+      "name": "Home",
+      "entity_type": "location",
+      "confidence": 0.479,
+      "canonical_name": "home",
+      "start": 190,
+      "end": 194,
+      "source": "gliner"
+    },
+    {
+      "name": "Indicator light",
+      "entity_type": "equipment",
+      "confidence": 0.432,
+      "canonical_name": "indicator_light",
+      "start": 260,
+      "end": 275,
+      "source": "gliner"
+    },
+    {
+      "name": "Brightness",
+      "entity_type": "parameter",
+      "confidence": 0.723,
+      "canonical_name": "brightness",
+      "start": 298,
+      "end": 308,
+      "source": "gliner"
+    },
+    {
+      "name": "password option",
+      "entity_type": "parameter",
+      "confidence": 0.644,
+      "canonical_name": "password_option",
+      "start": 5,
+      "end": 20,
+      "source": "gliner"
+    },
+    {
+      "name": "left side",
+      "entity_type": "location",
+      "confidence": 0.808,
+      "canonical_name": "left_side",
+      "start": 59,
+      "end": 68,
+      "source": "gliner"
+    },
+    {
+      "name": "symbol",
+      "entity_type": "parameter",
+      "confidence": 0.314,
+      "canonical_name": "symbol",
+      "start": 108,
+      "end": 114,
+      "source": "gliner"
+    },
+    {
+      "name": "alarm",
+      "entity_type": "failure_mode",
+      "confidence": 0.562,
+      "canonical_name": "alarm",
+      "start": 126,
+      "end": 131,
+      "source": "gliner"
+    },
+    {
+      "name": "right side",
+      "entity_type": "location",
+      "confidence": 0.864,
+      "canonical_name": "right_side",
+      "start": 246,
+      "end": 256,
+      "source": "gliner"
+    },
+    {
+      "name": "warning",
+      "entity_type": "failure_mode",
+      "confidence": 0.63,
+      "canonical_name": "warning",
+      "start": 169,
+      "end": 176,
+      "source": "gliner"
+    },
+    {
+      "name": "indication",
+      "entity_type": "parameter",
+      "confidence": 0.423,
+      "canonical_name": "indication",
+      "start": 85,
+      "end": 95,
+      "source": "gliner"
+    },
+    {
+      "name": "menu structure",
+      "entity_type": "control_system",
+      "confidence": 0.462,
+      "canonical_name": "menu_structure",
+      "start": 148,
+      "end": 162,
+      "source": "gliner"
+    },
+    {
+      "name": "entire system",
+      "entity_type": "control_system",
+      "confidence": 0.462,
+      "canonical_name": "entire_system",
+      "start": 194,
+      "end": 207,
+      "source": "gliner"
+    }
+  ]
+}

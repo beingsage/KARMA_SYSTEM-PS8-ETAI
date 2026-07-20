@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-07-14T18:50:57.913872",
+  "stage": "cross_stage_synthesis",
+  "status": "completed",
+  "text_length": 39649,
+  "full_output": {
+    "status": "completed",
+    "stage": "cross_stage_synthesis",
+    "text_length": 39649,
+    "heading_count": 12,
+    "table_detection_count": 15,
+    "grounding_detection_count": 7,
+    "overall_quality_score": 8.3,
+    "overall_quality_label": "very good",
+    "stage_quality_breakdown": {
+      "stage1_ocr": 8.5,
+      "stage2_layout": 7.5,
+      "stage3_structure": 8.5,
+      "stage4_tables": 8.0,
+      "stage5_detection": 8.0,
+      "stage6_synthesis": 9.5
+    },
+    "headings": [
+      "Hydro MPC",
+      "Installation and operating instructions",
+      "English (GB) Installation and operating instructions",
+      "Original installation and operating instructions",
+      "These installation and operating instructions apply to the Grundfos Hydro MPC bo",
+      "Sections 1-4 give the information necessary to be able to install the product in",
+      "Sections 5-16 give important information about the product as well as informatio",
+      "CONTENTS"
+    ],
+    "summary": "The pipeline produced usable OCR text, structural headings, table context, and object detections. Overall quality is strong for a lightweight fallback-driven workflow."
+  }
+}

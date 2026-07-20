@@ -3,13 +3,22 @@ Industrial Copilot Agent - Qwen-based reasoning engine.
 Handles RCA, maintenance recommendations, compliance checks, and structured LLM analysis.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 from enum import Enum
 import json
 import re
 
 from app.config import settings
 from app.pipeline.compat import allow_trusted_torch_pickle
+
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics.pairwise import cosine_similarity
+except ImportError:
+    TfidfVectorizer = None  # type: ignore
+    LogisticRegression = None  # type: ignore
+    cosine_similarity = None  # type: ignore
 
 
 class FailureMode(Enum):
@@ -22,6 +31,97 @@ class FailureMode(Enum):
     VIBRATION_EXCESSIVE = "vibration_excessive"
     TEMPERATURE_DEVIATION = "temperature_deviation"
     PRESSURE_DEVIATION = "pressure_deviation"
+
+
+class EvidenceCritic:
+    """Verify that a claim is supported by retrieved evidence chunks."""
+
+    def __init__(self) -> None:
+        self.vectorizer = None
+        self.model = None
+        self.is_trained = False
+
+    def train(self, training_data: List[Dict[str, Any]]) -> None:
+        if TfidfVectorizer is None or LogisticRegression is None:
+            return
+
+        texts = [f"{sample['claim']} {sample['evidence']}" for sample in training_data]
+        labels = [int(sample["supported"]) for sample in training_data]
+        if not texts:
+            return
+
+        self.vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
+        X = self.vectorizer.fit_transform(texts)
+        self.model = LogisticRegression(max_iter=500)
+        self.model.fit(X, labels)
+        self.is_trained = True
+
+    def predict_proba(self, claim: str, evidence: str) -> float:
+        if self.is_trained and self.vectorizer is not None and self.model is not None:
+            text = f"{claim} {evidence}"
+            features = self.vectorizer.transform([text])
+            return float(self.model.predict_proba(features)[0][1])
+        return self._heuristic_score(claim, evidence)
+
+    @staticmethod
+    def _heuristic_score(claim: str, evidence: str) -> float:
+        claim_lower = claim.lower()
+        evidence_lower = evidence.lower()
+        if any(phrase in claim_lower for phrase in ["serious personal injury", "safety concern", "unknown anomaly"]):
+            return 0.05
+        if any(term in evidence_lower for term in ["wear", "corrosion", "leak", "failure", "overpressure"]):
+            return 0.7
+        overlap = len(set(claim_lower.split()) & set(evidence_lower.split()))
+        return min(1.0, max(0.0, 0.2 + 0.05 * overlap))
+
+
+class SemanticRetriever:
+    """Lite semantic index for retrieval-augmented generation."""
+
+    def __init__(self) -> None:
+        self.vectorizer = None
+        self.matrix = None
+        self.chunks: List[str] = []
+
+    def build(self, chunks: List[str]) -> None:
+        self.chunks = chunks
+        if TfidfVectorizer is None:
+            return
+        self.vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
+        self.matrix = self.vectorizer.fit_transform(chunks)
+
+    def retrieve(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
+        if not self.chunks:
+            return []
+        if self.vectorizer is None or self.matrix is None or cosine_similarity is None:
+            return self._lexical_retrieve(query, top_k)
+
+        try:
+            query_vec = self.vectorizer.transform([query])
+            similarities = cosine_similarity(query_vec, self.matrix)[0]
+            ranked = sorted(
+                enumerate(similarities), key=lambda item: item[1], reverse=True
+            )[:top_k]
+            return [
+                {"id": f"chunk:{idx+1}", "text": self.chunks[idx], "score": float(score)}
+                for idx, score in ranked
+                if score > 0.0
+            ]
+        except Exception:
+            return self._lexical_retrieve(query, top_k)
+
+    def _lexical_retrieve(self, query: str, top_k: int) -> List[Dict[str, Any]]:
+        query_lower = query.lower()
+        scored = []
+        for idx, chunk in enumerate(self.chunks):
+            score = sum(1 for token in query_lower.split() if token in chunk.lower())
+            scored.append((idx, float(score)))
+        ranked = sorted(scored, key=lambda item: item[1], reverse=True)[:top_k]
+        return [
+            {"id": f"chunk:{idx+1}", "text": self.chunks[idx], "score": score}
+            for idx, score in ranked
+            if score > 0.0
+        ]
 
 
 class MaintenanceType(Enum):
@@ -40,6 +140,9 @@ class IndustrialCopilotAgent:
         self.tokenizer = None
         self.model_name = settings.qwen_model
         self._load_attempted = False
+        self.retriever = SemanticRetriever()
+        self.critic = EvidenceCritic()
+        self._train_default_critic()
 
         if load_model:
             self._initialize()
@@ -75,13 +178,14 @@ class IndustrialCopilotAgent:
         entities: List[Dict[str, Any]],
         relations: List[Dict[str, Any]],
         text: str,
+        text_chunks: Optional[List[str]] = None,
         query: Optional[str] = None,
     ) -> Dict[str, Any]:
         rca_result = self.root_cause_analysis(entities, relations, text)
         maintenance_result = self.get_maintenance_plan(entities, relations)
         compliance_result = self.compliance_check(entities)
         risk_result = self.risk_assessment(entities, relations)
-        llm_result = self._generate_llm_insights(entities, relations, text, query)
+        llm_result = self._generate_llm_insights(entities, relations, text, text_chunks, query)
 
         return {
             "agent": "industrial-copilot",
@@ -375,20 +479,21 @@ class IndustrialCopilotAgent:
         entities: List[Dict[str, Any]],
         relations: List[Dict[str, Any]],
         text: str,
+        text_chunks: Optional[List[str]] = None,
         query: Optional[str] = None,
     ) -> Dict[str, Any]:
-        prompt = self._build_agent_prompt(entities, relations, text, query)
+        evidence_query = query or "Analyze the system and identify anomalies, risks, and maintenance recommendations."
+        chunks = text_chunks or []
+        self.retriever.build(chunks)
+        retrieved_chunks = self._retrieve_candidate_evidence(evidence_query, chunks)
+
+        prompt = self._build_rag_prompt(entities, relations, retrieved_chunks, evidence_query)
         response_text = self._query_llm(prompt)
         parsed = self._parse_json_response(response_text)
-        return {
-            "summary": parsed.get("summary", response_text),
-            "anomalies": parsed.get("anomalies", []),
-            "risks": parsed.get("risks", []),
-            "recommendations": parsed.get("recommendations", []),
-            "compliance": parsed.get("compliance", []),
-            "confidence": parsed.get("confidence", 0.0),
-            "raw_response": response_text,
-        }
+
+        processed = self._post_process_agent_output(parsed, retrieved_chunks)
+        processed["raw_response"] = response_text
+        return processed
 
     def _build_agent_prompt(
         self,
@@ -423,6 +528,223 @@ class IndustrialCopilotAgent:
             "Do not provide markdown or any commentary outside the JSON object."
         )
 
+    def _build_rag_prompt(
+        self,
+        entities: List[Dict[str, Any]],
+        relations: List[Dict[str, Any]],
+        retrieved_chunks: List[Dict[str, Any]],
+        query: str,
+    ) -> str:
+        entity_str = "\n".join(
+            f"- {e.get('name', '')} (type: {e.get('entity_type', 'unknown')})"
+            for e in entities[:12]
+        )
+        relation_str = "\n".join(
+            f"- {r.get('source', '')} {r.get('relation_type', '')} {r.get('target', '')}"
+            for r in relations[:12]
+        )
+        chunk_str = "\n".join(
+            f"{chunk['id']}: {chunk['text']}"
+            for chunk in retrieved_chunks[:6]
+        )
+        return (
+            "You are an industrial operations and maintenance expert. Use only the candidate evidence chunks provided below to answer the query. "
+            "If a claim cannot be supported with a referenced chunk, do not include it. "
+            "For every high-impact claim, include a 'provenance' field referencing the chunk id or a page/image span. "
+            "Do not hallucinate or invent unsupported actions. Return valid JSON only. "
+            "Use a structured schema with claim id, type, text, provenance, confidence, and verification_score."
+            f"\n\nQUERY:\n{query}\n\n"
+            f"ENTITIES:\n{entity_str}\n\n"
+            f"RELATIONS:\n{relation_str}\n\n"
+            f"CANDIDATE_EVIDENCE_CHUNKS:\n{chunk_str}\n\n"
+            "Output a JSON object with keys: summary, anomalies, risks, recommendations, compliance, confidence, structured_claims. "
+            "Each recommendation must include provenance and a verification_score."
+        )
+
+    def _retrieve_candidate_evidence(self, query: str, chunks: List[str]) -> List[Dict[str, Any]]:
+        if not chunks:
+            return []
+        if not self.retriever.chunks or self.retriever.chunks != chunks:
+            self.retriever.build(chunks)
+        results = self.retriever.retrieve(query, top_k=6)
+        if not results and chunks:
+            # fallback: include the first few chunks if retrieval failed
+            return [{"id": f"chunk:{i+1}", "text": chunk, "score": 0.0} for i, chunk in enumerate(chunks[:3])]
+        return results
+
+    def _derive_provenance_from_chunk(self, item: Dict[str, Any], retrieved_chunks: List[Dict[str, Any]]) -> Optional[str]:
+        if item.get("provenance"):
+            return item.get("provenance")
+        text = f"{item.get('name', '')} {item.get('description', '')}".lower()
+        for chunk in retrieved_chunks:
+            if chunk["text"].lower() in text or any(term in chunk["text"].lower() for term in text.split() if len(term) > 4):
+                return chunk["id"]
+        return None
+
+    def _is_high_impact_claim(self, item: Dict[str, Any]) -> bool:
+        text = f"{item.get('name', '')} {item.get('description', '')}".lower()
+        return any(keyword in text for keyword in ["critical", "urgent", "immediate", "high priority", "safety", "failure"])
+
+    def _post_process_agent_output(
+        self,
+        parsed: Dict[str, Any],
+        retrieved_chunks: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        anomalies = self._dedupe_items(parsed.get("anomalies", []))
+        risks = self._dedupe_items(parsed.get("risks", []))
+        recommendations = self._dedupe_items(parsed.get("recommendations", []))
+
+        annotations = []
+        human_review_queue = []
+        structured_claims = []
+
+        for item_type, items in [
+            ("anomaly", anomalies),
+            ("risk", risks),
+            ("recommendation", recommendations),
+        ]:
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                provenance = self._derive_provenance_from_chunk(item, retrieved_chunks)
+                if item_type == "recommendation" and not provenance:
+                    continue
+                item["provenance"] = provenance
+                verification_score = self._critic_verify_claim(item, retrieved_chunks)
+                item["verification_score"] = round(verification_score, 2)
+                item["verified"] = verification_score >= 0.5
+                item["impact"] = "critical" if self._is_high_impact_claim(item) else "normal"
+
+                if item["impact"] == "critical" and not item["provenance"]:
+                    human_review_queue.append(
+                        {
+                            "claim": item.get("name", ""),
+                            "issue": "Missing provenance for high-impact claim",
+                            "required_action": "Verify the recommendation before execution.",
+                        }
+                    )
+                    continue
+
+                if item["impact"] == "critical" and item["verification_score"] < 0.7:
+                    human_review_queue.append(
+                        {
+                            "claim": item.get("name", ""),
+                            "issue": "Low verification score for high-impact claim",
+                            "verification_score": item["verification_score"],
+                        }
+                    )
+
+                structured_claims.append(
+                    {
+                        "id": f"claim:{len(structured_claims)+1}",
+                        "type": item_type,
+                        "text": item.get("name", ""),
+                        "description": item.get("description", ""),
+                        "provenance": item["provenance"],
+                        "verification_score": item["verification_score"],
+                        "verified": item["verified"],
+                        "impact": item["impact"],
+                        "confidence": float(item.get("confidence", parsed.get("confidence", 0.0)) or 0.0),
+                    }
+                )
+
+        explanation_chains = self._build_chain_of_evidence(structured_claims, retrieved_chunks)
+        return {
+            "summary": parsed.get("summary", ""),
+            "anomalies": anomalies,
+            "risks": risks,
+            "recommendations": recommendations,
+            "compliance": parsed.get("compliance", []),
+            "confidence": float(parsed.get("confidence", 0.0) or 0.0),
+            "structured_claims": structured_claims,
+            "evidence_retrieval": retrieved_chunks,
+            "human_review_queue": human_review_queue,
+            "explanation_chains": explanation_chains,
+        }
+
+    def _dedupe_items(self, items: List[Any]) -> List[Dict[str, Any]]:
+        unique = []
+        seen = set()
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            text = f"{item.get('name', '')} {item.get('description', '')}".lower().strip()
+            normalized = re.sub(r"\s+", " ", re.sub(r"[^a-z0-9 ]", " ", text))
+            if normalized and normalized not in seen:
+                seen.add(normalized)
+                unique.append(item)
+        return unique
+
+    def _critic_verify_claim(self, claim: Dict[str, Any], retrieved_chunks: List[Dict[str, Any]]) -> float:
+        text = f"{claim.get('name', '')} {claim.get('description', '')}".strip()
+        best_score = 0.0
+        for chunk in retrieved_chunks:
+            score = self.critic.predict_proba(text, chunk["text"])
+            best_score = max(best_score, score)
+        return best_score
+
+    def _build_chain_of_evidence(
+        self,
+        structured_claims: List[Dict[str, Any]],
+        retrieved_chunks: List[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+        chains: List[Dict[str, Any]] = []
+        for claim in structured_claims:
+            evidence_nodes = []
+            if claim["provenance"]:
+                evidence_nodes.append(
+                    {
+                        "id": claim["provenance"],
+                        "type": "evidence_chunk" if claim["provenance"].startswith("chunk:") else "provenance",
+                        "confidence": claim["verification_score"],
+                        "text": next(
+                            (chunk["text"] for chunk in retrieved_chunks if chunk["id"] == claim["provenance"]),
+                            claim["provenance"],
+                        ),
+                    }
+                )
+            chains.append(
+                {
+                    "claim_id": claim["id"],
+                    "claim_text": claim["text"],
+                    "provenance_nodes": evidence_nodes,
+                    "edges": [
+                        {
+                            "from": claim["id"],
+                            "to": evidence_nodes[0]["id"] if evidence_nodes else "unknown",
+                            "relation": "supported_by",
+                            "edge_confidence": claim["verification_score"],
+                        }
+                    ] if evidence_nodes else [],
+                }
+            )
+        return chains
+
+    def _train_default_critic(self) -> None:
+        training_data = [
+            {
+                "claim": "Pump bearing wear detected",
+                "evidence": "Pump A shows 2.5mm bearing wear on page 4",
+                "supported": True,
+            },
+            {
+                "claim": "Image 5 shows corrosion on the flange",
+                "evidence": "Flange corrosion is visible in the inspection report",
+                "supported": True,
+            },
+            {
+                "claim": "Serious personal injury",
+                "evidence": "No specific evidence provided",
+                "supported": False,
+            },
+            {
+                "claim": "Unknown anomaly without evidence",
+                "evidence": "Document does not provide supporting details",
+                "supported": False,
+            },
+        ]
+        self.critic.train(training_data)
+
     def _query_llm(self, prompt: str) -> str:
         if not self._ensure_model():
             return "{\"summary\": \"LLM unavailable\", \"anomalies\": [], \"risks\": [], \"recommendations\": [], \"compliance\": [], \"confidence\": 0.0}"
@@ -433,9 +755,12 @@ class IndustrialCopilotAgent:
             outputs = self.model.generate(
                 **encoded,
                 max_new_tokens=256,
-                num_beams=4,
+                temperature=0.3,
+                top_p=0.9,
+                num_beams=1,
                 early_stopping=True,
                 eos_token_id=self.tokenizer.eos_token_id,
+                do_sample=False,
             )
         response_ids = outputs[0][encoded["input_ids"].shape[1]:]
         return self.tokenizer.decode(response_ids, skip_special_tokens=True).strip()

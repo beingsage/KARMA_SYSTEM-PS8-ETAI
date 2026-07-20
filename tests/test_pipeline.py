@@ -29,7 +29,11 @@ class PipelineTests(unittest.TestCase):
         self.assertIn("table_transformer_extraction", result["pipeline_metadata"]["stages"])
         self.assertIn("yolo_pid_detector", result["pipeline_metadata"]["stages"])
         self.assertIn("entity_linking", result["pipeline_metadata"]["stages"])
-        self.assertIn(result["pipeline_metadata"]["model_mode"], ["best-model-stack", "partial-stack", "unavailable"])
+        self.assertIn("ontology_enrichment", result["pipeline_metadata"]["stages"])
+        self.assertIn(
+            result["pipeline_metadata"]["model_mode"],
+            ["best-model-stack", "hybrid-fallback-stack", "partial-stack", "unavailable"],
+        )
 
 
 if __name__ == "__main__":

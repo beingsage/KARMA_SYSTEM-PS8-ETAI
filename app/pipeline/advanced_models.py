@@ -292,8 +292,9 @@ class Qwen3LLM:
         
         try:
             max_tokens = max_tokens or settings.qwen3_max_tokens
-            temperature = temperature or settings.qwen3_temperature
-            
+            temperature = settings.qwen3_temperature if temperature is None else temperature
+            do_sample = float(temperature) > 0.0
+
             inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
             
             outputs = self.model.generate(
@@ -301,7 +302,7 @@ class Qwen3LLM:
                 max_new_tokens=max_tokens,
                 temperature=temperature,
                 top_p=0.95,
-                do_sample=True
+                do_sample=do_sample
             )
             
             response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)

@@ -3,12 +3,14 @@ import asyncio
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.openapi.docs import get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 
 from app.config import settings
 import warnings
 from app.pipeline.compat import ensure_pyarrow_compat, install_safe_torch_load_default
+from app.pipeline.neo4j_store import Neo4jGraphStore
 
 # Suppress expected FutureWarnings from dependencies
 warnings.filterwarnings("ignore", category=FutureWarning, message=".*torch.load.*")
@@ -49,10 +51,23 @@ from app.pipeline.advanced_models import (
     initialize_advanced_models
 )
 from app.pipeline.advanced_pipeline import AdvancedPipelineStages
-from app.schemas import JobResult
+from app.pipeline.workflow_bundle import build_api_catalog, build_workflow_bundle
+from app.schemas import JobResult, OntologyMigrationRequest
 from app.storage import list_jobs, load_job, create_job, update_job
 
 app = FastAPI(title=settings.app_name)
+
+@app.get("/swagger", include_in_schema=False)
+def custom_swagger_ui_html() -> Any:
+    """Serve the Swagger UI for the FastAPI app."""
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title=f"{settings.app_name} - Swagger UI",
+    )
+
+@app.get(app.swagger_ui_oauth2_redirect_url, include_in_schema=False)
+def swagger_ui_redirect() -> Any:
+    return get_swagger_ui_oauth2_redirect_html()
 
 # Enable CORS for frontend integration
 app.add_middleware(
@@ -111,9 +126,65 @@ def _run_pipeline_sync(uploaded_filename: str, pdf_bytes: bytes, job_id: str) ->
     return asyncio.run(engine_run_pipeline(uploaded_filename, pdf_bytes, job_id=job_id))
 
 
+def _run_doc_sync(uploaded_filename: str, text: str, job_id: str) -> dict[str, object]:
+    """Run the generic text pipeline in a dedicated thread with its own event loop."""
+    from app.pipeline.engine_v2 import get_pipeline
+
+    return asyncio.run(get_pipeline().run_from_text(uploaded_filename, text, job_id=job_id))
+
+
+def _extract_text_from_document(content: bytes, file_name: Optional[str], mime_type: Optional[str]) -> str:
+    try:
+        from app.pipeline.llamaindex_hybrid import LlamaIndexHybrid
+
+        loader = LlamaIndexHybrid()
+        extracted_text = loader.extract_text(file_bytes=content, file_name=file_name, mime_type=mime_type)
+        if extracted_text:
+            return extracted_text
+    except Exception:
+        pass
+
+    try:
+        return content.decode("utf-8", errors="ignore")
+    except Exception:
+        return ""
+
+
+async def _submit_pdf_workflow(uploaded_filename: str, pdf_bytes: bytes) -> JobResult:
+    job = create_job(uploaded_filename)
+    job_id = job["job_id"]
+    update_job(job_id, {"status": "processing", "message": "Pipeline started."})
+    asyncio.create_task(_process_pdf_background(job_id, uploaded_filename, pdf_bytes))
+    return JobResult(**load_job(job_id))
+
+
+async def _submit_text_workflow(uploaded_filename: str, text: str) -> JobResult:
+    job = create_job(uploaded_filename)
+    job_id = job["job_id"]
+    update_job(job_id, {"status": "processing", "message": "Pipeline started."})
+    asyncio.create_task(_process_doc_background(job_id, uploaded_filename, text))
+    return JobResult(**load_job(job_id))
+
+
 async def _process_pdf_background(job_id: str, uploaded_filename: str, pdf_bytes: bytes) -> None:
     try:
         result = await asyncio.to_thread(_run_pipeline_sync, uploaded_filename, pdf_bytes, job_id)
+        update_job(job_id, result)
+    except Exception as exc:
+        update_job(
+            job_id,
+            {
+                "job_id": job_id,
+                "status": "failed",
+                "message": str(exc),
+                "error": type(exc).__name__,
+            },
+        )
+
+
+async def _process_doc_background(job_id: str, uploaded_filename: str, text: str) -> None:
+    try:
+        result = await asyncio.to_thread(_run_doc_sync, uploaded_filename, text, job_id)
         update_job(job_id, result)
     except Exception as exc:
         update_job(
@@ -139,11 +210,65 @@ async def process_pdf(file: UploadFile = File(...), file_name: str | None = Form
         raise HTTPException(status_code=400, detail="Uploaded PDF is empty")
 
     uploaded_filename = file_name or file.filename
-    job = create_job(uploaded_filename)
-    job_id = job["job_id"]
-    update_job(job_id, {"status": "processing", "message": "Pipeline started."})
-    asyncio.create_task(_process_pdf_background(job_id, uploaded_filename, payload))
-    return JobResult(**load_job(job_id))
+    return await _submit_pdf_workflow(uploaded_filename, payload)
+
+
+@app.post("/api/v1/process-doc", response_model=JobResult)
+async def process_document(
+    file: UploadFile | None = File(None),
+    text: str | None = Form(None),
+    file_name: str | None = Form(None),
+    mime_type: str | None = Form(None),
+) -> JobResult:
+    """Process a generic document or text through the pipeline."""
+
+    if file is None and text is None:
+        raise HTTPException(status_code=400, detail="Provide either a file upload or raw text")
+
+    if file is not None:
+        payload = await file.read()
+        if not payload:
+            raise HTTPException(status_code=400, detail="Uploaded document is empty")
+        uploaded_filename = file_name or file.filename or "document"
+        text = _extract_text_from_document(payload, uploaded_filename, mime_type or file.content_type)
+    else:
+        uploaded_filename = file_name or "text_document"
+
+    if not text:
+        raise HTTPException(status_code=400, detail="Document could not be parsed into text")
+
+    return await _submit_text_workflow(uploaded_filename, text)
+
+
+@app.post("/api/v1/workflows/analyze", response_model=JobResult)
+async def analyze_workflow(
+    file: UploadFile | None = File(None),
+    text: str | None = Form(None),
+    file_name: str | None = Form(None),
+    mime_type: str | None = Form(None),
+) -> JobResult:
+    """Single frontend-facing entrypoint for end-to-end document analysis."""
+
+    if file is None and text is None:
+        raise HTTPException(status_code=400, detail="Provide either a file upload or raw text")
+
+    if file is not None:
+        payload = await file.read()
+        if not payload:
+            raise HTTPException(status_code=400, detail="Uploaded file is empty")
+        uploaded_filename = file_name or file.filename or "document"
+        inferred_mime = (mime_type or file.content_type or "").lower()
+        if uploaded_filename.lower().endswith(".pdf") or "pdf" in inferred_mime:
+            return await _submit_pdf_workflow(uploaded_filename, payload)
+        text = _extract_text_from_document(payload, uploaded_filename, mime_type or file.content_type)
+        if not text:
+            raise HTTPException(status_code=400, detail="Document could not be parsed into text")
+        return await _submit_text_workflow(uploaded_filename, text)
+
+    uploaded_filename = file_name or "text_document"
+    if not text:
+        raise HTTPException(status_code=400, detail="Provide raw text for workflow analysis")
+    return await _submit_text_workflow(uploaded_filename, text)
 
 
 @app.get("/api/v1/jobs/{job_id}", response_model=JobResult)
@@ -162,6 +287,44 @@ def list_job_summaries() -> list[dict[str, object]]:
     """List all jobs"""
     
     return list_jobs()
+
+
+@app.get("/api/v1/workflows/{job_id}/bundle")
+def get_workflow_bundle(job_id: str, include_raw: bool = False) -> dict[str, object]:
+    """Return a normalized, frontend-friendly bundle for a finished or in-flight job."""
+
+    try:
+        payload = load_job(job_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="Job not found") from exc
+
+    return build_workflow_bundle(payload, include_raw=include_raw)
+
+
+@app.get("/api/v1/workflows/catalog")
+def workflow_catalog() -> dict[str, object]:
+    """Expose the limited frontend-facing API surface and backend capability groups."""
+
+    pipeline = get_pipeline()
+    health = pipeline.get_health_status()
+    return {
+        "status": health.get("status"),
+        "runtime_mode": health.get("runtime_mode"),
+        "api_catalog": build_api_catalog(),
+        "stage_catalog": health.get("stages", []),
+        "backend_integrations": health.get("backend_integrations", {}),
+        "model_counts": health.get("model_counts", {}),
+    }
+
+
+@app.post("/api/v1/ontology/backfill")
+def ontology_backfill(dry_run: bool = False, limit: int | None = None) -> dict[str, object]:
+    """Backfill stable ontology metadata for existing Neo4j entities and relations."""
+    store = Neo4jGraphStore()
+    try:
+        return store.backfill_ontology_metadata(dry_run=dry_run, limit=limit)
+    finally:
+        store.close()
 
 
 @app.get("/api/v1/models/status")
@@ -190,6 +353,7 @@ def model_status() -> dict[str, object]:
             "entity_extraction",
             "relation_extraction",
             "entity_linking",
+            "ontology_enrichment",
             "qwen2_5_vl",
             "neo4j_persistence",
             "graphrag_analysis",
@@ -202,10 +366,28 @@ def model_status() -> dict[str, object]:
             "graph_store": pipeline.graph_store is not None,
             "rag_summarizer": pipeline.rag_summarizer is not None,
             "copilot_agent": pipeline.copilot_agent is not None,
+            "ontology_enricher": getattr(pipeline, "ontology_enricher", None) is not None,
             "yolo": pipeline.yolo_model is not None,
             "embeddings": pipeline.embedding_model is not None,
         },
     }
+
+
+@app.post("/api/v1/admin/neo4j/migrate-ontology")
+def migrate_neo4j_ontology(request: OntologyMigrationRequest) -> dict[str, object]:
+    """Run the one-time ontology backfill/migration against existing Neo4j data."""
+
+    pipeline = get_pipeline()
+    graph_store = getattr(pipeline, "graph_store", None)
+    if not graph_store or not getattr(graph_store, "connected", False):
+        raise HTTPException(status_code=503, detail="Neo4j graph store not available")
+
+    return graph_store.backfill_ontology_metadata(
+        dry_run=request.dry_run,
+        limit=request.limit,
+        include_all_nodes=request.include_all_nodes,
+        create_typed_labels=request.create_typed_labels,
+    )
 
 
 @app.get("/api/v1/copilot/rca/{job_id}")
@@ -416,6 +598,53 @@ def graph_reasoning(query: str = Body(...)) -> dict[str, Any]:
     return {
         "reasoning_result": result
     }
+
+
+@app.post("/api/v1/advanced/doc-query")
+@app.post("/api/v1/advanced/llama-query")
+def llama_query(
+    query: str = Body(...),
+    job_id: str | None = Body(None),
+    text: str | None = Body(None),
+    top_k: int = Body(5),
+) -> dict[str, Any]:
+    """Query document content using LlamaIndex retrieval."""
+    if job_id is None and text is None:
+        raise HTTPException(status_code=400, detail="Provide either a job_id or raw text for query")
+
+    if job_id is not None:
+        try:
+            payload = load_job(job_id)
+        except FileNotFoundError:
+            raise HTTPException(status_code=404, detail="Job not found")
+        if text is None:
+            text = payload.get("text", "")
+        text_chunks = payload.get("document_segments") or []
+    else:
+        text_chunks = []
+
+    if not text and not text_chunks:
+        raise HTTPException(status_code=400, detail="No document text or chunks available for query")
+
+    try:
+        from app.pipeline.llamaindex_hybrid import LlamaIndexHybrid
+
+        llm = LlamaIndexHybrid(embedder=get_pipeline().embedding_model)
+        if text_chunks:
+            llm.build_index(text_chunks=text_chunks, text_chunks_metadata=[{"chunk_id": i} for i in range(len(text_chunks))])
+        else:
+            llm.build_index_from_text(text=text)
+
+        evidence = llm.retrieve([query], entities=[])
+        return {
+            "query": query,
+            "top_k": top_k,
+            "results": evidence.contexts[:top_k],
+            "coverage_score": evidence.coverage_score,
+            "combined_text": evidence.combined_text,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"LlamaIndex query unavailable: {exc}")
 
 
 @app.post("/api/v1/advanced/llm-analysis")

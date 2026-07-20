@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-07-15T12:25:19.011431",
+  "stage": "qwen2_5_vl",
+  "full_output": {
+    "images_processed": 10,
+    "status": "vl_model_unavailable"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-07-15T12:25:19.010525",
+  "stage": "bge_reranking",
+  "full_output": {
+    "ranked": [],
+    "source": "reranker_unavailable",
+    "reason": "intentionally_skipped"
+  }
+}

@@ -1,0 +1,4093 @@
+{
+  "timestamp": "2026-07-15T17:55:25.901127",
+  "stage": "pid_component_detection",
+  "status": "completed",
+  "full_output": {
+    "components": [
+      {
+        "canonical_id": "hydro_mpc_booster",
+        "name": "Hydro MPC",
+        "entity_type": "equipment",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.9640000000000001,
+        "occurrences": [
+          {
+            "entity_name": "Hydro MPC",
+            "char_offset": [
+              3,
+              12
+            ],
+            "page": "unknown",
+            "entity_canonical": "hydro_mpc",
+            "entity_id": "hydro_mpc",
+            "confidence": 0.914
+          },
+          {
+            "entity_name": "Hydro MPC-E",
+            "char_offset": [
+              17,
+              28
+            ],
+            "page": "unknown",
+            "entity_canonical": "hydro_mpc_e",
+            "entity_id": "hydro_mpc_e",
+            "confidence": 0.784
+          },
+          {
+            "entity_name": "Hydro MPC-S",
+            "char_offset": [
+              190,
+              201
+            ],
+            "page": "unknown",
+            "entity_canonical": "hydro_mpc_s",
+            "entity_id": "hydro_mpc_s",
+            "confidence": 0.717
+          },
+          {
+            "entity_name": "Hydro MPC booster systems",
+            "char_offset": [
+              71,
+              96
+            ],
+            "page": "unknown",
+            "entity_canonical": "hydro_mpc_booster_systems",
+            "entity_id": "hydro_mpc_booster_systems",
+            "confidence": 0.366
+          },
+          {
+            "entity_name": "Hydro MPC XL",
+            "char_offset": [
+              21,
+              33
+            ],
+            "page": "unknown",
+            "entity_canonical": "hydro_mpc_xl",
+            "entity_id": "hydro_mpc_xl",
+            "confidence": 0.402
+          },
+          {
+            "entity_name": "Hydro MPC booster system",
+            "char_offset": [
+              2,
+              26
+            ],
+            "page": "unknown",
+            "entity_canonical": "hydro_mpc_booster_system",
+            "entity_id": "hydro_mpc_booster_system",
+            "confidence": 0.463
+          },
+          {
+            "entity_name": "E",
+            "char_offset": [
+              48,
+              49
+            ],
+            "page": "unknown",
+            "entity_canonical": "e",
+            "entity_id": "e",
+            "confidence": 0.312
+          },
+          {
+            "entity_name": "Hydro MPC-F System",
+            "char_offset": [
+              81,
+              99
+            ],
+            "page": "unknown",
+            "entity_canonical": "hydro_mpc_f_system",
+            "entity_id": "hydro_mpc_f_system",
+            "confidence": 0.596
+          },
+          {
+            "entity_name": "Hydro MPC-S System",
+            "char_offset": [
+              40,
+              58
+            ],
+            "page": "unknown",
+            "entity_canonical": "hydro_mpc_s_system",
+            "entity_id": "hydro_mpc_s_system",
+            "confidence": 0.734
+          },
+          {
+            "entity_name": "Hydro MPC-F",
+            "char_offset": [
+              17,
+              28
+            ],
+            "page": "unknown",
+            "entity_canonical": "hydro_mpc_f",
+            "entity_id": "hydro_mpc_f",
+            "confidence": 0.379
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              3,
+              12
+            ],
+            "context_snippet": "## Hydro MPC\n\nInstallation and operating instructions\n\n<!-- im",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              265,
+              274
+            ],
+            "context_snippet": "and operating instructions apply to the Grundfos Hydro MPC booster systems.\n\nSections 1-4 give the informati",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              6362,
+              6371
+            ],
+            "context_snippet": "k must be at least 2 m long.\n\n<!-- image -->\n\nThe Hydro MPC booster systems with CR 120 or CR 150 pumps are s",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              6854,
+              6863
+            ],
+            "context_snippet": "f the control cabinet and pumps.\n\n<!-- image -->\n\nHydro MPC is only designed for indoor installation. Do not",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              11210,
+              11219
+            ],
+            "context_snippet": "prefill the tank with nitrogen to this pressure:\n\nHydro MPC-E and -F:\n\n0.7 x the setpoint.\n\nHydro MPC-S:\n\n0.9",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              11252,
+              11261
+            ],
+            "context_snippet": "ssure:\n\nHydro MPC-E and -F:\n\n0.7 x the setpoint.\n\nHydro MPC-S:\n\n0.9 x the setpoint.\n\n<!-- image -->\n\nUse nitr",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              13126,
+              13135
+            ],
+            "context_snippet": "for operation.\n\n## 4.1 Handling the product\n\nThe Hydro MPC booster systems with CR 120 or 150 pumps have eye",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              13398,
+              13407
+            ],
+            "context_snippet": "be at least 3 m long.\n\nFig. 4 Correct lifting of Hydro MPC XL\n\n<!-- image -->\n\n## CAUTION\n\n<!-- image -->\n\n<",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              14584,
+              14593
+            ],
+            "context_snippet": "tions.\n\nTM04 4188 1009\n\n<!-- image -->\n\n4\n\nFig. 5 Hydro MPC booster system\n\n|   Pos. | Description",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              15431,
+              15440
+            ],
+            "context_snippet": "| 1          |\n\n## 5.2 Control variant\n\nThe Hydro MPC booster systems are divided into three groups bas",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              16188,
+              16197
+            ],
+            "context_snippet": "cally speed-controlled pumps. From 0.37 to 22 kW, Hydro MPC-E is equipped with CR(I)E pumps with integrated f",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              16282,
+              16291
+            ],
+            "context_snippet": "th integrated frequency converter. As from 30 kW, Hydro MPC-E is equipped with CR pumps connected to Grundfos",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              17115,
+              17124
+            ],
+            "context_snippet": "e also section 6. Overview of control variants .\n\nHydro MPC always include application-optimised software for",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              19125,
+              19134
+            ],
+            "context_snippet": "ntrol MPC options - GSC file numbers |\n|      3 | Hydro MPC - GSC file number*           |\n|      4 | Hydro M",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              19177,
+              19186
+            ],
+            "context_snippet": "dro MPC - GSC file number*           |\n|      4 | Hydro MPC options - GSC file numbers*  |\n|      5 | Pump da",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              19586,
+              19595
+            ],
+            "context_snippet": "| Hydro MPC        | -E         | 6                   | CRE 1",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              35287,
+              35296
+            ],
+            "context_snippet": "tems.\n\n## Systems with speed-controlled pumps\n\n## Hydro MPC-E\n\nHydro MPC booster system with three CR(I)E pum",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              35300,
+              35309
+            ],
+            "context_snippet": "tems with speed-controlled pumps\n\n## Hydro MPC-E\n\nHydro MPC booster system with three CR(I)E pumps.\n\n<!-- ima",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              35434,
+              35443
+            ],
+            "context_snippet": "umps connected to one CUE frequency converter\n\n## Hydro MPC-F\n\nSystem with three CR pumps connected to one Gr",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              35698,
+              35707
+            ],
+            "context_snippet": "ration.\n\n## Systems with mains-operated pumps\n\n## Hydro MPC-S\n\nSystem with three mains-operated CR(I) pumps.",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              35980,
+              35989
+            ],
+            "context_snippet": "ree CR(I)E pumps in operation.\n\n<!-- image -->\n\n- Hydro MPC-E maintains a constant pressure through continuou",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              36511,
+              36520
+            ],
+            "context_snippet": "perated CR pumps in operation.\n\n<!-- image -->\n\n- Hydro MPC-F maintains a constant pressure through continuou",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              37054,
+              37063
+            ],
+            "context_snippet": "ated CR(I) pumps in operation.\n\n<!-- image -->\n\n- Hydro MPC-S maintains an almost constant pressure through c",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              3,
+              12
+            ],
+            "context_snippet": "## Hydro MPC\n\nInstallation and operating instructions\n\n<!-- im",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              265,
+              274
+            ],
+            "context_snippet": "and operating instructions apply to the Grundfos Hydro MPC booster systems.\n\nSections 1-4 give the informati",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              6362,
+              6371
+            ],
+            "context_snippet": "k must be at least 2 m long.\n\n<!-- image -->\n\nThe Hydro MPC booster systems with CR 120 or CR 150 pumps are s",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              6854,
+              6863
+            ],
+            "context_snippet": "f the control cabinet and pumps.\n\n<!-- image -->\n\nHydro MPC is only designed for indoor installation. Do not",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              11210,
+              11219
+            ],
+            "context_snippet": "prefill the tank with nitrogen to this pressure:\n\nHydro MPC-E and -F:\n\n0.7 x the setpoint.\n\nHydro MPC-S:\n\n0.9",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              11252,
+              11261
+            ],
+            "context_snippet": "ssure:\n\nHydro MPC-E and -F:\n\n0.7 x the setpoint.\n\nHydro MPC-S:\n\n0.9 x the setpoint.\n\n<!-- image -->\n\nUse nitr",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              13126,
+              13135
+            ],
+            "context_snippet": "for operation.\n\n## 4.1 Handling the product\n\nThe Hydro MPC booster systems with CR 120 or 150 pumps have eye",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              13398,
+              13407
+            ],
+            "context_snippet": "be at least 3 m long.\n\nFig. 4 Correct lifting of Hydro MPC XL\n\n<!-- image -->\n\n## CAUTION\n\n<!-- image -->\n\n<",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              14584,
+              14593
+            ],
+            "context_snippet": "tions.\n\nTM04 4188 1009\n\n<!-- image -->\n\n4\n\nFig. 5 Hydro MPC booster system\n\n|   Pos. | Description",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              15431,
+              15440
+            ],
+            "context_snippet": "| 1          |\n\n## 5.2 Control variant\n\nThe Hydro MPC booster systems are divided into three groups bas",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              16188,
+              16197
+            ],
+            "context_snippet": "cally speed-controlled pumps. From 0.37 to 22 kW, Hydro MPC-E is equipped with CR(I)E pumps with integrated f",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              16282,
+              16291
+            ],
+            "context_snippet": "th integrated frequency converter. As from 30 kW, Hydro MPC-E is equipped with CR pumps connected to Grundfos",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              17115,
+              17124
+            ],
+            "context_snippet": "e also section 6. Overview of control variants .\n\nHydro MPC always include application-optimised software for",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              19125,
+              19134
+            ],
+            "context_snippet": "ntrol MPC options - GSC file numbers |\n|      3 | Hydro MPC - GSC file number*           |\n|      4 | Hydro M",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              19177,
+              19186
+            ],
+            "context_snippet": "dro MPC - GSC file number*           |\n|      4 | Hydro MPC options - GSC file numbers*  |\n|      5 | Pump da",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              19586,
+              19595
+            ],
+            "context_snippet": "| Hydro MPC        | -E         | 6                   | CRE 1",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              35287,
+              35296
+            ],
+            "context_snippet": "tems.\n\n## Systems with speed-controlled pumps\n\n## Hydro MPC-E\n\nHydro MPC booster system with three CR(I)E pum",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              35300,
+              35309
+            ],
+            "context_snippet": "tems with speed-controlled pumps\n\n## Hydro MPC-E\n\nHydro MPC booster system with three CR(I)E pumps.\n\n<!-- ima",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              35434,
+              35443
+            ],
+            "context_snippet": "umps connected to one CUE frequency converter\n\n## Hydro MPC-F\n\nSystem with three CR pumps connected to one Gr",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              35698,
+              35707
+            ],
+            "context_snippet": "ration.\n\n## Systems with mains-operated pumps\n\n## Hydro MPC-S\n\nSystem with three mains-operated CR(I) pumps.",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              35980,
+              35989
+            ],
+            "context_snippet": "ree CR(I)E pumps in operation.\n\n<!-- image -->\n\n- Hydro MPC-E maintains a constant pressure through continuou",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              36511,
+              36520
+            ],
+            "context_snippet": "perated CR pumps in operation.\n\n<!-- image -->\n\n- Hydro MPC-F maintains a constant pressure through continuou",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "hydro mpc",
+            "matched_text": "Hydro MPC",
+            "char_offset": [
+              37054,
+              37063
+            ],
+            "context_snippet": "ated CR(I) pumps in operation.\n\n<!-- image -->\n\n- Hydro MPC-S maintains an almost constant pressure through c",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC booster",
+            "matched_text": "Hydro MPC booster",
+            "char_offset": [
+              265,
+              282
+            ],
+            "context_snippet": "and operating instructions apply to the Grundfos Hydro MPC booster systems.\n\nSections 1-4 give the information neces",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC booster",
+            "matched_text": "Hydro MPC booster",
+            "char_offset": [
+              6362,
+              6379
+            ],
+            "context_snippet": "k must be at least 2 m long.\n\n<!-- image -->\n\nThe Hydro MPC booster systems with CR 120 or CR 150 pumps are secured b",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC booster",
+            "matched_text": "Hydro MPC booster",
+            "char_offset": [
+              13126,
+              13143
+            ],
+            "context_snippet": "for operation.\n\n## 4.1 Handling the product\n\nThe Hydro MPC booster systems with CR 120 or 150 pumps have eyebolts in",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC booster",
+            "matched_text": "Hydro MPC booster",
+            "char_offset": [
+              14584,
+              14601
+            ],
+            "context_snippet": "tions.\n\nTM04 4188 1009\n\n<!-- image -->\n\n4\n\nFig. 5 Hydro MPC booster system\n\n|   Pos. | Description",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC booster",
+            "matched_text": "Hydro MPC booster",
+            "char_offset": [
+              15431,
+              15448
+            ],
+            "context_snippet": "| 1          |\n\n## 5.2 Control variant\n\nThe Hydro MPC booster systems are divided into three groups based on th",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "Hydro MPC booster",
+            "matched_text": "Hydro MPC booster",
+            "char_offset": [
+              35300,
+              35317
+            ],
+            "context_snippet": "tems with speed-controlled pumps\n\n## Hydro MPC-E\n\nHydro MPC booster system with three CR(I)E pumps.\n\n<!-- image -->",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "hydro_mpc",
+          "hydro_mpc_e",
+          "hydro_mpc_s",
+          "hydro_mpc_booster_systems",
+          "hydro_mpc_xl",
+          "hydro_mpc_booster_system",
+          "e",
+          "hydro_mpc_f_system",
+          "hydro_mpc_s_system",
+          "hydro_mpc_f"
+        ]
+      },
+      {
+        "canonical_id": "control_generic",
+        "name": "Control variant",
+        "entity_type": "control_system",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.9700000000000001,
+        "occurrences": [
+          {
+            "entity_name": "Control variant",
+            "char_offset": [
+              183,
+              198
+            ],
+            "page": "unknown",
+            "entity_canonical": "control_variant",
+            "entity_id": "control_variant",
+            "confidence": 0.92
+          },
+          {
+            "entity_name": "control cabinet",
+            "char_offset": [
+              215,
+              230
+            ],
+            "page": "unknown",
+            "entity_canonical": "control_cabinet",
+            "entity_id": "control_cabinet",
+            "confidence": 0.968
+          },
+          {
+            "entity_name": "speed-controlled operation",
+            "char_offset": [
+              4,
+              30
+            ],
+            "page": "unknown",
+            "entity_canonical": "speed_controlled_operation",
+            "entity_id": "speed_controlled_operation",
+            "confidence": 0.785
+          },
+          {
+            "entity_name": "CU 352 control unit",
+            "char_offset": [
+              239,
+              258
+            ],
+            "page": "unknown",
+            "entity_canonical": "cu_352_control_unit",
+            "entity_id": "cu_352_control_unit",
+            "confidence": 0.861
+          },
+          {
+            "entity_name": "Control MPC",
+            "char_offset": [
+              136,
+              147
+            ],
+            "page": "unknown",
+            "entity_canonical": "control_mpc",
+            "entity_id": "control_mpc",
+            "confidence": 0.872
+          },
+          {
+            "entity_name": "controls",
+            "char_offset": [
+              47,
+              55
+            ],
+            "page": "unknown",
+            "entity_canonical": "controls",
+            "entity_id": "controls",
+            "confidence": 0.521
+          },
+          {
+            "entity_name": "Customised controls",
+            "char_offset": [
+              106,
+              125
+            ],
+            "page": "unknown",
+            "entity_canonical": "customised_controls",
+            "entity_id": "customised_controls",
+            "confidence": 0.7
+          },
+          {
+            "entity_name": "speedcontrolled operation",
+            "char_offset": [
+              172,
+              197
+            ],
+            "page": "unknown",
+            "entity_canonical": "speedcontrolled_operation",
+            "entity_id": "speedcontrolled_operation",
+            "confidence": 0.342
+          },
+          {
+            "keyword": "control",
+            "matched_text": "Control",
+            "char_offset": [
+              1842,
+              1849
+            ],
+            "context_snippet": "|      6 |\n|  5.2 | Control variant",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              2118,
+              2125
+            ],
+            "context_snippet": "|      8 |\n|   6. | Overview of control variants                                        |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              6810,
+              6817
+            ],
+            "context_snippet": "ntilated room to ensure sufficient cooling of the control cabinet and pumps.\n\n<!-- image -->\n\nHydro MPC is",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              14423,
+              14430
+            ],
+            "context_snippet": "arallel and mounted on a common base frame with a control cabinet and all necessary fittings.\n\n<!-- image -",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "Control",
+            "char_offset": [
+              14753,
+              14760
+            ],
+            "context_snippet": "------------------------|------------|\n|      1 | Control cabinet                         | 1          |\n|",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "Control",
+            "char_offset": [
+              15410,
+              15417
+            ],
+            "context_snippet": "k                          | 1          |\n\n## 5.2 Control variant\n\nThe Hydro MPC booster systems are divide",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              15500,
+              15507
+            ],
+            "context_snippet": "ystems are divided into three groups based on the control variant:\n\n| Control variant   | Description",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "Control",
+            "char_offset": [
+              15520,
+              15527
+            ],
+            "context_snippet": "nto three groups based on the control variant:\n\n| Control variant   | Description",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              17095,
+              17102
+            ],
+            "context_snippet": "(one per pump).\n\nSee also section 6. Overview of control variants .\n\nHydro MPC always include application-",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              18165,
+              18172
+            ],
+            "context_snippet": "oftware label is placed on the back of the CU 352 control unit.\n\n| 1. Control MPC",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "Control",
+            "char_offset": [
+              18185,
+              18192
+            ],
+            "context_snippet": "ced on the back of the CU 352 control unit.\n\n| 1. Control MPC                                  | 3. HydroMP",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "Control",
+            "char_offset": [
+              19021,
+              19028
+            ],
+            "context_snippet": "-------------------------------------|\n|      1 | Control MPC - GSC file number          |\n|      2 | Contr",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "Control",
+            "char_offset": [
+              19073,
+              19080
+            ],
+            "context_snippet": "ntrol MPC - GSC file number          |\n|      2 | Control MPC options - GSC file numbers |\n|      3 | Hydro",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              25399,
+              25406
+            ],
+            "context_snippet": "|        |        |\n| A      | Systems with the control cabinet mounted on the same base frame",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              25635,
+              25642
+            ],
+            "context_snippet": "|        |        |\n| C      | Systems with the control cabinet mounted on Systems with the control cabin",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              25679,
+              25686
+            ],
+            "context_snippet": "h the control cabinet mounted on Systems with the control cabinet mounted on its own       | its own base f",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              25888,
+              25895
+            ],
+            "context_snippet": "|\n| D E    | ASEAN design and systems with the control cabinet",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              26124,
+              26131
+            ],
+            "context_snippet": "|\n| F      | ASEAN design and systems with the control cabinet centred",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              26360,
+              26367
+            ],
+            "context_snippet": "|\n| G      | ASEAN design and systems with the control cabinet design and systems with the control cabin",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              26404,
+              26411
+            ],
+            "context_snippet": "h the control cabinet design and systems with the control cabinet         | mounted          | on its     |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              26610,
+              26617
+            ],
+            "context_snippet": "| ASEAN mounted ASEAN design and systems with the control cabinet prepared                              |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              27051,
+              27058
+            ],
+            "context_snippet": "|        |        |\n| W      | Systems with the control cabinet prepared for wall",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              35113,
+              35120
+            ],
+            "context_snippet": "I is only available in selected countries.\n\n* The control cabinet can be placed up to 2 m from the pumps.",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              35188,
+              35195
+            ],
+            "context_snippet": "aced up to 2 m from the pumps.\n\n## 6. Overview of control variants\n\nThe table shows examples of systems.\n\n#",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              35531,
+              35538
+            ],
+            "context_snippet": "ed to one Grundfos CUE frequency converter in the control cabinet. The speed-controlled operation alternate",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              36203,
+              36210
+            ],
+            "context_snippet": "the required number of pumps and through parallel control of the pumps in operation.\n- Pump changeover is a",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "control",
+            "char_offset": [
+              37398,
+              37405
+            ],
+            "context_snippet": "el\n\nThe operating panel in the front cover of the control cabinet\n\nfeatures a display, a number of buttons",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "controls",
+            "char_offset": [
+              33878,
+              33886
+            ],
+            "context_snippet": "|      |      |        |        |\n| V      | controls with",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control",
+            "matched_text": "controls",
+            "char_offset": [
+              34142,
+              34150
+            ],
+            "context_snippet": "|        |\n| W      | Standard options Customised controls",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control variant",
+            "matched_text": "Control variant",
+            "char_offset": [
+              1842,
+              1857
+            ],
+            "context_snippet": "|      6 |\n|  5.2 | Control variant",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control variant",
+            "matched_text": "Control variant",
+            "char_offset": [
+              15410,
+              15425
+            ],
+            "context_snippet": "k                          | 1          |\n\n## 5.2 Control variant\n\nThe Hydro MPC booster systems are divided into t",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control variant",
+            "matched_text": "control variant",
+            "char_offset": [
+              15500,
+              15515
+            ],
+            "context_snippet": "ystems are divided into three groups based on the control variant:\n\n| Control variant   | Description",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control variant",
+            "matched_text": "Control variant",
+            "char_offset": [
+              15520,
+              15535
+            ],
+            "context_snippet": "nto three groups based on the control variant:\n\n| Control variant   | Description",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control variant",
+            "matched_text": "control variants",
+            "char_offset": [
+              2118,
+              2134
+            ],
+            "context_snippet": "|      8 |\n|   6. | Overview of control variants                                        |      9 |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control variant",
+            "matched_text": "control variants",
+            "char_offset": [
+              17095,
+              17111
+            ],
+            "context_snippet": "(one per pump).\n\nSee also section 6. Overview of control variants .\n\nHydro MPC always include application-optimised",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control variant",
+            "matched_text": "control variants",
+            "char_offset": [
+              35188,
+              35204
+            ],
+            "context_snippet": "aced up to 2 m from the pumps.\n\n## 6. Overview of control variants\n\nThe table shows examples of systems.\n\n## Systems",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              6810,
+              6825
+            ],
+            "context_snippet": "ntilated room to ensure sufficient cooling of the control cabinet and pumps.\n\n<!-- image -->\n\nHydro MPC is only des",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              14423,
+              14438
+            ],
+            "context_snippet": "arallel and mounted on a common base frame with a control cabinet and all necessary fittings.\n\n<!-- image -->\n\nA di",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "Control cabinet",
+            "char_offset": [
+              14753,
+              14768
+            ],
+            "context_snippet": "------------------------|------------|\n|      1 | Control cabinet                         | 1          |\n|      2 |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              25399,
+              25414
+            ],
+            "context_snippet": "|        |        |\n| A      | Systems with the control cabinet mounted on the same base frame",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              25635,
+              25650
+            ],
+            "context_snippet": "|        |        |\n| C      | Systems with the control cabinet mounted on Systems with the control cabinet mount",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              25679,
+              25694
+            ],
+            "context_snippet": "h the control cabinet mounted on Systems with the control cabinet mounted on its own       | its own base for | flo",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              25888,
+              25903
+            ],
+            "context_snippet": "|\n| D E    | ASEAN design and systems with the control cabinet",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              26124,
+              26139
+            ],
+            "context_snippet": "|\n| F      | ASEAN design and systems with the control cabinet centred",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              26360,
+              26375
+            ],
+            "context_snippet": "|\n| G      | ASEAN design and systems with the control cabinet design and systems with the control cabinet",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              26404,
+              26419
+            ],
+            "context_snippet": "h the control cabinet design and systems with the control cabinet         | mounted          | on its     | base fr",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              26610,
+              26625
+            ],
+            "context_snippet": "| ASEAN mounted ASEAN design and systems with the control cabinet prepared                              |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              27051,
+              27066
+            ],
+            "context_snippet": "|        |        |\n| W      | Systems with the control cabinet prepared for wall",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              35113,
+              35128
+            ],
+            "context_snippet": "I is only available in selected countries.\n\n* The control cabinet can be placed up to 2 m from the pumps.\n\n## 6. Ov",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              35531,
+              35546
+            ],
+            "context_snippet": "ed to one Grundfos CUE frequency converter in the control cabinet. The speed-controlled operation alternates betwee",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control cabinet",
+            "matched_text": "control cabinet",
+            "char_offset": [
+              37398,
+              37413
+            ],
+            "context_snippet": "el\n\nThe operating panel in the front cover of the control cabinet\n\nfeatures a display, a number of buttons and two",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "control unit",
+            "matched_text": "control unit",
+            "char_offset": [
+              18165,
+              18177
+            ],
+            "context_snippet": "oftware label is placed on the back of the CU 352 control unit.\n\n| 1. Control MPC",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "control_variant",
+          "control_cabinet",
+          "speed_controlled_operation",
+          "cu_352_control_unit",
+          "control_mpc",
+          "controls",
+          "customised_controls",
+          "speedcontrolled_operation"
+        ]
+      },
+      {
+        "canonical_id": "valve_generic",
+        "name": "pressure",
+        "entity_type": "parameter",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.917,
+        "occurrences": [
+          {
+            "entity_name": "pressure",
+            "char_offset": [
+              259,
+              267
+            ],
+            "page": "unknown",
+            "entity_canonical": "pressure",
+            "entity_id": "pressure",
+            "confidence": 0.867
+          },
+          {
+            "entity_name": "Isolating valve",
+            "char_offset": [
+              193,
+              208
+            ],
+            "page": "unknown",
+            "entity_canonical": "isolating_valve",
+            "entity_id": "isolating_valve",
+            "confidence": 0.315
+          },
+          {
+            "entity_name": "Non-return valve",
+            "char_offset": [
+              0,
+              16
+            ],
+            "page": "unknown",
+            "entity_canonical": "non_return_valve",
+            "entity_id": "non_return_valve",
+            "confidence": 0.365
+          },
+          {
+            "entity_name": "Bypass Non-return valve",
+            "char_offset": [
+              86,
+              109
+            ],
+            "page": "unknown",
+            "entity_canonical": "bypass_non_return_valve",
+            "entity_id": "bypass_non_return_valve",
+            "confidence": 0.595
+          },
+          {
+            "keyword": "valve",
+            "matched_text": "valve",
+            "char_offset": [
+              14961,
+              14966
+            ],
+            "context_snippet": "steel         | 1          |\n|      4 | Isolating valve                         | 2 per pump |\n|      5 |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "valve",
+            "matched_text": "valve",
+            "char_offset": [
+              15094,
+              15099
+            ],
+            "context_snippet": "| 1          |\n|      6 | Non-return valve                        | 1 per pump |\n|      7 |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "valve",
+            "matched_text": "valve",
+            "char_offset": [
+              30120,
+              30125
+            ],
+            "context_snippet": "|        |        |\n| C D    | Bypass Non-return valve",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "valve",
+            "matched_text": "valves",
+            "char_offset": [
+              28082,
+              28088
+            ],
+            "context_snippet": "| valves           |            |                     |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "valve",
+            "matched_text": "valves",
+            "char_offset": [
+              28318,
+              28324
+            ],
+            "context_snippet": "vanised-steel manifold, base frame and standard | valves           |            |                     |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "valve",
+            "matched_text": "valves",
+            "char_offset": [
+              28450,
+              28456
+            ],
+            "context_snippet": "|      |      |        |        |\n| C D    | valves Stainless-steel manifold, galvanised steel base f",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "valve",
+            "matched_text": "valves",
+            "char_offset": [
+              28586,
+              28592
+            ],
+            "context_snippet": "|                  |            | valves              |                    |      |      |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "valve",
+            "matched_text": "valves",
+            "char_offset": [
+              28822,
+              28828
+            ],
+            "context_snippet": "|                  |            | valves              |                    |      |      |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "valve",
+            "matched_text": "valves",
+            "char_offset": [
+              29045,
+              29051
+            ],
+            "context_snippet": "| standard         | valves     |                     |                    |",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "pressure",
+          "isolating_valve",
+          "non_return_valve",
+          "bypass_non_return_valve"
+        ]
+      },
+      {
+        "canonical_id": "cr_120_pump",
+        "name": "CR 120",
+        "entity_type": "equipment",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.524,
+        "occurrences": [
+          {
+            "entity_name": "CR 120",
+            "char_offset": [
+              50,
+              56
+            ],
+            "page": "unknown",
+            "entity_canonical": "cr_120",
+            "entity_id": "cr_120",
+            "confidence": 0.474
+          },
+          {
+            "entity_name": "CR 120 or 150 pumps",
+            "char_offset": [
+              102,
+              121
+            ],
+            "page": "unknown",
+            "entity_canonical": "cr_120_or_150_pumps",
+            "entity_id": "cr_120_or_150_pumps",
+            "confidence": 0.71
+          },
+          {
+            "entity_name": "CR 120 or CR 150 pumps",
+            "char_offset": [
+              127,
+              149
+            ],
+            "page": "unknown",
+            "entity_canonical": "cr_120_or_cr_150_pumps",
+            "entity_id": "cr_120_or_cr_150_pumps",
+            "confidence": 0.467
+          },
+          {
+            "entity_name": "CR",
+            "char_offset": [
+              21,
+              23
+            ],
+            "page": "unknown",
+            "entity_canonical": "cr",
+            "entity_id": "cr",
+            "confidence": 0.732
+          },
+          {
+            "keyword": "CR 120",
+            "matched_text": "CR 120",
+            "char_offset": [
+              6393,
+              6399
+            ],
+            "context_snippet": "!-- image -->\n\nThe Hydro MPC booster systems with CR 120 or CR 150 pumps are secured by means of transport",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "CR 120",
+            "matched_text": "CR 120",
+            "char_offset": [
+              13157,
+              13163
+            ],
+            "context_snippet": "g the product\n\nThe Hydro MPC booster systems with CR 120 or 150 pumps have eyebolts in the base frame. See",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "CR 120",
+            "matched_text": "CR 120",
+            "char_offset": [
+              14170,
+              14176
+            ],
+            "context_snippet": "o not use chains for lifting booster systems with CR 120 or CR 150 pumps, as this may damage the motors.",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "cr_120",
+          "cr_120_or_150_pumps",
+          "cr_120_or_cr_150_pumps",
+          "cr"
+        ]
+      },
+      {
+        "canonical_id": "cr_150_pump",
+        "name": "CR 150",
+        "entity_type": "equipment",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.492,
+        "occurrences": [
+          {
+            "entity_name": "CR 150",
+            "char_offset": [
+              60,
+              66
+            ],
+            "page": "unknown",
+            "entity_canonical": "cr_150",
+            "entity_id": "cr_150",
+            "confidence": 0.442
+          },
+          {
+            "keyword": "CR 150",
+            "matched_text": "CR 150",
+            "char_offset": [
+              6403,
+              6409
+            ],
+            "context_snippet": "-->\n\nThe Hydro MPC booster systems with CR 120 or CR 150 pumps are secured by means of transport straps. D",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "CR 150",
+            "matched_text": "CR 150",
+            "char_offset": [
+              14180,
+              14186
+            ],
+            "context_snippet": "chains for lifting booster systems with CR 120 or CR 150 pumps, as this may damage the motors.\n\n## 5. Prod",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "cr_150"
+        ]
+      },
+      {
+        "canonical_id": "pump_generic",
+        "name": "pump",
+        "entity_type": "equipment",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.8600000000000001,
+        "occurrences": [
+          {
+            "entity_name": "pump",
+            "char_offset": [
+              73,
+              77
+            ],
+            "page": "unknown",
+            "entity_canonical": "pump",
+            "entity_id": "pump",
+            "confidence": 0.81
+          },
+          {
+            "entity_name": "motor and pump",
+            "char_offset": [
+              196,
+              210
+            ],
+            "page": "unknown",
+            "entity_canonical": "motor_and_pump",
+            "entity_id": "motor_and_pump",
+            "confidence": 0.706
+          },
+          {
+            "entity_name": "pumps",
+            "char_offset": [
+              255,
+              260
+            ],
+            "page": "unknown",
+            "entity_canonical": "pumps",
+            "entity_id": "pumps",
+            "confidence": 0.778
+          },
+          {
+            "entity_name": "Pos",
+            "char_offset": [
+              29,
+              32
+            ],
+            "page": "unknown",
+            "entity_canonical": "pos",
+            "entity_id": "pos",
+            "confidence": 0.881
+          },
+          {
+            "entity_name": "Two to six electronically speed-controlled pumps",
+            "char_offset": [
+              79,
+              127
+            ],
+            "page": "unknown",
+            "entity_canonical": "two_to_six_electronically_speed_controlled_pumps",
+            "entity_id": "two_to_six_electronically_speed_controlled_pumps",
+            "confidence": 0.787
+          },
+          {
+            "entity_name": "CR(I)E pumps",
+            "char_offset": [
+              49,
+              61
+            ],
+            "page": "unknown",
+            "entity_canonical": "cr_i_e_pumps",
+            "entity_id": "cr_i_e_pumps",
+            "confidence": 0.831
+          },
+          {
+            "entity_name": "CR pumps",
+            "char_offset": [
+              136,
+              144
+            ],
+            "page": "unknown",
+            "entity_canonical": "cr_pumps",
+            "entity_id": "cr_pumps",
+            "confidence": 0.73
+          },
+          {
+            "entity_name": "one per pump",
+            "char_offset": [
+              200,
+              212
+            ],
+            "page": "unknown",
+            "entity_canonical": "one_per_pump",
+            "entity_id": "one_per_pump",
+            "confidence": 0.304
+          },
+          {
+            "entity_name": "CR(I) pumps",
+            "char_offset": [
+              235,
+              246
+            ],
+            "page": "unknown",
+            "entity_canonical": "cr_i_pumps",
+            "entity_id": "cr_i_pumps",
+            "confidence": 0.662
+          },
+          {
+            "entity_name": "Pump data",
+            "char_offset": [
+              207,
+              216
+            ],
+            "page": "unknown",
+            "entity_canonical": "pump_data",
+            "entity_id": "pump_data",
+            "confidence": 0.734
+          },
+          {
+            "entity_name": "All pumps",
+            "char_offset": [
+              151,
+              160
+            ],
+            "page": "unknown",
+            "entity_canonical": "all_pumps",
+            "entity_id": "all_pumps",
+            "confidence": 0.707
+          },
+          {
+            "entity_name": "Fixed-speed pumps",
+            "char_offset": [
+              205,
+              222
+            ],
+            "page": "unknown",
+            "entity_canonical": "fixed_speed_pumps",
+            "entity_id": "fixed_speed_pumps",
+            "confidence": 0.888
+          },
+          {
+            "entity_name": "Customised-system pumps",
+            "char_offset": [
+              306,
+              329
+            ],
+            "page": "unknown",
+            "entity_canonical": "customised_system_pumps",
+            "entity_id": "customised_system_pumps",
+            "confidence": 0.804
+          },
+          {
+            "entity_name": "Pilot pump",
+            "char_offset": [
+              314,
+              324
+            ],
+            "page": "unknown",
+            "entity_canonical": "pilot_pump",
+            "entity_id": "pilot_pump",
+            "confidence": 0.766
+          },
+          {
+            "entity_name": "CR(I)E pump",
+            "char_offset": [
+              274,
+              285
+            ],
+            "page": "unknown",
+            "entity_canonical": "cr_i_e_pump",
+            "entity_id": "cr_i_e_pump",
+            "confidence": 0.345
+          },
+          {
+            "entity_name": "mains-operated CR(I) pumps",
+            "char_offset": [
+              186,
+              212
+            ],
+            "page": "unknown",
+            "entity_canonical": "mains_operated_cr_i_pumps",
+            "entity_id": "mains_operated_cr_i_pumps",
+            "confidence": 0.742
+          },
+          {
+            "entity_name": "One CR pump",
+            "char_offset": [
+              113,
+              124
+            ],
+            "page": "unknown",
+            "entity_canonical": "one_cr_pump",
+            "entity_id": "one_cr_pump",
+            "confidence": 0.491
+          },
+          {
+            "entity_name": "mains-operated CR(I) pump",
+            "char_offset": [
+              193,
+              218
+            ],
+            "page": "unknown",
+            "entity_canonical": "mains_operated_cr_i_pump",
+            "entity_id": "mains_operated_cr_i_pump",
+            "confidence": 0.676
+          },
+          {
+            "entity_name": "Pump changeover",
+            "char_offset": [
+              103,
+              118
+            ],
+            "page": "unknown",
+            "entity_canonical": "pump_changeover",
+            "entity_id": "pump_changeover",
+            "confidence": 0.585
+          },
+          {
+            "entity_name": "mains-operated CR pumps",
+            "char_offset": [
+              61,
+              84
+            ],
+            "page": "unknown",
+            "entity_canonical": "mains_operated_cr_pumps",
+            "entity_id": "mains_operated_cr_pumps",
+            "confidence": 0.69
+          },
+          {
+            "entity_name": "CR pump",
+            "char_offset": [
+              109,
+              116
+            ],
+            "page": "unknown",
+            "entity_canonical": "cr_pump",
+            "entity_id": "cr_pump",
+            "confidence": 0.831
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              7120,
+              7124
+            ],
+            "context_snippet": "nical installation\n\n## 3.2.1 Pipes\n\nArrows on the pump base show the direction of flow of water through",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              7178,
+              7182
+            ],
+            "context_snippet": "e show the direction of flow of water through the pump.\n\nThe pipes connected to the booster system must",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              7688,
+              7692
+            ],
+            "context_snippet": "n are generated by the rotations in the motor and pump and by the flow in pipes and fittings. The effect",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              10967,
+              10971
+            ],
+            "context_snippet": "t they do not stress the expansion joints and the pump. Follow the supplier's instructions and pass them",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              14999,
+              15003
+            ],
+            "context_snippet": "| Isolating valve                         | 2 per pump |\n|      5 | Base frame, stainless steel",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              15131,
+              15135
+            ],
+            "context_snippet": "| Non-return valve                        | 1 per pump |\n|      7 | Outlet manifold, stainless steel",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "Pump",
+            "char_offset": [
+              15281,
+              15285
+            ],
+            "context_snippet": "tter and pressure gauge | 1          |\n|      9 | Pump                                    | 2-6        |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              16376,
+              16380
+            ],
+            "context_snippet": "ted to Grundfos CUE frequency converters (one per pump). |\n| -F                | Two to six CR(I) pumps",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              17055,
+              17059
+            ],
+            "context_snippet": "ted to Grundfos CUE frequency converters (one per pump).\n\nSee also section 6. Overview of control varian",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "Pump",
+            "char_offset": [
+              18636,
+              18640
+            ],
+            "context_snippet": "H-MPC options                                | 5. Pump data |\n| 2",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "Pump",
+            "char_offset": [
+              19229,
+              19233
+            ],
+            "context_snippet": "dro MPC options - GSC file numbers*  |\n|      5 | Pump data - GSC file numbers**         |\n\n* Applies on",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "Pump",
+            "char_offset": [
+              21606,
+              21610
+            ],
+            "context_snippet": "|      |      |        |        |\n|        | Pump type",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              29872,
+              29876
+            ],
+            "context_snippet": "|      |        |        |\n| B      | Pilot pump",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              35637,
+              35641
+            ],
+            "context_snippet": "es between the pumps.\n\n<!-- image -->\n\nOne CR(I)E pump in operation.\n\n## Systems with mains-operated pum",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              35781,
+              35785
+            ],
+            "context_snippet": "ins-operated CR(I) pumps.\n\n<!-- image -->\n\nOne CR pump connected to one Grundfos CUE frequency converter",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              35876,
+              35880
+            ],
+            "context_snippet": "converter in operation.\n\nOne mains-operated CR(I) pump in operation.\n\n<!-- image -->\n\n<!-- image -->\n\nTh",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "Pump",
+            "char_offset": [
+              36240,
+              36244
+            ],
+            "context_snippet": "ugh parallel control of the pumps in operation.\n- Pump changeover is automatic and depends on load, oper",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              36391,
+              36395
+            ],
+            "context_snippet": "will run at equal speed.\n\n<!-- image -->\n\nOne CR pump connected to one Grundfos CUE frequency converter",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              36606,
+              36610
+            ],
+            "context_snippet": "ough continuous adjustment of the speed of the CR pump connected to the Grundfos CUE frequency converter",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              36731,
+              36735
+            ],
+            "context_snippet": "operation alternates between the pumps.\n- One CR pump connected to the Grundfos CUE frequency converter",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pump",
+            "char_offset": [
+              36851,
+              36855
+            ],
+            "context_snippet": "irst. If the pressure cannot be maintained by the pump, one or two mains-operated CR pumps will be cut i",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "Pump",
+            "char_offset": [
+              36910,
+              36914
+            ],
+            "context_snippet": "or two mains-operated CR pumps will be cut in.\n- Pump changeover is automatic and depends on load, oper",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "Pump",
+            "char_offset": [
+              37251,
+              37255
+            ],
+            "context_snippet": "between H set  and H stop  (cut-out pressure).\n- Pump changeover is automatic and depends on load, oper",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              6410,
+              6415
+            ],
+            "context_snippet": "e Hydro MPC booster systems with CR 120 or CR 150 pumps are secured by means of transport straps. Do not",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              6830,
+              6835
+            ],
+            "context_snippet": "ure sufficient cooling of the control cabinet and pumps.\n\n<!-- image -->\n\nHydro MPC is only designed for",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              12919,
+              12924
+            ],
+            "context_snippet": ".\n5. When the wizard is completed, check that all pumps are set to \"Auto\" in the menu \"Status\".\n6. Go to",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              13171,
+              13176
+            ],
+            "context_snippet": "The Hydro MPC booster systems with CR 120 or 150 pumps have eyebolts in the base frame. See fig. 4.\n\nDur",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              14187,
+              14192
+            ],
+            "context_snippet": "for lifting booster systems with CR 120 or CR 150 pumps, as this may damage the motors.\n\n## 5. Product in",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              14353,
+              14358
+            ],
+            "context_snippet": "ter systems consist of two to six CRI(E) or CR(E) pumps connected in parallel and mounted on a common bas",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              16161,
+              16166
+            ],
+            "context_snippet": "| Two to six electronically speed-controlled pumps. From 0.37 to 22 kW, Hydro MPC-E is equipped with",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              16224,
+              16229
+            ],
+            "context_snippet": ".37 to 22 kW, Hydro MPC-E is equipped with CR(I)E pumps with integrated frequency converter. As from 30 k",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              16314,
+              16319
+            ],
+            "context_snippet": "r. As from 30 kW, Hydro MPC-E is equipped with CR pumps connected to Grundfos CUE frequency converters (o",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              16424,
+              16429
+            ],
+            "context_snippet": "r pump). |\n| -F                | Two to six CR(I) pumps connected to a Grundfos CUE frequency converter.",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              16533,
+              16538
+            ],
+            "context_snippet": "speed-controlled operation alternates between the pumps.",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              16728,
+              16733
+            ],
+            "context_snippet": "| Two to six mains-operated CR(I) pumps",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              16993,
+              16998
+            ],
+            "context_snippet": "|\n\nDesign code E-I only uses CR pumps connected to Grundfos CUE frequency converters (o",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              19354,
+              19359
+            ],
+            "context_snippet": ".\n- ** Applies only to CR, CRI, CRN, CRE and CRIE pumps.\n\n<!-- image -->\n\nA GSC (Grundfos Standard Config",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              20430,
+              20435
+            ],
+            "context_snippet": "|      |      |        |        |\n| E      | All pumps, E-motor or CUE",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              20674,
+              20679
+            ],
+            "context_snippet": "|      |        |        |\n| F      | Fixed-speed pumps, one CUE",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              20910,
+              20915
+            ],
+            "context_snippet": "|      |        |        |\n| S      | Fixed-speed pumps",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              21152,
+              21157
+            ],
+            "context_snippet": "|        |        |\n| X      | Customised-system pumps",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              21385,
+              21390
+            ],
+            "context_snippet": "|        |        |\n|        | Number of main pumps",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              25522,
+              25527
+            ],
+            "context_snippet": "|                  | as         | the pumps           |                    |      |      |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              26025,
+              26030
+            ],
+            "context_snippet": "|            | same base           | frame as the pumps |      |      |      |      |        |        |\n|",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              35162,
+              35167
+            ],
+            "context_snippet": "control cabinet can be placed up to 2 m from the pumps.\n\n## 6. Overview of control variants\n\nThe table s",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              35277,
+              35282
+            ],
+            "context_snippet": "les of systems.\n\n## Systems with speed-controlled pumps\n\n## Hydro MPC-E\n\nHydro MPC booster system with th",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              35343,
+              35348
+            ],
+            "context_snippet": "MPC-E\n\nHydro MPC booster system with three CR(I)E pumps.\n\n<!-- image -->\n\n## Systems with pumps connected",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              35383,
+              35388
+            ],
+            "context_snippet": "ee CR(I)E pumps.\n\n<!-- image -->\n\n## Systems with pumps connected to one CUE frequency converter\n\n## Hydr",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              35468,
+              35473
+            ],
+            "context_snippet": "y converter\n\n## Hydro MPC-F\n\nSystem with three CR pumps connected to one Grundfos CUE frequency converter",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              35602,
+              35607
+            ],
+            "context_snippet": "speed-controlled operation alternates between the pumps.\n\n<!-- image -->\n\nOne CR(I)E pump in operation.",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              35688,
+              35693
+            ],
+            "context_snippet": "ump in operation.\n\n## Systems with mains-operated pumps\n\n## Hydro MPC-S\n\nSystem with three mains-operated",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              35750,
+              35755
+            ],
+            "context_snippet": "dro MPC-S\n\nSystem with three mains-operated CR(I) pumps.\n\n<!-- image -->\n\nOne CR pump connected to one Gr",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              35941,
+              35946
+            ],
+            "context_snippet": "on.\n\n<!-- image -->\n\n<!-- image -->\n\nThree CR(I)E pumps in operation.\n\n<!-- image -->\n\n- Hydro MPC-E main",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              36072,
+              36077
+            ],
+            "context_snippet": "through continuous adjustment of the speed of the pumps.\n- The system performance is adjusted to the dema",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              36176,
+              36181
+            ],
+            "context_snippet": "and through cutting in/out the required number of pumps and through parallel control of the pumps in oper",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              36218,
+              36223
+            ],
+            "context_snippet": "mber of pumps and through parallel control of the pumps in operation.\n- Pump changeover is automatic and",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              36323,
+              36328
+            ],
+            "context_snippet": "depends on load, operating hours and fault.\n- All pumps in operation will run at equal speed.\n\n<!-- image",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              36472,
+              36477
+            ],
+            "context_snippet": "CUE frequency converter and two mains-operated CR pumps in operation.\n\n<!-- image -->\n\n- Hydro MPC-F main",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              36715,
+              36720
+            ],
+            "context_snippet": "speedcontrolled operation alternates between the pumps.\n- One CR pump connected to the Grundfos CUE freq",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              36886,
+              36891
+            ],
+            "context_snippet": "ntained by the pump, one or two mains-operated CR pumps will be cut in.\n- Pump changeover is automatic an",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              37015,
+              37020
+            ],
+            "context_snippet": "ting hours and fault.\n\nThree mains-operated CR(I) pumps in operation.\n\n<!-- image -->\n\n- Hydro MPC-S main",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              37151,
+              37156
+            ],
+            "context_snippet": "re through cutting in/ out the required number of pumps.\n- The operating range of the pumps will lie betw",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pump",
+            "matched_text": "pumps",
+            "char_offset": [
+              37187,
+              37192
+            ],
+            "context_snippet": "red number of pumps.\n- The operating range of the pumps will lie between H set  and H stop  (cut-out pres",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "pump",
+          "motor_and_pump",
+          "pumps",
+          "pos",
+          "two_to_six_electronically_speed_controlled_pumps",
+          "cr_i_e_pumps",
+          "cr_pumps",
+          "one_per_pump",
+          "cr_i_pumps",
+          "pump_data",
+          "all_pumps",
+          "fixed_speed_pumps",
+          "customised_system_pumps",
+          "pilot_pump",
+          "cr_i_e_pump",
+          "mains_operated_cr_i_pumps",
+          "one_cr_pump",
+          "mains_operated_cr_i_pump",
+          "pump_changeover",
+          "mains_operated_cr_pumps",
+          "cr_pump"
+        ]
+      },
+      {
+        "canonical_id": "sealing_generic",
+        "name": "sealing compound",
+        "entity_type": "material",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.5860000000000001,
+        "occurrences": [
+          {
+            "entity_name": "sealing compound",
+            "char_offset": [
+              88,
+              104
+            ],
+            "page": "unknown",
+            "entity_canonical": "sealing_compound",
+            "entity_id": "sealing_compound",
+            "confidence": 0.536
+          },
+          {
+            "keyword": "sealing compound",
+            "matched_text": "sealing compound",
+            "char_offset": [
+              7342,
+              7358
+            ],
+            "context_snippet": "the booster system. Either end can be used. Apply sealing compound to the unused end of the manifold, and fit the sc",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "gasket",
+            "matched_text": "gasket",
+            "char_offset": [
+              7472,
+              7478
+            ],
+            "context_snippet": "anifolds with flanges, fit a blanking flange with gasket.\n\nTo achieve optimum operation and minimise noise",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "sealing_compound"
+        ]
+      },
+      {
+        "canonical_id": "expansion_joint_generic",
+        "name": "vibration dampening",
+        "entity_type": "parameter",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.366,
+        "occurrences": [
+          {
+            "entity_name": "vibration dampening",
+            "char_offset": [
+              95,
+              114
+            ],
+            "page": "unknown",
+            "entity_canonical": "vibration_dampening",
+            "entity_id": "vibration_dampening",
+            "confidence": 0.316
+          },
+          {
+            "entity_name": "expansion joints",
+            "char_offset": [
+              34,
+              50
+            ],
+            "page": "unknown",
+            "entity_canonical": "expansion_joints",
+            "entity_id": "expansion_joints",
+            "confidence": 0.849
+          },
+          {
+            "entity_name": "vibration",
+            "char_offset": [
+              48,
+              57
+            ],
+            "page": "unknown",
+            "entity_canonical": "vibration",
+            "entity_id": "vibration",
+            "confidence": 0.491
+          },
+          {
+            "entity_name": "Vibration dampers",
+            "char_offset": [
+              9,
+              26
+            ],
+            "page": "unknown",
+            "entity_canonical": "vibration_dampers",
+            "entity_id": "vibration_dampers",
+            "confidence": 0.955
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "Expansion joint",
+            "char_offset": [
+              8290,
+              8305
+            ],
+            "context_snippet": "ion     |\n|--------|-----------------|\n|      1 | Expansion joint |\n|      2 | Pipe support    |\n|      3 | Machine",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "expansion joints",
+            "char_offset": [
+              8005,
+              8021
+            ],
+            "context_snippet": "to the booster system, we recommend that you fit expansion joints on the inlet and outlet pipes to prevent that vib",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "expansion joints",
+            "char_offset": [
+              8170,
+              8186
+            ],
+            "context_snippet": "image -->\n\nFig. 1 Example showing the position of expansion joints, pipe supports and machine shoes\n\n|   Pos. | Desc",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "Expansion joints",
+            "char_offset": [
+              8383,
+              8399
+            ],
+            "context_snippet": "|\n|      3 | Machine shoe    |\n\n<!-- image -->\n\nExpansion joints, pipe supports and machine shoes shown in fig. 1",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "expansion joints",
+            "char_offset": [
+              9664,
+              9680
+            ],
+            "context_snippet": "n a base frame with vibration dampers, always fit expansion joints on the manifolds. This is important to prevent th",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "Expansion joints",
+            "char_offset": [
+              9786,
+              9802
+            ],
+            "context_snippet": "ter system from \"hanging\" in the pipes.\n\n## 3.2.4 Expansion joints\n\nFit expansion joints for these reasons:\n\n- to ab",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "expansion joints",
+            "char_offset": [
+              9808,
+              9824
+            ],
+            "context_snippet": "ng\" in the pipes.\n\n## 3.2.4 Expansion joints\n\nFit expansion joints for these reasons:\n\n- to absorb expansions or con",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "expansion joints",
+            "char_offset": [
+              10094,
+              10110
+            ],
+            "context_snippet": "ure-borne noise in the pipes (only rubber bellows expansion joints).\n\n<!-- image -->\n\nDo not install expansion joint",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "expansion joints",
+            "char_offset": [
+              10145,
+              10161
+            ],
+            "context_snippet": "xpansion joints).\n\n<!-- image -->\n\nDo not install expansion joints to compensate for inaccuracies in the pipes such",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "expansion joints",
+            "char_offset": [
+              10251,
+              10267
+            ],
+            "context_snippet": "ipes such as centre displacement of flanges.\n\nFit expansion joints at a distance of minimum 1 to 1 1/2 times the nom",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "expansion joints",
+            "char_offset": [
+              10451,
+              10467
+            ],
+            "context_snippet": "his prevents the development of turbulence in the expansion joints, resulting in better inlet conditions and a minim",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "expansion joints",
+            "char_offset": [
+              10640,
+              10656
+            ],
+            "context_snippet": "TM02 4979 1902\n\nFig. 3 Examples of rubber bellows expansion joints without and with limiting rods\n\nExpansion joints",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "Expansion joints",
+            "char_offset": [
+              10689,
+              10705
+            ],
+            "context_snippet": "expansion joints without and with limiting rods\n\nExpansion joints with limiting rods can be used to minimise the fo",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "expansion joints",
+            "char_offset": [
+              10774,
+              10790
+            ],
+            "context_snippet": "can be used to minimise the forces caused by the expansion joints. We always recommend that you use expansion joint",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "expansion joints",
+            "char_offset": [
+              10825,
+              10841
+            ],
+            "context_snippet": "xpansion joints. We always recommend that you use expansion joints with limiting rods for flanges larger than DN 100",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "expansion joint",
+            "matched_text": "expansion joints",
+            "char_offset": [
+              10942,
+              10958
+            ],
+            "context_snippet": "Anchor the pipes so that they do not stress the expansion joints and the pump. Follow the supplier's instructions",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "damper",
+            "matched_text": "damper",
+            "char_offset": [
+              9417,
+              9423
+            ],
+            "context_snippet": "g parts by means of vibration dampers.\n\nThe right damper varies from installation to installation, and a w",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "damper",
+            "matched_text": "damper",
+            "char_offset": [
+              9478,
+              9484
+            ],
+            "context_snippet": "es from installation to installation, and a wrong damper may increase the vibration level. Vibration dampe",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "damper",
+            "matched_text": "dampers",
+            "char_offset": [
+              9230,
+              9237
+            ],
+            "context_snippet": "sually taken as 2200 kg/m 3 .\n\n## 3.2.3 Vibration dampers\n\nTo prevent the transmission of vibrations to bui",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "damper",
+            "matched_text": "dampers",
+            "char_offset": [
+              9397,
+              9404
+            ],
+            "context_snippet": "ndation from building parts by means of vibration dampers.\n\nThe right damper varies from installation to in",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "damper",
+            "matched_text": "dampers",
+            "char_offset": [
+              9529,
+              9536
+            ],
+            "context_snippet": "amper may increase the vibration level. Vibration dampers must therefore be sized by the supplier. If the b",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "damper",
+            "matched_text": "dampers",
+            "char_offset": [
+              9644,
+              9651
+            ],
+            "context_snippet": "ystem is installed on a base frame with vibration dampers, always fit expansion joints on the manifolds. Th",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "vibration_dampening",
+          "expansion_joints",
+          "vibration",
+          "vibration_dampers"
+        ]
+      },
+      {
+        "canonical_id": "pipe_generic",
+        "name": "pipes and fittings",
+        "entity_type": "material",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.409,
+        "occurrences": [
+          {
+            "entity_name": "pipes and fittings",
+            "char_offset": [
+              230,
+              248
+            ],
+            "page": "unknown",
+            "entity_canonical": "pipes_and_fittings",
+            "entity_id": "pipes_and_fittings",
+            "confidence": 0.359
+          },
+          {
+            "entity_name": "pipe supports",
+            "char_offset": [
+              235,
+              248
+            ],
+            "page": "unknown",
+            "entity_canonical": "pipe_supports",
+            "entity_id": "pipe_supports",
+            "confidence": 0.779
+          },
+          {
+            "entity_name": "Pipe support",
+            "char_offset": [
+              166,
+              178
+            ],
+            "page": "unknown",
+            "entity_canonical": "pipe_support",
+            "entity_id": "pipe_support",
+            "confidence": 0.505
+          },
+          {
+            "entity_name": "pipes",
+            "char_offset": [
+              250,
+              255
+            ],
+            "page": "unknown",
+            "entity_canonical": "pipes",
+            "entity_id": "pipes",
+            "confidence": 0.46
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipe",
+            "char_offset": [
+              8188,
+              8192
+            ],
+            "context_snippet": "Example showing the position of expansion joints, pipe supports and machine shoes\n\n|   Pos. | Descriptio",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "Pipe",
+            "char_offset": [
+              8319,
+              8323
+            ],
+            "context_snippet": "--------|\n|      1 | Expansion joint |\n|      2 | Pipe support    |\n|      3 | Machine shoe    |\n\n<!-- i",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipe",
+            "char_offset": [
+              8401,
+              8405
+            ],
+            "context_snippet": "hine shoe    |\n\n<!-- image -->\n\nExpansion joints, pipe supports and machine shoes shown in fig. 1 are no",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipe",
+            "char_offset": [
+              11040,
+              11044
+            ],
+            "context_snippet": "er's instructions and pass them on to advisers or pipe installers.\n\n## 3.2.5 Prefilling of diaphragm tan",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "Pipes",
+            "char_offset": [
+              7099,
+              7104
+            ],
+            "context_snippet": "emoval.\n\n## 3.2 Mechanical installation\n\n## 3.2.1 Pipes\n\nArrows on the pump base show the direction of fl",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipes",
+            "char_offset": [
+              7189,
+              7194
+            ],
+            "context_snippet": "direction of flow of water through the pump.\n\nThe pipes connected to the booster system must be of adequa",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipes",
+            "char_offset": [
+              7266,
+              7271
+            ],
+            "context_snippet": "ter system must be of adequate size.\n\nConnect the pipes to the manifolds of the booster system. Either en",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipes",
+            "char_offset": [
+              7712,
+              7717
+            ],
+            "context_snippet": "otations in the motor and pump and by the flow in pipes and fittings. The effect on the environment is su",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipes",
+            "char_offset": [
+              8046,
+              8051
+            ],
+            "context_snippet": "you fit expansion joints on the inlet and outlet pipes to prevent that vibrations are transmitted throug",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipes",
+            "char_offset": [
+              8107,
+              8112
+            ],
+            "context_snippet": "event that vibrations are transmitted through the pipes.\n\n<!-- image -->\n\nFig. 1 Example showing the posi",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipes",
+            "char_offset": [
+              8542,
+              8547
+            ],
+            "context_snippet": "em.\n\nTighten all nuts before startup.\n\nFasten the pipes to parts of the building to ensure that they cann",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipes",
+            "char_offset": [
+              9769,
+              9774
+            ],
+            "context_snippet": "prevent the booster system from \"hanging\" in the pipes.\n\n## 3.2.4 Expansion joints\n\nFit expansion joints",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipes",
+            "char_offset": [
+              9891,
+              9896
+            ],
+            "context_snippet": "s:\n\n- to absorb expansions or contractions in the pipes caused by changing liquid temperature\n- to reduce",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipes",
+            "char_offset": [
+              10008,
+              10013
+            ],
+            "context_snippet": "strains in connection with pressure surges in the pipes\n- to isolate mechanical structure-borne noise in",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipes",
+            "char_offset": [
+              10067,
+              10072
+            ],
+            "context_snippet": "o isolate mechanical structure-borne noise in the pipes (only rubber bellows expansion joints).\n\n<!-- ima",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipes",
+            "char_offset": [
+              10200,
+              10205
+            ],
+            "context_snippet": "sion joints to compensate for inaccuracies in the pipes such as centre displacement of flanges.\n\nFit expa",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pipe",
+            "matched_text": "pipes",
+            "char_offset": [
+              10905,
+              10910
+            ],
+            "context_snippet": "rods for flanges larger than DN 100.\n\nAnchor the pipes so that they do not stress the expansion joints a",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "outlet pipe",
+            "matched_text": "outlet pipes",
+            "char_offset": [
+              8039,
+              8051
+            ],
+            "context_snippet": "nd that you fit expansion joints on the inlet and outlet pipes to prevent that vibrations are transmitted throug",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "line",
+            "matched_text": "line",
+            "char_offset": [
+              7942,
+              7946
+            ],
+            "context_snippet": "d in blocks of flats or the first consumer on the line is close to the booster system, we recommend that",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "line",
+            "matched_text": "line",
+            "char_offset": [
+              38421,
+              38425
+            ],
+            "context_snippet": ". 9 Display design\n\n<!-- image -->\n\n## 7.1.1 Menu line\n\nThe menu line (A) is illustrated in fig. 9.\n\nThe",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "line",
+            "matched_text": "line",
+            "char_offset": [
+              38436,
+              38440
+            ],
+            "context_snippet": "ign\n\n<!-- image -->\n\n## 7.1.1 Menu line\n\nThe menu line (A) is illustrated in fig. 9.\n\nThe display has fo",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "line",
+            "matched_text": "line",
+            "char_offset": [
+              38840,
+              38844
+            ],
+            "context_snippet": "ings (password option)            |\n\n## 7.1.2 Top line\n\nThe top line (B) is illustrated in fig. 9. It sh",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "line",
+            "matched_text": "line",
+            "char_offset": [
+              38854,
+              38858
+            ],
+            "context_snippet": "option)            |\n\n## 7.1.2 Top line\n\nThe top line (B) is illustrated in fig. 9. It shows the follow",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "line",
+            "matched_text": "line",
+            "char_offset": [
+              39599,
+              39603
+            ],
+            "context_snippet": "own in lists with these symbols.\n\n## 7.1.5 Bottom line\n\nThe bottom line (C) shows the date and time.",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "line",
+            "matched_text": "line",
+            "char_offset": [
+              39616,
+              39620
+            ],
+            "context_snippet": "these symbols.\n\n## 7.1.5 Bottom line\n\nThe bottom line (C) shows the date and time.",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "connection",
+            "matched_text": "connection",
+            "char_offset": [
+              9969,
+              9979
+            ],
+            "context_snippet": "uid temperature\n- to reduce mechanical strains in connection with pressure surges in the pipes\n- to isolate me",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "pipes_and_fittings",
+          "pipe_supports",
+          "pipe_support",
+          "pipes"
+        ]
+      },
+      {
+        "canonical_id": "manifold_generic",
+        "name": "blocks of flats",
+        "entity_type": "location",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.792,
+        "occurrences": [
+          {
+            "entity_name": "blocks of flats",
+            "char_offset": [
+              36,
+              51
+            ],
+            "page": "unknown",
+            "entity_canonical": "blocks_of_flats",
+            "entity_id": "blocks_of_flats",
+            "confidence": 0.742
+          },
+          {
+            "entity_name": "manifolds",
+            "char_offset": [
+              169,
+              178
+            ],
+            "page": "unknown",
+            "entity_canonical": "manifolds",
+            "entity_id": "manifolds",
+            "confidence": 0.453
+          },
+          {
+            "entity_name": "manifold",
+            "char_offset": [
+              231,
+              239
+            ],
+            "page": "unknown",
+            "entity_canonical": "manifold",
+            "entity_id": "manifold",
+            "confidence": 0.418
+          },
+          {
+            "entity_name": "inlet",
+            "char_offset": [
+              247,
+              252
+            ],
+            "page": "unknown",
+            "entity_canonical": "inlet",
+            "entity_id": "inlet",
+            "confidence": 0.665
+          },
+          {
+            "entity_name": "Inlet manifold",
+            "char_offset": [
+              149,
+              163
+            ],
+            "page": "unknown",
+            "entity_canonical": "inlet_manifold",
+            "entity_id": "inlet_manifold",
+            "confidence": 0.357
+          },
+          {
+            "entity_name": "Outlet manifold",
+            "char_offset": [
+              38,
+              53
+            ],
+            "page": "unknown",
+            "entity_canonical": "outlet_manifold",
+            "entity_id": "outlet_manifold",
+            "confidence": 0.636
+          },
+          {
+            "entity_name": "Stainless-steel manifold",
+            "char_offset": [
+              266,
+              290
+            ],
+            "page": "unknown",
+            "entity_canonical": "stainless_steel_manifold",
+            "entity_id": "stainless_steel_manifold",
+            "confidence": 0.819
+          },
+          {
+            "entity_name": "Galvanised-steel manifold",
+            "char_offset": [
+              244,
+              269
+            ],
+            "page": "unknown",
+            "entity_canonical": "galvanised_steel_manifold",
+            "entity_id": "galvanised_steel_manifold",
+            "confidence": 0.796
+          },
+          {
+            "entity_name": "nless-steel manifold",
+            "char_offset": [
+              0,
+              20
+            ],
+            "page": "unknown",
+            "entity_canonical": "nless_steel_manifold",
+            "entity_id": "nless_steel_manifold",
+            "confidence": 0.445
+          },
+          {
+            "entity_name": "Elbow manifold",
+            "char_offset": [
+              140,
+              154
+            ],
+            "page": "unknown",
+            "entity_canonical": "elbow_manifold",
+            "entity_id": "elbow_manifold",
+            "confidence": 0.586
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifold",
+            "char_offset": [
+              7384,
+              7392
+            ],
+            "context_snippet": ". Apply sealing compound to the unused end of the manifold, and fit the screw cap. For manifolds with flange",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifold",
+            "char_offset": [
+              10347,
+              10355
+            ],
+            "context_snippet": "1 1/2 times the nominal flange diameter from the manifold on the inlet as well as on the outlet side. This",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifold",
+            "char_offset": [
+              14891,
+              14899
+            ],
+            "context_snippet": "| 1          |\n|      3 | Inlet manifold, stainless steel         | 1          |\n|      4",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifold",
+            "char_offset": [
+              15156,
+              15164
+            ],
+            "context_snippet": "| 1 per pump |\n|      7 | Outlet manifold, stainless steel        | 1          |\n|      8 |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifold",
+            "char_offset": [
+              27994,
+              28002
+            ],
+            "context_snippet": "|        |        |\n| A      | Stainless-steel manifold, base frame and standard",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifold",
+            "char_offset": [
+              28230,
+              28238
+            ],
+            "context_snippet": "|        |        |\n| B      | Stainless-steel manifold, base frames and standard Galvanised-steel manifo",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifold",
+            "char_offset": [
+              28282,
+              28290
+            ],
+            "context_snippet": "nifold, base frames and standard Galvanised-steel manifold, base frame and standard | valves           |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifold",
+            "char_offset": [
+              28473,
+              28481
+            ],
+            "context_snippet": "|        |\n| C D    | valves Stainless-steel manifold, galvanised steel base frame and",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifold",
+            "char_offset": [
+              28712,
+              28720
+            ],
+            "context_snippet": "|        |\n| H      | standard Galvanised-steel manifold, base frame painted black and standard",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifold",
+            "char_offset": [
+              28938,
+              28946
+            ],
+            "context_snippet": "|        |        |\n| I      | Stainless-steel manifold, base frame painted black and",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifold",
+            "char_offset": [
+              30344,
+              30352
+            ],
+            "context_snippet": "|      |        |        |\n| E F    | Elbow manifold",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifold",
+            "char_offset": [
+              30583,
+              30591
+            ],
+            "context_snippet": "|      |        |        |\n| G      | No inlet manifold Diaphragm tank",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifolds",
+            "char_offset": [
+              7279,
+              7288
+            ],
+            "context_snippet": "st be of adequate size.\n\nConnect the pipes to the manifolds of the booster system. Either end can be used. Ap",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifolds",
+            "char_offset": [
+              7421,
+              7430
+            ],
+            "context_snippet": "d end of the manifold, and fit the screw cap. For manifolds with flanges, fit a blanking flange with gasket.",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifolds",
+            "char_offset": [
+              9688,
+              9697
+            ],
+            "context_snippet": "ation dampers, always fit expansion joints on the manifolds. This is important to prevent the booster system",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifolds",
+            "char_offset": [
+              13641,
+              13650
+            ],
+            "context_snippet": "motors.\n- -Do not lift the booster system by the manifolds.\n- -Do not stand on the manifolds.\n\n## CAUTION\n\n#",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifolds",
+            "char_offset": [
+              13675,
+              13684
+            ],
+            "context_snippet": "r system by the manifolds.\n- -Do not stand on the manifolds.\n\n## CAUTION\n\n## Crushing of feet\n\nMinor or moder",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifolds",
+            "char_offset": [
+              13871,
+              13880
+            ],
+            "context_snippet": "motors.\n- -Do not lift the booster system by the manifolds.\n- -Do not stand on the manifolds.\n\nWhen lifting",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "manifold",
+            "matched_text": "manifolds",
+            "char_offset": [
+              13905,
+              13914
+            ],
+            "context_snippet": "r system by the manifolds.\n- -Do not stand on the manifolds.\n\nWhen lifting the booster system, only use suita",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "inlet manifold",
+            "matched_text": "Inlet manifold",
+            "char_offset": [
+              14885,
+              14899
+            ],
+            "context_snippet": "| 1          |\n|      3 | Inlet manifold, stainless steel         | 1          |\n|      4",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "inlet manifold",
+            "matched_text": "inlet manifold",
+            "char_offset": [
+              30577,
+              30591
+            ],
+            "context_snippet": "|      |      |        |        |\n| G      | No inlet manifold Diaphragm tank",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "outlet manifold",
+            "matched_text": "Outlet manifold",
+            "char_offset": [
+              15149,
+              15164
+            ],
+            "context_snippet": "| 1 per pump |\n|      7 | Outlet manifold, stainless steel        | 1          |\n|      8 |",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "block",
+            "matched_text": "blocks",
+            "char_offset": [
+              7897,
+              7903
+            ],
+            "context_snippet": "the system.\n\nIf booster systems are installed in blocks of flats or the first consumer on the line is clo",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "blocks_of_flats",
+          "manifolds",
+          "manifold",
+          "inlet",
+          "inlet_manifold",
+          "outlet_manifold",
+          "stainless_steel_manifold",
+          "galvanised_steel_manifold",
+          "nless_steel_manifold",
+          "elbow_manifold"
+        ]
+      },
+      {
+        "canonical_id": "pressure_tank_generic",
+        "name": "diaphragm tank",
+        "entity_type": "equipment",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.6120000000000001,
+        "occurrences": [
+          {
+            "entity_name": "diaphragm tank",
+            "char_offset": [
+              58,
+              72
+            ],
+            "page": "unknown",
+            "entity_canonical": "diaphragm_tank",
+            "entity_id": "diaphragm_tank",
+            "confidence": 0.562
+          },
+          {
+            "keyword": "tank",
+            "matched_text": "tank",
+            "char_offset": [
+              11091,
+              11095
+            ],
+            "context_snippet": "ipe installers.\n\n## 3.2.5 Prefilling of diaphragm tank, if applicable\n\nIf a diaphragm tank is connected",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "tank",
+            "matched_text": "tank",
+            "char_offset": [
+              11127,
+              11131
+            ],
+            "context_snippet": "of diaphragm tank, if applicable\n\nIf a diaphragm tank is connected to the system, prefill the tank with",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "tank",
+            "matched_text": "tank",
+            "char_offset": [
+              11172,
+              11176
+            ],
+            "context_snippet": "ragm tank is connected to the system, prefill the tank with nitrogen to this pressure:\n\nHydro MPC-E and",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "tank",
+            "matched_text": "tank",
+            "char_offset": [
+              14496,
+              14500
+            ],
+            "context_snippet": "necessary fittings.\n\n<!-- image -->\n\nA diaphragm tank must be included in some installations.\n\nTM04 418",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "tank",
+            "matched_text": "tank",
+            "char_offset": [
+              15357,
+              15361
+            ],
+            "context_snippet": "| 2-6        |\n|     10 | Diaphragm tank                          | 1          |\n\n## 5.2 C",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "tank",
+            "matched_text": "tank",
+            "char_offset": [
+              30602,
+              30606
+            ],
+            "context_snippet": "|        |\n| G      | No inlet manifold Diaphragm tank",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "diaphragm_tank"
+        ]
+      },
+      {
+        "canonical_id": "motor_generic",
+        "name": "motors",
+        "entity_type": "equipment",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.433,
+        "occurrences": [
+          {
+            "entity_name": "motors",
+            "char_offset": [
+              174,
+              180
+            ],
+            "page": "unknown",
+            "entity_canonical": "motors",
+            "entity_id": "motors",
+            "confidence": 0.383
+          },
+          {
+            "entity_name": "E-motor",
+            "char_offset": [
+              162,
+              169
+            ],
+            "page": "unknown",
+            "entity_canonical": "e_motor",
+            "entity_id": "e_motor",
+            "confidence": 0.309
+          },
+          {
+            "keyword": "motor",
+            "matched_text": "motor",
+            "char_offset": [
+              7678,
+              7683
+            ],
+            "context_snippet": "d vibration are generated by the rotations in the motor and pump and by the flow in pipes and fittings. T",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "motor",
+            "matched_text": "motor",
+            "char_offset": [
+              20439,
+              20444
+            ],
+            "context_snippet": "|        |        |\n| E      | All pumps, E-motor or CUE",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "motor",
+            "matched_text": "motor",
+            "char_offset": [
+              33665,
+              33670
+            ],
+            "context_snippet": "|        |\n| U      | Certificate Undersized motor",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "motor",
+            "matched_text": "motors",
+            "char_offset": [
+              13592,
+              13598
+            ],
+            "context_snippet": "he booster system, do not use the eyebolts of the motors.\n- -Do not lift the booster system by the manifol",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "motor",
+            "matched_text": "motors",
+            "char_offset": [
+              13822,
+              13828
+            ],
+            "context_snippet": "he booster system, do not use the eyebolts of the motors.\n- -Do not lift the booster system by the manifol",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "motor",
+            "matched_text": "motors",
+            "char_offset": [
+              14217,
+              14223
+            ],
+            "context_snippet": "th CR 120 or CR 150 pumps, as this may damage the motors.\n\n## 5. Product introduction\n\n## 5.1 Product desc",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "motors",
+          "e_motor"
+        ]
+      },
+      {
+        "canonical_id": "sensor_generic",
+        "name": "Pressure transmitter and pressure gauge",
+        "entity_type": "equipment",
+        "detected_via": [
+          "text_entity",
+          "entity_extraction"
+        ],
+        "confidence": 0.493,
+        "occurrences": [
+          {
+            "entity_name": "Pressure transmitter and pressure gauge",
+            "char_offset": [
+              83,
+              122
+            ],
+            "page": "unknown",
+            "entity_canonical": "pressure_transmitter_and_pressure_gauge",
+            "entity_id": "pressure_transmitter_and_pressure_gauge",
+            "confidence": 0.443
+          },
+          {
+            "entity_name": "PE",
+            "char_offset": [
+              50,
+              52
+            ],
+            "page": "unknown",
+            "entity_canonical": "pe",
+            "entity_id": "pe",
+            "confidence": 0.976
+          },
+          {
+            "entity_name": "Redundant sensor",
+            "char_offset": [
+              95,
+              111
+            ],
+            "page": "unknown",
+            "entity_canonical": "redundant_sensor",
+            "entity_id": "redundant_sensor",
+            "confidence": 0.549
+          },
+          {
+            "keyword": "sensor",
+            "matched_text": "sensor",
+            "char_offset": [
+              31528,
+              31534
+            ],
+            "context_snippet": "|      |        |        |\n| K      | Redundant sensor One free position",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "transmitter",
+            "matched_text": "transmitter",
+            "char_offset": [
+              15224,
+              15235
+            ],
+            "context_snippet": "s steel        | 1          |\n|      8 | Pressure transmitter and pressure gauge | 1          |\n|      9 | Pump",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "gauge",
+            "matched_text": "gauge",
+            "char_offset": [
+              15249,
+              15254
+            ],
+            "context_snippet": "|\n|      8 | Pressure transmitter and pressure gauge | 1          |\n|      9 | Pump",
+            "page": "unknown",
+            "confidence": 0.95
+          },
+          {
+            "keyword": "pressure gauge",
+            "matched_text": "pressure gauge",
+            "char_offset": [
+              15240,
+              15254
+            ],
+            "context_snippet": "1          |\n|      8 | Pressure transmitter and pressure gauge | 1          |\n|      9 | Pump",
+            "page": "unknown",
+            "confidence": 0.95
+          }
+        ],
+        "parent_entity_ids": [
+          "pressure_transmitter_and_pressure_gauge",
+          "pe",
+          "redundant_sensor"
+        ]
+      },
+      {
+        "canonical_id": "flexcon_expansion_tank",
+        "name": "A",
+        "entity_type": "parameter",
+        "detected_via": "entity_extraction",
+        "confidence": 0.825,
+        "occurrences": [
+          {
+            "entity_name": "A",
+            "char_offset": [
+              75,
+              76
+            ],
+            "page": "unknown",
+            "entity_canonical": "a",
+            "entity_id": "a",
+            "confidence": 0.825
+          },
+          {
+            "entity_name": "N",
+            "char_offset": [
+              47,
+              48
+            ],
+            "page": "unknown",
+            "entity_canonical": "n",
+            "entity_id": "n",
+            "confidence": 0.87
+          },
+          {
+            "entity_name": "X",
+            "char_offset": [
+              194,
+              195
+            ],
+            "page": "unknown",
+            "entity_canonical": "x",
+            "entity_id": "x",
+            "confidence": 0.337
+          }
+        ],
+        "parent_entity_ids": [
+          "a",
+          "n",
+          "x"
+        ]
+      }
+    ],
+    "summary": {
+      "total_components": 14,
+      "total_mentions": 346,
+      "detection_methods": {
+        "text_entity": 13,
+        "visual": 0
+      },
+      "coverage_notes": "Fused text and entity extraction"
+    }
+  }
+}

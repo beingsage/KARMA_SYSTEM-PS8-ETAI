@@ -1,0 +1,92 @@
+{
+  "timestamp": "2026-07-15T11:41:08.935475",
+  "stage": "yolo_pid_detector",
+  "status": "completed",
+  "full_output": {
+    "detected_objects": [
+      {
+        "page": 1,
+        "boxes": [],
+        "labels": [],
+        "confidences": []
+      },
+      {
+        "page": 2,
+        "boxes": [],
+        "labels": [],
+        "confidences": []
+      },
+      {
+        "page": 3,
+        "boxes": [
+          [
+            46.21623992919922,
+            185.77554321289062,
+            1907.3143310546875,
+            2367.45361328125
+          ]
+        ],
+        "labels": [
+          "book"
+        ],
+        "confidences": [
+          0.40705618262290955
+        ]
+      },
+      {
+        "page": 4,
+        "boxes": [],
+        "labels": [],
+        "confidences": []
+      },
+      {
+        "page": 5,
+        "boxes": [
+          [
+            137.0404815673828,
+            17.884944915771484,
+            1917.645263671875,
+            2506.441162109375
+          ]
+        ],
+        "labels": [
+          "book"
+        ],
+        "confidences": [
+          0.4464244842529297
+        ]
+      },
+      {
+        "page": 6,
+        "boxes": [],
+        "labels": [],
+        "confidences": []
+      },
+      {
+        "page": 7,
+        "boxes": [],
+        "labels": [],
+        "confidences": []
+      },
+      {
+        "page": 8,
+        "boxes": [],
+        "labels": [],
+        "confidences": []
+      },
+      {
+        "page": 9,
+        "boxes": [],
+        "labels": [],
+        "confidences": []
+      },
+      {
+        "page": 10,
+        "boxes": [],
+        "labels": [],
+        "confidences": []
+      }
+    ],
+    "source": "ultralytics_yolo"
+  }
+}
