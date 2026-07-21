@@ -1,7 +1,7 @@
 -r base.txt
 transformers==4.57.6
 sentence-transformers==5.6.0
-gliner==0.2.27
-glirel==1.2.1
+gliner==0.2.25
+glirel==1.2.0
 git+https://github.com/chakki-works/seqeval.git#egg=seqeval
 # BLINK is provided by the local compatibility shim in ./blink

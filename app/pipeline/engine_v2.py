@@ -169,7 +169,8 @@ class IndustrialGraphPipeline:
             _log_model_device(self.entity_extractor, "Entity extractor")
             print(f"✓ Entity extractor ready ({self.entity_extractor.__class__.__name__})")
         except Exception as exc:
-            print(f"⚠ Entity extractor initialization failed: {type(exc).__name__} - {exc}")
+            self.entity_extractor = None
+            print(f"⚠ Entity extractor initialization failed: {type(exc).__name__} - {exc}; continuing with heuristic fallback")
 
         try:
             from app.pipeline.relation_extractor import RebelRelationExtractor
@@ -183,7 +184,7 @@ class IndustrialGraphPipeline:
             print(f"✓ Relation extractor ready ({self.relation_extractor.__class__.__name__})")
         except Exception as exc:
             self.relation_extractor = None
-            print(f"⚠ Relation extractor initialization failed: {type(exc).__name__} - {exc}")
+            print(f"⚠ Relation extractor initialization failed: {type(exc).__name__} - {exc}; continuing with heuristic fallback")
 
         try:
             self.pid_symbol_detector = PIDSymbolDetector()

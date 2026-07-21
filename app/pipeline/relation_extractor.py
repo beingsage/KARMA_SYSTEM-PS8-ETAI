@@ -33,6 +33,9 @@ class GLiRELRelationExtractor:
                 self.model = GLiREL.from_pretrained(self.model_name, map_location=self.device)
             if hasattr(self.model, "eval"):
                 self.model.eval()
+            # Validate model has expected attributes
+            if not hasattr(self.model, "extract_triples"):
+                raise AttributeError("GLiREL model missing extract_triples method")
             self.is_ready = self.model is not None
             self.backend = "glirel"
             print(f"✓ GLiREL relation extraction model loaded on {self.device}: {self.model_name}")
@@ -43,6 +46,8 @@ class GLiRELRelationExtractor:
                 print("  ⚠ Detected pyarrow API mismatch. The runtime now shims `PyExtensionType` when possible; otherwise install a pyarrow build that still exposes that alias.")
             if "weights_only" in msg or "pickle" in msg or "torch.load" in msg:
                 print("  ⚠ Detected torch loading/pickle issue. Ensure PyTorch >= 2.6 or use safetensors checkpoints; consider installing `safetensors` and using .safetensors model files.")
+            if "found_via" in msg or "LoadedDL" in msg:
+                print("  ⚠ Detected GLiREL DataLoader API mismatch. This may be due to version incompatibility between glirel and its dependencies.")
             print("  ⚠ Falling back to heuristic relation extraction.")
             self.model = None
             self.is_ready = True

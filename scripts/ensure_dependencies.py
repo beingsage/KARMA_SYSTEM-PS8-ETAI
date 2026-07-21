@@ -36,7 +36,7 @@ DEFAULT_REQUIRED_PACKAGES = [
     "pydantic",
     "pypdf",
     "neo4j",
-    "numpy>=2.0,<3.0",
+    "numpy>=1.24.0,<2.0.0",
     "requests>=2.32.3,<3.0.0",
     "Pillow>=11.0.0,<13.0.0",
     "pydantic-settings>=2.14.2,<3.0.0",
@@ -51,10 +51,10 @@ OPTIONAL_PACKAGES = [
     "loguru>=0.7.0",
     "node2vec>=0.5.0",
     "sentence-transformers>=5.6.0",
-    "bertopic>=0.17.4",
-    "hdbscan>=0.8.44",
-    "umap-learn>=0.5.12",
-    "networkx>=3.0",
+    "bertopic>=0.15.0,<0.18.0",
+    "hdbscan>=0.8.30,<0.9.0",
+    "umap-learn>=0.5.1,<0.6.0",
+    "networkx>=2.0,<3.0",
     "langgraph>=0.2.76",
     "langchain>=0.3.0",
     "langchain-community>=0.4.2",
@@ -188,6 +188,11 @@ def _is_kaggle_environment() -> bool:
 
 
 def _should_skip_on_kaggle(package_spec: str) -> bool:
+    normalized = _normalize_package_spec(package_spec).lower()
+    if "groundingdino" in normalized:
+        return True
+    if "glirel" in normalized or "gliner" in normalized:
+        return True
     return False
 
 
@@ -346,6 +351,11 @@ def ensure_dependencies(
         normalized_package = _normalize_package_spec(package).lower()
         if _should_skip_on_kaggle(package):
             print(f"  SKIP: skipping {package} on Kaggle; fallback behavior will be used")
+            failed_packages.append(package)
+            continue
+
+        if _should_skip_on_kaggle(package):
+            print(f"  SKIP: skipping {package} because it is not required for this runtime")
             failed_packages.append(package)
             continue
 
