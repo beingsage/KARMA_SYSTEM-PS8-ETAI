@@ -14,13 +14,17 @@ NOTE: We do NOT replace OCR/entity/relation extractors here.
 from __future__ import annotations
 
 import importlib
+import json
 import mimetypes
 import os
 import re
 import tempfile
+import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
+
+from app.config import settings
 
 
 def _dynamic_import(path: str) -> Any:
@@ -34,8 +38,9 @@ def _safe_imports():
     try:
         from llama_index.core import Document, VectorStoreIndex, Settings as LlamaSettings
         from llama_index.core.node_parser import SimpleNodeParser
+        from llama_index.core.readers.file.base import SimpleDirectoryReader
         from llama_index.core.schema import TextNode
-        from llama_index.core.embeddings import BaseEmbedding
+        from llama_index.core.embeddings import BaseEmbedding, MockEmbedding
         from llama_index.core.retrievers import VectorIndexRetriever
         from llama_index.core.postprocessor import SimilarityPostprocessor
     except Exception as exc:  # pragma: no cover
@@ -45,10 +50,12 @@ def _safe_imports():
         "Document": Document,
         "VectorStoreIndex": VectorStoreIndex,
         "SimpleNodeParser": SimpleNodeParser,
+        "SimpleDirectoryReader": SimpleDirectoryReader,
         "TextNode": TextNode,
         "VectorIndexRetriever": VectorIndexRetriever,
         "SimilarityPostprocessor": SimilarityPostprocessor,
         "LlamaSettings": LlamaSettings,
+        "MockEmbedding": MockEmbedding,
     }, None
 
 
@@ -104,15 +111,41 @@ class HybridEvidence:
 class LlamaIndexHybrid:
     """Hybrid citation-grounded synthesis using LlamaIndex retrieval."""
 
-    def __init__(self, embedder: Optional[Any] = None) -> None:
+    def __init__(
+        self,
+        embedder: Optional[Any] = None,
+        api_key: Optional[str] = None,
+        llamaparse_api_key: Optional[str] = None,
+    ) -> None:
         self._llama, self._import_error = _safe_imports()
         self._index: Any = None
         self._retriever: Any = None
         self._embedder = embedder
+        self._api_key = api_key or settings.llama_api_key or os.getenv("OPENAI_API_KEY", "") or os.getenv("LLAMA_CLOUD_API_KEY", "") or os.getenv("LLAMA_API_KEY", "")
+        self._llamaparse_api_key = llamaparse_api_key or settings.llamaparse_api_key or os.getenv("LLAMAPARSE_API_KEY", "")
+        self._configure_api_keys()
 
     @property
     def available(self) -> bool:
         return self._llama is not None
+
+    def _configure_api_keys(self) -> None:
+        if self._api_key:
+            os.environ["OPENAI_API_KEY"] = self._api_key
+            os.environ["LLAMA_API_KEY"] = self._api_key
+            os.environ["LLAMA_CLOUD_API_KEY"] = self._api_key
+        if self._llamaparse_api_key:
+            os.environ["LLAMAPARSE_API_KEY"] = self._llamaparse_api_key
+            if not self._api_key:
+                os.environ["OPENAI_API_KEY"] = self._llamaparse_api_key
+
+        try:
+            import openai as _openai
+            effective_key = self._api_key or self._llamaparse_api_key
+            if effective_key:
+                _openai.api_key = effective_key
+        except Exception:
+            pass
 
     def _get_loader_class(self, extension: str) -> Optional[Any]:
         for candidate in _LOADER_CANDIDATES.get(extension.lower(), []):
@@ -122,27 +155,112 @@ class LlamaIndexHybrid:
                 continue
         return None
 
+    def _load_documents_from_llamaparse(self, file_path: str, metadata: Optional[Dict[str, Any]] = None) -> List[Any]:
+        api_key = self._llamaparse_api_key or settings.llamaparse_api_key or os.getenv("LLAMAPARSE_API_KEY", "") or os.getenv("LLAMA_CLOUD_API_KEY", "")
+        if not api_key:
+            return []
+
+        try:
+            from llama_parse import LlamaParse
+        except Exception:
+            return []
+
+        try:
+            parser = LlamaParse(
+                api_key=api_key,
+                result_type="markdown",
+                save_images=True,
+                split_by_page=True,
+                show_progress=False,
+                verbose=False,
+                ignore_errors=True,
+            )
+            docs = parser.load_data(file_path)
+            if docs:
+                for doc in docs:
+                    if isinstance(doc, dict):
+                        continue
+                    md = getattr(doc, "metadata", {}) or {}
+                    if metadata:
+                        md = {**metadata, **md}
+                        setattr(doc, "metadata", md)
+                return docs
+        except Exception:
+            return []
+
+        return []
+
     def _load_documents_from_path(self, file_path: str, metadata: Optional[Dict[str, Any]] = None) -> List[Any]:
         ext = Path(file_path).suffix.lower() or ".txt"
+
+        direct_docs = self._load_documents_from_llamaparse(file_path, metadata=metadata)
+        if direct_docs:
+            return direct_docs
+
         loader_class = self._get_loader_class(ext)
         if loader_class is not None:
             try:
                 loader = loader_class()
                 if hasattr(loader, "load_data"):
-                    return loader.load_data(file_path)
+                    docs = loader.load_data(file_path)
+                    if docs:
+                        return docs
                 if hasattr(loader, "load"):
-                    return loader.load(file_path)
+                    docs = loader.load(file_path)
+                    if docs:
+                        return docs
             except Exception:
                 pass
 
+        SimpleDirectoryReader = self._llama.get("SimpleDirectoryReader")
+        if SimpleDirectoryReader is not None:
+            try:
+                docs = SimpleDirectoryReader(input_files=[file_path], raise_on_error=False).load_data()
+                if docs:
+                    return docs
+            except Exception:
+                pass
+
+        # If file content is already structured JSON from a LlamaParse-style extractor,
+        # try to preserve structured metadata when available.
         try:
             with open(file_path, "rb") as f:
-                text = f.read().decode("utf-8", errors="ignore")
+                raw_bytes = f.read()
+                raw_text = raw_bytes.decode("utf-8", errors="ignore")
         except Exception:
-            text = ""
+            raw_text = ""
 
         Document = self._llama["Document"]
-        return [Document(text=text, metadata=metadata or {})]
+        if metadata is None:
+            metadata = {}
+
+        if raw_text:
+            try:
+                parsed = json.loads(raw_text)
+                if isinstance(parsed, dict) and (
+                    "text" in parsed or "items" in parsed or "elements" in parsed
+                ):
+                    metadata = {**metadata, **parsed}
+                    item_text = []
+                    if isinstance(parsed.get("items"), list):
+                        for item in parsed["items"]:
+                            if isinstance(item, dict):
+                                text = item.get("text") or item.get("content") or item.get("snippet") or str(item)
+                                if text:
+                                    item_text.append(str(text))
+                    elif isinstance(parsed.get("elements"), list):
+                        for item in parsed["elements"]:
+                            if isinstance(item, dict):
+                                text = item.get("text") or item.get("content") or item.get("snippet") or str(item)
+                                if text:
+                                    item_text.append(str(text))
+                    if item_text:
+                        return [Document(text="\n\n".join(item_text), metadata=metadata)]
+                    return [Document(text=parsed.get("text", raw_text), metadata=metadata)]
+            except Exception:
+                pass
+
+        return [Document(text=raw_text, metadata=metadata)]
 
     def load_documents(
         self,
@@ -155,9 +273,12 @@ class LlamaIndexHybrid:
         if not self.available:
             raise RuntimeError(f"LlamaIndexHybrid unavailable: {self._import_error}")
 
+        Document = self._llama["Document"]
+
         if text is not None:
-            Document = self._llama["Document"]
-            return [Document(text=text, metadata=metadata or {})]
+            if metadata is None:
+                metadata = {}
+            return [Document(text=text, metadata=metadata)]
 
         if file_bytes is not None:
             suffix = None
@@ -193,6 +314,13 @@ class LlamaIndexHybrid:
         if self._embedder is not None:
             try:
                 LlamaSettings.embed_model = self._embedder
+            except Exception:
+                pass
+        else:
+            try:
+                MockEmbedding = self._llama.get("MockEmbedding")
+                if MockEmbedding is not None:
+                    LlamaSettings.embed_model = MockEmbedding(embed_dim=8)
             except Exception:
                 pass
 
@@ -269,6 +397,13 @@ class LlamaIndexHybrid:
                 LlamaSettings.embed_model = self._embedder
             except Exception:
                 pass
+        else:
+            try:
+                MockEmbedding = self._llama.get("MockEmbedding")
+                if MockEmbedding is not None:
+                    LlamaSettings.embed_model = MockEmbedding(embed_dim=8)
+            except Exception:
+                pass
 
         docs: List[Any] = []
         text_chunks_metadata = text_chunks_metadata or [{} for _ in text_chunks]
@@ -334,6 +469,67 @@ class LlamaIndexHybrid:
 
         return HybridEvidence(contexts=contexts, combined_text=combined_text, coverage_score=float(coverage))
 
+    def _llm_synthesize_citation_json(
+        self,
+        entities: List[Dict[str, Any]],
+        relations: List[Dict[str, Any]],
+        text: str,
+        queries: List[str],
+        evidence: HybridEvidence,
+    ) -> Optional[Dict[str, Any]]:
+        api_key = settings.gemini_api_key or os.getenv("GEMINI_API_KEY", "") or os.getenv("GOOGLE_API_KEY", "")
+        if not api_key:
+            return None
+
+        prompt = (
+            "You are an evidence-grounded industrial RCA assistant. "
+            "Return ONLY valid JSON with keys: summary_method, status, anomalies_detected, failure_risks, "
+            "maintenance_recommendations, compliance, confidence, evidence_coverage, citations. "
+            "Use the retrieved evidence to support claims, keep the output concise, and do not invent facts.\n\n"
+            f"Question: {text[:400]}\n\n"
+            f"Entities: {json.dumps(entities[:8], ensure_ascii=False)}\n\n"
+            f"Relations: {json.dumps(relations[:8], ensure_ascii=False)}\n\n"
+            f"Evidence contexts:\n{json.dumps(evidence.contexts[:5], ensure_ascii=False)}"
+        )
+
+        try:
+            payload = {"contents": [{"parts": [{"text": prompt}]}]}
+            data = json.dumps(payload).encode("utf-8")
+            request = urllib.request.Request(
+                f"https://generativelanguage.googleapis.com/v1beta/models/{os.getenv('GEMINI_MODEL', 'gemini-2.0-flash')}:generateContent?key={api_key}",
+                data=data,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(request, timeout=20) as response:
+                body = json.loads(response.read().decode("utf-8"))
+
+            candidates = body.get("candidates") or []
+            if not candidates:
+                return None
+            parts = candidates[0].get("content", {}).get("parts", [])
+            output_text = "".join(part.get("text", "") for part in parts if isinstance(part, dict))
+            if not output_text:
+                return None
+
+            parsed = json.loads(output_text)
+            if isinstance(parsed, dict):
+                parsed["summary_method"] = parsed.get("summary_method") or "llm-citation-synthesis"
+                parsed["status"] = parsed.get("status") or "analyzed"
+                parsed["citations"] = parsed.get("citations") or [
+                    {
+                        "chunk_id": c.get("chunk_id"),
+                        "score": c.get("score"),
+                        "snippet": (c.get("text") or "")[:180],
+                    }
+                    for c in evidence.contexts[:5]
+                ]
+                return parsed
+        except Exception:
+            return None
+
+        return None
+
     def citation_summarize(
         self,
         entities: List[Dict[str, Any]],
@@ -343,11 +539,8 @@ class LlamaIndexHybrid:
     ) -> Dict[str, Any]:
         """Return evidence-grounded JSON schema expected by your GraphRAG stage.
 
-        IMPORTANT: This function does not call an LLM here by default.
-        It produces a grounded-but-extraction-style output.
-
-        If you later wire a LLM, keep the validation rule:
-        - claims must be directly supported by retrieved contexts.
+        This function now prefers an LLM-backed synthesis path when a Gemini key is available,
+        while preserving the original retrieval/heuristic fallback for offline or degraded runs.
         """
         if queries is None:
             top_ents = entities[:12]
@@ -361,6 +554,11 @@ class LlamaIndexHybrid:
             queries = (ent_queries + rel_queries)[:10] or [text[:200] if text else "document"]
 
         evidence = self.retrieve(queries=queries, entities=entities)
+
+        llm_result = self._llm_synthesize_citation_json(entities, relations, text, queries, evidence)
+        if llm_result is not None:
+            llm_result.setdefault("evidence_coverage", evidence.coverage_score)
+            return llm_result
 
         if not evidence.contexts or evidence.coverage_score < 0.05:
             return {

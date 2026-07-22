@@ -51,7 +51,7 @@ class AdvancedPipelineStages:
         self.rca_agent = models.get("rca")
         self.lessons_miner = models.get("bertopic")
         self.clusterer = models.get("hdbscan")
-        self.graph_embedder = models.get("node2vec")
+        self.graph_embedder = models.get("graphsage") or models.get("node2vec")
     
     # ========================================================================
     # STAGE 1: Store Embeddings in Qdrant
@@ -516,10 +516,10 @@ class AdvancedPipelineStages:
 
     async def stage_graph_embeddings(self,
                                     pipeline_result: Dict[str, Any]) -> Dict[str, Any]:
-        """Stage: Generate knowledge graph embeddings using Node2Vec."""
+        """Stage: Generate knowledge graph embeddings using GraphSAGE or Node2Vec fallback."""
         try:
             if not self.graph_embedder or not self.graph_embedder.available:
-                logger.warning("Node2Vec graph embedder not available")
+                logger.warning("Graph embedding backend not available")
                 return pipeline_result
 
             embeddings = self.graph_embedder.generate_embeddings()
@@ -530,7 +530,7 @@ class AdvancedPipelineStages:
                 "summary": f"Generated {len(embeddings)} graph node embeddings",
                 "timestamp": datetime.now().isoformat()
             }
-            logger.info(f"✓ Generated {len(embeddings)} Node2Vec embeddings")
+            logger.info(f"✓ Generated {len(embeddings)} graph embeddings")
         except Exception as e:
             logger.error(f"Error in graph embeddings: {e}")
             pipeline_result["stage_15_graph_embeddings"] = {

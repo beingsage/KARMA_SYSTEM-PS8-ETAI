@@ -87,6 +87,7 @@ from app.pipeline.model_helpers import (
     BgeReranker,
     GroundingDinoDetector,
     PIDSymbolDetector,
+    PandidRCNNDetector,
     SamSegmenter,
     VisualLanguageCaptioner,
 )
@@ -110,6 +111,7 @@ class IndustrialGraphPipeline:
         self.pid_symbol_detector = None
         self.grounding_dino_detector = None
         self.sam_segmenter = None
+        self.pandid_rcnn_detector = None
         self.embedding_model = None
         self.visual_language_model = None
         self.reranker_model = None
@@ -212,6 +214,13 @@ class IndustrialGraphPipeline:
         except Exception as exc:
             self.sam_segmenter = None
             print(f"⚠ SAM2 initialization failed: {type(exc).__name__} - {exc}")
+
+        try:
+            self.pandid_rcnn_detector = PandidRCNNDetector()
+            print(f"✓ PANDID RCNN detector ready ({self.pandid_rcnn_detector.backend})")
+        except Exception as exc:
+            self.pandid_rcnn_detector = None
+            print(f"⚠ PANDID RCNN initialization failed: {type(exc).__name__} - {exc}")
 
         try:
             self.embedding_model = BgeEmbedder()
@@ -438,6 +447,13 @@ class IndustrialGraphPipeline:
                 required=False,
                 pdf_bytes=pdf_bytes,
                 text=text,
+            )
+
+            pandid_rcnn_info = await self._run_stage(
+                "pandid_rcnn_detection",
+                self._detect_pandid_rcnn_objects,
+                required=False,
+                pdf_bytes=pdf_bytes,
             )
 
             sam_segmentation_info = await self._run_stage(
@@ -754,6 +770,7 @@ class IndustrialGraphPipeline:
                 "reading_order": (reading_order or {}).get("reading_order", []) if isinstance(reading_order, dict) else (reading_order or []),
                 "table_transformer": table_transformer_info or {},
                 "groundingdino": groundingdino_info or {},
+                "pandid_rcnn": pandid_rcnn_info or {},
                 "sam_segments": sam_segmentation_info or {},
                 "yolo_pid_insights": yolo_pid_insights or {},
                 "pid_symbol_insights": pid_symbol_insights or {},
@@ -793,6 +810,7 @@ class IndustrialGraphPipeline:
                         "yolo": self.yolo_model is not None,
                         "pid_symbol_detector": self.pid_symbol_detector is not None,
                         "groundingdino": self.grounding_dino_detector is not None,
+                        "pandid_rcnn": self.pandid_rcnn_detector is not None,
                         "sam": self.sam_segmenter is not None,
                         "embeddings": self.embedding_model is not None,
                         "reranker": self.reranker_model is not None,
@@ -1019,6 +1037,13 @@ class IndustrialGraphPipeline:
                 required=False,
                 pdf_bytes=None,
                 text=text,
+            )
+
+            pandid_rcnn_info = await self._run_stage(
+                "pandid_rcnn_detection",
+                self._detect_pandid_rcnn_objects,
+                required=False,
+                pdf_bytes=None,
             )
 
             sam_segmentation_info = await self._run_stage(
@@ -1292,6 +1317,7 @@ class IndustrialGraphPipeline:
                 "reading_order": (reading_order or {}).get("reading_order", []) if isinstance(reading_order, dict) else (reading_order or []),
                 "table_transformer": table_transformer_info or {},
                 "groundingdino": groundingdino_info or {},
+                "pandid_rcnn": pandid_rcnn_info or {},
                 "sam_segments": sam_segmentation_info or {},
                 "yolo_pid_insights": yolo_pid_insights or {},
                 "pid_symbol_insights": pid_symbol_insights or {},
@@ -1330,6 +1356,7 @@ class IndustrialGraphPipeline:
                         "yolo": self.yolo_model is not None,
                         "pid_symbol_detector": self.pid_symbol_detector is not None,
                         "groundingdino": self.grounding_dino_detector is not None,
+                        "pandid_rcnn": self.pandid_rcnn_detector is not None,
                         "sam": self.sam_segmenter is not None,
                         "embeddings": self.embedding_model is not None,
                         "reranker": self.reranker_model is not None,
@@ -2242,6 +2269,25 @@ class IndustrialGraphPipeline:
             print(f"⚠ GroundingDINO detection failed: {exc}")
             return {"detections": [], "source": "groundingdino_failed", "error": str(exc)}
 
+    def _detect_pandid_rcnn_objects(self, pdf_bytes: bytes, text: str = "") -> Dict[str, Any]:
+        if self.pandid_rcnn_detector is None:
+            return {"detections": [], "source": "pandid_rcnn_unavailable"}
+
+        images = self._render_pdf_pages(pdf_bytes)
+        if images is None:
+            images = []
+
+        try:
+            detections = self.pandid_rcnn_detector.detect(images)
+            return {
+                "detections": detections,
+                "source": "pandid_rcnn",
+                "count": len(detections),
+            }
+        except Exception as exc:
+            print(f"⚠ PANDID RCNN detection failed: {exc}")
+            return {"detections": [], "source": "pandid_rcnn_failed", "error": str(exc)}
+
     def _segment_with_sam(self, pdf_bytes: bytes, grounding_info: Optional[Dict[str, Any]] = None, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         if self.sam_segmenter is None:
             return {"segments": [], "source": "sam_unavailable"}
@@ -2401,10 +2447,35 @@ class IndustrialGraphPipeline:
                 captions = visual_language_model.caption_images(images)
                 tried_model = bool(captions)
                 if captions:
+                    source_artifacts = []
+                    for page_number, caption in enumerate(captions, start=1):
+                        content = None
+                        if page_number - 1 < len(images):
+                            try:
+                                from io import BytesIO
+                                import base64
+                                buffer = BytesIO()
+                                images[page_number - 1].save(buffer, format="PNG")
+                                content = base64.b64encode(buffer.getvalue()).decode("utf-8")
+                            except Exception:
+                                content = None
+                        source_artifacts.append(
+                            {
+                                "artifact_id": f"page-image-{page_number}",
+                                "source_document": getattr(self, "current_source_name", "unknown"),
+                                "kind": "page_image",
+                                "page": page_number,
+                                "mime_type": "image/png",
+                                "caption": caption.get("caption", ""),
+                                "content": content,
+                                "metadata": {"method": caption.get("method", "image-to-text-pipeline")},
+                            }
+                        )
                     return {
                         "images_processed": len(captions),
                         "status": "vl_model",
                         "captions": captions,
+                        "source_artifacts": source_artifacts,
                         "method_tried_model": True,
                         "telemetry": {"fallback_usage": getattr(self, "fallback_usage", {}).copy()},
                     }
@@ -2479,10 +2550,36 @@ class IndustrialGraphPipeline:
                     f"[ALERT] vl_fallback used {fallback_usage['vl_fallback']} times; consider provisioning a VL model or containerizing a lightweight model"
                 )
 
+        source_artifacts = []
+        for page_number, caption in enumerate(captions, start=1):
+            content = None
+            if page_number - 1 < len(images):
+                try:
+                    from io import BytesIO
+                    import base64
+                    buffer = BytesIO()
+                    images[page_number - 1].save(buffer, format="PNG")
+                    content = base64.b64encode(buffer.getvalue()).decode("utf-8")
+                except Exception:
+                    content = None
+            source_artifacts.append(
+                {
+                    "artifact_id": f"page-image-{page_number}",
+                    "source_document": getattr(self, "current_source_name", "unknown"),
+                    "kind": "page_image",
+                    "page": page_number,
+                    "mime_type": "image/png",
+                    "caption": caption.get("caption", ""),
+                    "content": content,
+                    "metadata": {"method": caption.get("method", "ocr_proxy")},
+                }
+            )
+
         return {
             "images_processed": len(captions),
             "status": "vl_fallback" if captions else "vl_model_unavailable",
             "captions": captions,
+            "source_artifacts": source_artifacts,
             "method_tried_model": tried_model,
             "telemetry": {"fallback_usage": getattr(self, "fallback_usage", {}).copy()},
         }
@@ -2778,16 +2875,25 @@ class IndustrialGraphPipeline:
             }
         return self.copilot_agent.reason(entities, relations, text, text_chunks)
 
-    def _persist_graph(self, entities: List[Dict[str, Any]], relations: List[Dict[str, Any]], job_id: str) -> str:
+    def _persist_graph(
+        self,
+        entities: List[Dict[str, Any]],
+        relations: List[Dict[str, Any]],
+        job_id: str,
+        source_artifacts: Optional[List[Dict[str, Any]]] = None,
+    ) -> str:
         if self.graph_store is None:
             return "skipped (neo4j unavailable)"
 
         entity_success = self.graph_store.persist_entities(entities, job_id)
         relation_success = self.graph_store.persist_relations(relations, job_id)
+        artifact_success = False
+        if isinstance(source_artifacts, list):
+            artifact_success = self.graph_store.persist_source_artifacts(source_artifacts, job_id)
 
-        if entity_success and relation_success:
+        if entity_success and relation_success and artifact_success:
             return "persisted"
-        if entity_success or relation_success:
+        if entity_success or relation_success or artifact_success:
             return "partial"
         return "skipped"
 

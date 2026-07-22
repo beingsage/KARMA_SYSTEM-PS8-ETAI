@@ -75,6 +75,11 @@ class JobResult(BaseModel):
     status: str
     message: str
     uploaded_filename: Optional[str] = None
+    source_name: Optional[str] = None
+    source_type: Optional[str] = None
+    source_format: Optional[str] = None
+    parsed_source: Optional[bool] = None
+    source_metadata: Optional[dict[str, Any]] = None
     extraction_summary: Optional[str] = None
     text: Optional[str] = None
     entities: List[EntityRecord] = []

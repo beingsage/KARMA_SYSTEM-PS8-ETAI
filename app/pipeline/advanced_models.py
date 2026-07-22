@@ -649,6 +649,92 @@ class HDBSCANClusterer:
             return {"labels": [], "probabilities": [], "clusters": {}, "summary": f"Clustering failed: {exc}"}
 
 
+class GraphSAGEGraphEmbedder:
+    """Knowledge graph embedding using a PyG GraphSAGE-style fallback over Neo4j graph data."""
+
+    def __init__(self):
+        self.available = False
+        self.driver = None
+        self.nx = None
+        self.torch = None
+        self.tg = None
+        self.ts = None
+
+        try:
+            import networkx as nx
+            import torch
+            import torch_geometric as tg
+            from torch_geometric.utils import to_networkx
+            from neo4j import GraphDatabase
+
+            self.nx = nx
+            self.torch = torch
+            self.tg = tg
+            self.ts = to_networkx
+            self.driver = GraphDatabase.driver(
+                settings.neo4j_uri,
+                auth=(settings.neo4j_user, settings.neo4j_password),
+            )
+            self.available = True
+            logger.info("✓ GraphSAGE graph embedder initialized")
+        except ImportError as exc:
+            logger.warning(f"GraphSAGE dependencies missing: {exc}")
+        except Exception as exc:
+            logger.warning(f"GraphSAGE embedder initialization failed: {exc}")
+
+    def _load_graph(self) -> Optional[Any]:
+        if not self.available or self.driver is None:
+            return None
+
+        graph = self.nx.Graph()
+        try:
+            with self.driver.session() as session:
+                result = session.run(
+                    "MATCH (a)-[r]->(b) RETURN id(a) AS a_id, a.name AS a_name, labels(a) AS a_labels, id(b) AS b_id, b.name AS b_name, labels(b) AS b_labels"
+                )
+                for record in result:
+                    a_id = str(record["a_id"])
+                    b_id = str(record["b_id"])
+                    graph.add_node(a_id, name=record.get("a_name"), labels=record.get("a_labels"))
+                    graph.add_node(b_id, name=record.get("b_name"), labels=record.get("b_labels"))
+                    graph.add_edge(a_id, b_id)
+
+            return graph
+        except Exception as exc:
+            logger.error(f"Loading Neo4j graph failed: {exc}")
+            return None
+
+    def generate_embeddings(self, dimensions: int = 64, hidden_channels: int = 32, num_layers: int = 2) -> Dict[str, List[float]]:
+        graph = self._load_graph()
+        if graph is None or graph.number_of_nodes() == 0:
+            return {}
+
+        try:
+            from torch_geometric.nn import SAGEConv
+
+            nx_graph = graph
+            node_ids = list(nx_graph.nodes())
+            node_index = {node_id: idx for idx, node_id in enumerate(node_ids)}
+            edge_index = [[node_index[u], node_index[v]] for u, v in nx_graph.edges()]
+            edge_index_t = self.torch.tensor(edge_index, dtype=self.torch.long).t().contiguous()
+            x = self.torch.eye(len(node_ids), dtype=self.torch.float32)
+            conv1 = SAGEConv(len(node_ids), hidden_channels)
+            conv2 = SAGEConv(hidden_channels, dimensions)
+            with self.torch.no_grad():
+                hidden = conv1(x, edge_index_t)
+                hidden = self.torch.relu(hidden)
+                out = conv2(hidden, edge_index_t)
+            embeddings = {
+                node_ids[idx]: out[idx].tolist()
+                for idx in range(len(node_ids))
+            }
+            logger.info(f"✓ Generated GraphSAGE-style embeddings for {len(embeddings)} graph nodes")
+            return embeddings
+        except Exception as exc:
+            logger.error(f"GraphSAGE embedding generation failed: {exc}")
+            return {}
+
+
 class Node2VecGraphEmbedder:
     """Knowledge graph embedding using Node2Vec."""
 
@@ -989,6 +1075,12 @@ def initialize_advanced_models() -> Dict[str, Any]:
         logger.warning(f"⚠ HDBSCAN failed: {e}")
 
     # Knowledge graph embeddings
+    try:
+        initialized_models["graphsage"] = GraphSAGEGraphEmbedder()
+        logger.info("✓ GraphSAGE graph embedder initialized")
+    except Exception as e:
+        logger.warning(f"⚠ GraphSAGE failed: {e}")
+
     try:
         initialized_models["node2vec"] = Node2VecGraphEmbedder()
         logger.info("✓ Node2Vec graph embedder initialized")

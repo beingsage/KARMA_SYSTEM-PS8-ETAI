@@ -544,6 +544,103 @@ class Neo4jGraphStore:
             print(f"⚠ Failed to persist relations: {e}")
             return False
 
+    def persist_source_artifacts(
+        self,
+        artifacts: List[Dict[str, Any]],
+        job_id: str,
+    ) -> bool:
+        if not self.driver:
+            return False
+
+        valid_artifacts = [
+            artifact for artifact in artifacts
+            if isinstance(artifact, dict)
+            and (
+                artifact.get("artifact_id")
+                or artifact.get("source_document")
+                or artifact.get("kind")
+            )
+        ]
+        if not valid_artifacts:
+            print("⚠ No valid source artifacts to persist")
+            return False
+
+        timestamp = datetime.now().isoformat()
+        try:
+            with self.driver.session() as session:
+                session.run(
+                    """
+                    MERGE (j:Job {job_id: $job_id})
+                    SET j.timestamp = $timestamp
+                    """,
+                    job_id=job_id,
+                    timestamp=timestamp,
+                )
+
+                for artifact in valid_artifacts:
+                    artifact_id = str(
+                        artifact.get("artifact_id")
+                        or hashlib.md5(
+                            (
+                                str(artifact.get("source_document") or "")
+                                + "|"
+                                + str(artifact.get("kind") or "source_artifact")
+                                + "|"
+                                + str(artifact.get("page") or "")
+                            ).encode("utf-8")
+                        ).hexdigest()
+                    )
+                    source_document = artifact.get("source_document") or artifact.get("source_name") or artifact.get("file_name")
+                    kind = artifact.get("kind") or artifact.get("artifact_type") or "source_artifact"
+                    page = artifact.get("page") or artifact.get("page_number")
+                    mime_type = artifact.get("mime_type") or artifact.get("media_type") or "application/octet-stream"
+                    caption = artifact.get("caption") or artifact.get("description") or artifact.get("summary") or ""
+                    content = artifact.get("content") or artifact.get("blob") or artifact.get("image") or artifact.get("data")
+                    metadata = artifact.get("metadata") if isinstance(artifact.get("metadata"), dict) else {}
+                    provenance = artifact.get("provenance") or {
+                        "source_document": source_document,
+                        "source_method": artifact.get("source_method") or artifact.get("source") or "parser",
+                        "evidence": caption,
+                    }
+                    content_sha256 = hashlib.sha256(str(content).encode("utf-8")).hexdigest() if content is not None else None
+
+                    session.run(
+                        """
+                        MERGE (a:SourceArtifact {artifact_id: $artifact_id})
+                        SET a.kind = $kind,
+                            a.source_document = $source_document,
+                            a.page = $page,
+                            a.mime_type = $mime_type,
+                            a.caption = $caption,
+                            a.content = $content,
+                            a.content_sha256 = $content_sha256,
+                            a.metadata = $metadata,
+                            a.provenance = $provenance,
+                            a.updated_at = $timestamp
+                        WITH a
+                        MATCH (j:Job {job_id: $job_id})
+                        MERGE (j)-[:HAS_SOURCE_ARTIFACT]->(a)
+                        """,
+                        artifact_id=artifact_id,
+                        kind=kind,
+                        source_document=source_document,
+                        page=page,
+                        mime_type=mime_type,
+                        caption=caption,
+                        content=content,
+                        content_sha256=content_sha256,
+                        metadata=metadata,
+                        provenance=provenance,
+                        job_id=job_id,
+                        timestamp=timestamp,
+                    )
+
+                print(f"✓ Persisted {len(valid_artifacts)} source artifacts to Neo4j")
+                return True
+        except Exception as e:
+            print(f"⚠ Failed to persist source artifacts: {e}")
+            return False
+
     def migrate_existing_nodes(
         self,
         *,

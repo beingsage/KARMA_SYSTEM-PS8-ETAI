@@ -12,7 +12,16 @@ touch "$LOG_FILE"
 
 exec > >(tee -a "$LOG_FILE") 2>&1
 
-trap 'echo "run_all.sh completed at $(date +"%Y-%m-%d %H:%M:%S %Z")"' EXIT
+cleanup() {
+  echo "run_all.sh completed at $(date +"%Y-%m-%d %H:%M:%S %Z")"
+  if [ -n "${FRONTEND_PID:-}" ]; then
+    kill "$FRONTEND_PID" 2>/dev/null || true
+  fi
+  if [ -n "${SERVER_PID:-}" ]; then
+    kill "$SERVER_PID" 2>/dev/null || true
+  fi
+}
+trap cleanup EXIT
 
 echo "================================================================================"
 echo "Industrial PDF-to-Graph Pipeline - Full Setup & Startup"
@@ -584,6 +593,14 @@ if ! "${DEP_BOOTSTRAP_CMD[@]}"; then
   echo "  ⚠ Dependency bootstrap reported issues; continuing in best-effort mode."
 fi
 
+FRONTEND_REQUIREMENTS_FILE="$ROOT_DIR/requirements.frontend.txt"
+if [ -f "$ROOT_DIR/app/frontend/demo-ui/app.py" ] && [ -f "$FRONTEND_REQUIREMENTS_FILE" ]; then
+  echo "[3.1/6] Installing frontend Python dependencies..."
+  if ! "$PYTHON_BIN" "$ROOT_DIR/scripts/ensure_dependencies.py" --requirements "$FRONTEND_REQUIREMENTS_FILE" --python "$PYTHON_BIN"; then
+    echo "  ⚠ Frontend dependency bootstrap reported issues; continuing in best-effort mode."
+  fi
+fi
+
 # ============================================================================
 # 4. CREATE NECESSARY DIRECTORIES
 # ============================================================================
@@ -638,6 +655,7 @@ echo "Backend running on:"
 echo "  HTTP:  http://127.0.0.1:8001"
 echo "  Docs:  http://127.0.0.1:8001/docs"
 echo "  ReDoc: http://127.0.0.1:8001/redoc"
+echo "  Copilot: http://127.0.0.1:8001/copilot"
 echo ""
 echo "CORE API Endpoints:"
 echo "  POST   /api/v1/process-pdf        - Upload and process PDF"
@@ -678,6 +696,64 @@ if port_is_open "127.0.0.1" 8001; then
   sleep 2
 fi
 
+open_copilot_in_browser() {
+  local url="${1:-http://127.0.0.1:7860}"
+  if command -v xdg-open >/dev/null 2>&1; then
+    echo "  Opening Demo UI at $url"
+    (xdg-open "$url" >/dev/null 2>&1 || true) &
+  elif command -v python3 >/dev/null 2>&1; then
+    echo "  Opening Demo UI at $url"
+    (python3 -m webbrowser "$url" >/dev/null 2>&1 || true) &
+  fi
+}
+
+find_python_with_gradio() {
+  local candidates=("$ROOT_DIR/.venv/bin/python" "python3" "python")
+  for candidate in "${candidates[@]}"; do
+    local interpreter=""
+    if [ -x "$candidate" ]; then
+      interpreter="$candidate"
+    else
+      interpreter="$(command -v "$candidate" 2>/dev/null || true)"
+    fi
+    if [ -n "$interpreter" ] && [ -x "$interpreter" ]; then
+      if "$interpreter" -c "import importlib.util, sys; sys.exit(0 if importlib.util.find_spec('gradio') else 1)" >/dev/null 2>&1; then
+        echo "$interpreter"
+        return 0
+      fi
+    fi
+  done
+  return 1
+}
+
+start_demo_ui() {
+  local demo_script="$ROOT_DIR/app/frontend/demo-ui/app.py"
+  if [ ! -f "$demo_script" ]; then
+    echo "  Skipping Gradio demo: $demo_script not found"
+    return
+  fi
+
+  local default_port="${GRADIO_SERVER_PORT:-7860}"
+  local port="$default_port"
+  if port_is_open "127.0.0.1" "$default_port"; then
+    port=$((default_port + 1))
+    echo "  Gradio default port $default_port is busy; using fallback port $port"
+  fi
+  export GRADIO_SERVER_PORT="$port"
+
+  local demo_python="$(find_python_with_gradio)"
+  if [ -z "$demo_python" ]; then
+    echo "  Skipping Gradio demo: no Python interpreter with gradio installed was found."
+    echo "  Install it with: $PYTHON_BIN -m pip install gradio"
+    return
+  fi
+
+  echo "  Starting Gradio demo UI from $demo_script using $demo_python"
+  "$demo_python" "$demo_script" &
+  FRONTEND_PID=$!
+  wait_for_port "Gradio demo" "127.0.0.1" "$port" 30 || true
+}
+
 NEO4J_URI="${NEO4J_URI:-bolt://localhost:7687}" \
 NEO4J_USER="${NEO4J_USER:-neo4j}" \
 NEO4J_PASSWORD="${NEO4J_PASSWORD:-80907012}" \
@@ -689,4 +765,10 @@ PYTHONUNBUFFERED=1 \
     --port 8001 \
     --workers 1 \
     --loop uvloop \
-    --access-log
+    --access-log &
+SERVER_PID=$!
+
+wait_for_port "FastAPI" "127.0.0.1" 8001 60 || true
+start_demo_ui
+open_copilot_in_browser "http://127.0.0.1:7860"
+wait "$SERVER_PID"

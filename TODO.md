@@ -1,11 +1,11 @@
-# Pipeline Bug & Issue Tracker
+# Integration Plan: P&ID Faster R-CNN (pandid_rcnn.t7)
 
-> Last Updated: 2025-01-19
+## Goal
+Integrate the trained Faster R-CNN model from `training/pandid.ipynb` into the production pipeline. The model activates **only if** the weights file exists — otherwise zero change in behavior.
 
----
+## Steps
 
-## 🟢 Fixed Issues
-
+- [x] Step 0: Understanding the codebase and notebook
 ### Bug 1: Neo4j Cypher Syntax Error (Fixed ✓)
 - **File:** `app/pipeline/neo4j_store.py`
 - **Fix:** Added `WITH e` between `FOREACH` and `MATCH` to properly scope entity variable

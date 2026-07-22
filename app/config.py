@@ -76,6 +76,18 @@ class Settings:
     
     # LLM models
     qwen_model: str = get_env("QWEN_MODEL", "Qwen/Qwen2.5-0.5B-Instruct", _env_config)
+    gemini_api_key: str = get_env("GEMINI_API_KEY", get_env("GOOGLE_API_KEY", "", _env_config), _env_config)
+    tavily_api_key: str = get_env("TAVILY_API_KEY", "", _env_config)
+    llama_api_key: str = get_env(
+        "LLAMA_API_KEY",
+        get_env("OPENAI_API_KEY", get_env("LLAMA_CLOUD_API_KEY", "", _env_config), _env_config),
+        _env_config,
+    )
+    llamaparse_api_key: str = get_env(
+        "LLAMAPARSE_API_KEY",
+        get_env("OPENAI_API_KEY", "", _env_config),
+        _env_config,
+    )
     # Optional: local on-disk Qwen snapshot path (used for fully offline runs)
     qwen_local: str = get_env("QWEN_LOCAL", "models/qwen_local", _env_config)
     enable_prompt_zero_shot_extraction: bool = get_env(

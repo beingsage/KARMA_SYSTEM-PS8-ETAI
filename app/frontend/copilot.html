@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Industrial Copilot</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #040b14;
+      --panel: #0d1727;
+      --panel-2: #101d31;
+      --text: #f2f7ff;
+      --muted: #8aa3bf;
+      --accent: #7ce6ff;
+      --accent-2: #49e09d;
+      --danger: #ff7b7b;
+      --border: rgba(255,255,255,0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: radial-gradient(circle at top left, rgba(124,230,255,0.16), transparent 24%), var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .app { max-width: 1160px; margin: 0 auto; padding: 24px; display: grid; gap: 20px; }
+    .hero, .panel, .message, .reference { border: 1px solid var(--border); background: rgba(13, 23, 39, 0.95); box-shadow: 0 16px 36px rgba(0,0,0,0.22); }
+    .hero { border-radius: 24px; padding: 22px; display: grid; gap: 16px; }
+    .hero h1 { margin: 0 0 8px; font-size: 2rem; }
+    .hero p { margin: 0; color: var(--muted); line-height: 1.6; }
+    .hero-strip { display: flex; flex-wrap: wrap; gap: 8px; }
+    .hero-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--muted); font-size: 0.84rem; }
+    .hero-chip strong { color: var(--text); }
+    .grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; }
+    .panel { border-radius: 20px; padding: 18px; display: grid; gap: 12px; }
+    label { font-size: 0.9rem; color: var(--muted); }
+    textarea, input, button { font: inherit; }
+    textarea { width: 100%; min-height: 120px; border-radius: 14px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); padding: 12px; resize: vertical; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    button { border: 0; border-radius: 999px; padding: 10px 14px; cursor: pointer; color: #031018; font-weight: 700; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+    button.secondary { background: rgba(255,255,255,0.1); color: var(--text); border: 1px solid var(--border); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    .voice-status { font-size: 0.9rem; color: var(--accent); min-height: 1.2rem; }
+    .voice-status.is-listening { color: var(--danger); }
+    .voice-status.is-speaking { color: var(--accent-2); }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; border-radius: 999px; background: rgba(255,255,255,0.06); color: var(--muted); font-size: 0.84rem; }
+    .status { color: var(--accent); font-weight: 600; }
+    .result { display: grid; gap: 16px; }
+    .message { border-radius: 18px; padding: 16px; line-height: 1.7; }
+    .message h3 { margin: 0 0 10px; font-size: 1.04rem; }
+    .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+    .advanced-dashboard { display: grid; gap: 14px; }
+    .advanced-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 12px; }
+    .advanced-panel, .analysis-card { border: 1px solid var(--border); background: rgba(255,255,255,0.04); border-radius: 16px; padding: 12px; display: grid; gap: 8px; }
+    .section-title { font-size: 0.95rem; font-weight: 700; color: var(--accent); }
+    .status-stack { display: grid; gap: 8px; }
+    .status-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; border-radius: 12px; padding: 8px 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); }
+    .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: rgba(124,230,255,0.14); color: var(--accent); }
+    .status-pill.offline { background: rgba(255,123,123,0.14); color: var(--danger); }
+    .graph-view { min-height: 220px; border-radius: 14px; border: 1px dashed var(--border); background: radial-gradient(circle at top left, rgba(124,230,255,0.12), transparent 32%), rgba(255,255,255,0.02); padding: 10px; display: grid; gap: 10px; }
+    .graph-canvas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .graph-node { border-radius: 12px; padding: 10px; min-height: 56px; border: 1px solid var(--border); background: rgba(13,23,39,0.9); display: flex; align-items: center; justify-content: center; text-align: center; color: var(--text); font-weight: 600; transition: transform 120ms ease, border-color 120ms ease; }
+    .graph-node.primary { border-color: rgba(124,230,255,0.45); box-shadow: inset 0 0 0 1px rgba(124,230,255,0.2); }
+    .graph-insights { color: var(--muted); font-size: 0.9rem; display: grid; gap: 4px; }
+    .advanced-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .insight-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .insight-pill { border: 1px solid var(--border); background: rgba(255,255,255,0.04); border-radius: 14px; padding: 10px 12px; display: grid; gap: 4px; }
+    .insight-pill strong { color: var(--accent); }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .action-chip { border: 1px solid var(--border); border-radius: 999px; padding: 6px 10px; background: rgba(255,255,255,0.04); color: var(--muted); font-size: 0.84rem; }
+    .analysis-card-body { color: var(--muted); display: grid; gap: 6px; }
+    .reasoning-layers { display: grid; gap: 10px; }
+    .reasoning-layer { border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; background: rgba(255,255,255,0.03); }
+    .reasoning-layer h4 { margin: 0 0 6px; font-size: 0.95rem; color: var(--accent); }
+    .reasoning-layer .body { color: var(--muted); line-height: 1.6; }
+    .confidence-bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.1); overflow: hidden; }
+    .confidence-bar > span { display: block; height: 100%; border-radius: inherit; }
+    .confidence-bar.good > span { background: linear-gradient(90deg, var(--accent-2), #8dffb5); }
+    .confidence-bar.warn > span { background: linear-gradient(90deg, #f4c542, #ffd77e); }
+    .confidence-bar.low > span { background: linear-gradient(90deg, var(--danger), #ffb26b); }
+    .reference-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--muted); }
+    .graph-node.active { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 0 0 1px rgba(124,230,255,0.25); }
+    .graph-node:hover { cursor: pointer; }
+    .graph-legend { display: flex; flex-wrap: wrap; gap: 8px; color: var(--muted); font-size: 0.83rem; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    .legend-dot.primary { background: var(--accent); }
+    .legend-dot.secondary { background: var(--accent-2); }
+    .legend-dot.tertiary { background: var(--danger); }
+    .card-body { display: grid; gap: 10px; }
+    .subcard { border-radius: 14px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); padding: 0 12px; }
+    .subcard summary { cursor: pointer; padding: 12px 0; font-weight: 600; }
+    .subcard-body { padding: 0 0 12px; color: var(--muted); display: grid; gap: 8px; }
+    .reasoning details { border-radius: 14px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); padding: 0 12px; }
+    .reasoning summary { cursor: pointer; padding: 12px 0; font-weight: 600; }
+    .reasoning .body { padding: 0 0 12px; color: var(--muted); }
+    .references { display: grid; gap: 10px; }
+    .timeline { position: relative; display: grid; gap: 10px; margin-top: 8px; }
+    .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: rgba(124,230,255,0.32); }
+    .timeline-item { position: relative; padding-left: 22px; }
+    .timeline-item::before { content: ''; position: absolute; left: 0; top: 6px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2px solid var(--panel); }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02em; }
+    .badge--neo4j { background: rgba(73, 224, 157, 0.16); color: var(--accent-2); }
+    .badge--web { background: rgba(124,230,255,0.16); color: var(--accent); }
+    .badge--artifact { background: rgba(255, 194, 91, 0.18); color: #ffd47d; }
+    .badge--neutral { background: rgba(255,255,255,0.08); color: var(--muted); }
+    .reference { position: relative; border-radius: 14px; padding: 12px; display: grid; gap: 8px; }
+    .reference a { color: var(--accent); text-decoration: none; }
+    .reference .popover { position: absolute; right: 12px; top: 12px; opacity: 0; pointer-events: none; transition: opacity 140ms ease; background: #08111f; border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; color: var(--muted); font-size: 0.82rem; max-width: 240px; }
+    .reference:hover .popover, .reference:focus-within .popover { opacity: 1; }
+    .muted { color: var(--muted); }
+    .empty { color: var(--muted); font-style: italic; }
+    .loading { display: inline-flex; align-items: center; gap: 8px; }
+    .spinner { width: 12px; height: 12px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); border-top-color: var(--accent); animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg);} }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div class="pill">Industrial Knowledge Copilot</div>
+      <h1>Ask the graph, the evidence, and the web together.</h1>
+      <p>Send a question and the backend will route it to the appropriate Neo4j-backed agent, show the reasoning chain, and surface references from Neo4j or Tavily.</p>
+      <div class="hero-strip">
+        <span class="hero-chip"><strong>Neo4j</strong> connected</span>
+        <span class="hero-chip"><strong>Web</strong> enabled</span>
+        <span class="hero-chip"><strong>Voice</strong> ready</span>
+        <span class="hero-chip"><strong>GraphRAG</strong> active</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <label for="question">Question</label>
+        <textarea id="question" placeholder="Example: Why did the compressor fail after the maintenance window?">Why did the compressor fail after the maintenance window?</textarea>
+        <div class="controls">
+          <button id="sendBtn">Run Copilot</button>
+          <button class="secondary" id="voiceBtn" type="button">🎤 Voice mode</button>
+          <button class="secondary" id="speakBtn" type="button">🔊 Speak answer</button>
+          <button class="secondary" id="clearBtn" type="button">Clear</button>
+          <label class="pill"><input id="useWeb" type="checkbox" checked /> Use web search</label>
+        </div>
+        <div class="chip-row">
+          <span class="action-chip">Run Copilot</span>
+          <span class="action-chip">Voice mode</span>
+          <span class="action-chip">Explain reasoning</span>
+          <span class="action-chip">Show evidence</span>
+        </div>
+        <div id="voiceStatus" class="voice-status">Voice ready. Click the mic button and speak naturally.</div>
+      </section>
+
+      <section class="panel">
+        <label for="jobSelector">Select a job</label>
+        <select id="jobSelector" style="width:100%; padding:10px; border-radius:12px; border:1px solid var(--border); background:var(--panel-2); color:var(--text);">
+          <option value="">No specific job</option>
+        </select>
+        <div class="pill">Job context</div>
+        <div id="jobContext" class="muted">No job selected. The chat endpoint can still answer from the graph.</div>
+      </section>
+    </div>
+
+    <section class="panel advanced-dashboard">
+      <div class="card-head">
+        <div>
+          <h3>Advanced runtime view</h3>
+          <div class="muted">A live model-status panel, Neo4j-style graph view, and dedicated cards for RCA, anomaly detection, RUL, and vector search.</div>
+        </div>
+        <button class="secondary" id="refreshAdvBtn" type="button">Refresh</button>
+      </div>
+      <div class="advanced-grid">
+        <div class="advanced-panel">
+          <div class="section-title">Model status</div>
+          <div id="modelStatusContent" class="status-stack">
+            <div class="empty">Loading advanced model state…</div>
+          </div>
+        </div>
+        <div class="advanced-panel">
+          <div class="section-title">Neo4j-style graph</div>
+          <div id="graphView" class="graph-view">
+            <div class="empty">Loading graph summary…</div>
+          </div>
+        </div>
+      </div>
+      <div class="advanced-cards">
+        <div class="analysis-card">
+          <div class="section-title">Root cause analysis</div>
+          <div id="rcaCard" class="analysis-card-body empty">Loading…</div>
+        </div>
+        <div class="analysis-card">
+          <div class="section-title">Anomaly detection</div>
+          <div id="anomalyCard" class="analysis-card-body empty">Loading…</div>
+        </div>
+        <div class="analysis-card">
+          <div class="section-title">RUL prediction</div>
+          <div id="rulCard" class="analysis-card-body empty">Loading…</div>
+        </div>
+        <div class="analysis-card">
+          <div class="section-title">Vector search</div>
+          <div id="vectorCard" class="analysis-card-body empty">Loading…</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel result" id="resultPanel">
+      <div class="empty">No analysis yet.</div>
+    </section>
+  </div>
+
+  <script>
+    const resultPanel = document.getElementById('resultPanel');
+    const questionInput = document.getElementById('question');
+    const jobContext = document.getElementById('jobContext');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const voiceBtn = document.getElementById('voiceBtn');
+    const speakBtn = document.getElementById('speakBtn');
+    const modelStatusContent = document.getElementById('modelStatusContent');
+    const graphView = document.getElementById('graphView');
+    const rcaCard = document.getElementById('rcaCard');
+    const anomalyCard = document.getElementById('anomalyCard');
+    const rulCard = document.getElementById('rulCard');
+    const vectorCard = document.getElementById('vectorCard');
+    const refreshAdvBtn = document.getElementById('refreshAdvBtn');
+    let voiceRecognition = null;
+    let voiceActive = false;
+    let latestAssistantText = '';
+    let mediaRecorder = null;
+    let mediaStream = null;
+    let voiceChunks = [];
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatText(value) {
+      return escapeHtml(String(value || '')).replace(/\n/g, '<br/>');
+    }
+
+    function getEvidenceSource(item) {
+      const text = String(item || '').toLowerCase();
+      if (text.includes('web result') || text.includes('web')) {
+        return 'web';
+      }
+      return 'neo4j';
+    }
+
+    function buildTimeline(evidence, references) {
+      const steps = [];
+      (evidence || []).slice(0, 4).forEach((item) => {
+        const text = String(item || '');
+        let label = 'Observation';
+        if (/maintenance/i.test(text)) label = 'Maintenance';
+        else if (/incident|failure|fail|alarm|sensor|root cause/i.test(text)) label = 'Incident';
+        else if (/inspection|quality|capa|calibration|defect|batch/i.test(text)) label = 'Quality';
+        else if (/policy|regulation|audit|standard|iso|oisd|peso|api/i.test(text)) label = 'Compliance';
+        steps.push({ label, detail: text, source: getEvidenceSource(item) });
+      });
+
+      if (!steps.length && (references || []).length) {
+        (references || []).slice(0, 3).forEach((item) => {
+          steps.push({ label: item.source_type === 'web' ? 'Web insight' : 'Graph insight', detail: item.summary || item.title || 'Reference', source: item.source_type === 'web' ? 'web' : 'neo4j' });
+        });
+      }
+      return steps;
+    }
+
+    function setLoading(isLoading) {
+      const button = document.getElementById('sendBtn');
+      button.disabled = isLoading;
+      button.innerHTML = isLoading ? '<span class="loading"><span class="spinner"></span>Analyzing...</span>' : 'Run Copilot';
+    }
+
+    function renderModelStatus(statusData) {
+      const advanced = statusData && statusData.advanced_models ? statusData.advanced_models : {};
+      const features = statusData && statusData.features ? statusData.features : {};
+      const rows = [
+        { label: 'Qdrant vector search', value: advanced.qdrant_vector_db ? 'Ready' : 'Offline', online: advanced.qdrant_vector_db },
+        { label: 'GraphRAG', value: advanced.graphrag ? 'Ready' : 'Offline', online: advanced.graphrag },
+        { label: 'Qwen 3 LLM', value: advanced.qwen3_llm ? 'Ready' : 'Offline', online: advanced.qwen3_llm },
+        { label: 'TimesFM', value: advanced.timesfm_forecaster ? 'Ready' : 'Offline', online: advanced.timesfm_forecaster },
+        { label: 'TFT RUL', value: advanced.tft_rul_predictor ? 'Ready' : 'Offline', online: advanced.tft_rul_predictor },
+        { label: 'RCA agent', value: advanced.rca_agent ? 'Ready' : 'Offline', online: advanced.rca_agent },
+      ];
+      modelStatusContent.innerHTML = `
+        <div class="status-row">
+          <strong>Feature coverage</strong>
+          <span class="status-pill ${statusData ? '' : 'offline'}">${statusData ? `${statusData.models_initialized || 0}/${statusData.total_models || 0} initialized` : 'Unavailable'}</span>
+        </div>
+        ${rows.map((row) => `
+          <div class="status-row">
+            <span>${escapeHtml(row.label)}</span>
+            <span class="status-pill ${row.online ? '' : 'offline'}">${escapeHtml(row.value)}</span>
+          </div>
+        `).join('')}
+        <div class="status-row">
+          <span>Graph reasoning</span>
+          <span class="status-pill ${features.graph_reasoning === 'Enabled' ? '' : 'offline'}">${escapeHtml(features.graph_reasoning || 'Unknown')}</span>
+        </div>
+      `;
+    }
+
+    function renderGraphView(graphData) {
+      const payload = graphData || {};
+      const entities = Array.isArray(payload.entities) && payload.entities.length ? payload.entities : [
+        { name: 'Equipment' }, { name: 'Maintenance' }, { name: 'Process' }, { name: 'Safety' }
+      ];
+      const relations = Array.isArray(payload.relations) && payload.relations.length ? payload.relations : [
+        'Equipment -> Maintenance', 'Maintenance -> Process', 'Process -> Safety'
+      ];
+      const insights = Array.isArray(payload.insights) && payload.insights.length ? payload.insights : [
+        'Critical dependencies mapped',
+        'Maintenance windows influence failure risk',
+        'Safety-critical nodes are connected to process drift'
+      ];
+      const nodes = entities.slice(0, 4).map((entity, index) => {
+        const label = entity.name || entity.label || entity.id || entity.entity || `Node ${index + 1}`;
+        const tone = index === 0 ? 'primary' : index === 1 ? 'secondary' : 'tertiary';
+        return { label, tone };
+      });
+      graphView.innerHTML = `
+        <div class="graph-canvas">
+          ${nodes.map((node, index) => `<button class="graph-node ${index === 0 ? 'primary active' : ''}" data-node="${escapeHtml(node.label)}" type="button" style="${index === 0 ? '' : ''}">${escapeHtml(node.label)}</button>`).join('')}
+        </div>
+        <div class="graph-legend">
+          <span><span class="legend-dot primary"></span>Primary entity</span>
+          <span><span class="legend-dot secondary"></span>Related signal</span>
+          <span><span class="legend-dot tertiary"></span>Risk path</span>
+        </div>
+        <div class="graph-insights">
+          ${insights.slice(0, 3).map((item) => `<div>• ${escapeHtml(item)}</div>`).join('')}
+          <div class="muted">${escapeHtml(relations.slice(0, 3).join(' • '))}</div>
+        </div>
+      `;
+      graphView.querySelectorAll('.graph-node').forEach((button) => {
+        button.addEventListener('click', () => {
+          graphView.querySelectorAll('.graph-node').forEach((node) => node.classList.remove('active'));
+          button.classList.add('active');
+        });
+      });
+    }
+
+    function renderAnalysisCards(payload) {
+      const rca = payload && payload.root_cause_analysis ? payload.root_cause_analysis : {};
+      const anomaly = payload && payload.anomaly_detection ? payload.anomaly_detection : {};
+      const rul = payload && payload.rul_prediction ? payload.rul_prediction : {};
+      const vector = payload && payload.vector_search ? payload.vector_search : {};
+
+      rcaCard.innerHTML = `
+        <div><strong>${escapeHtml((rca.root_causes && rca.root_causes[0]) || 'No root cause identified yet')}</strong></div>
+        <div>${escapeHtml((rca.summary || rca.recommendation || 'The RCA agent is ready to review incidents and recommend mitigation steps.'))}</div>
+        <div class="muted">Confidence: ${escapeHtml(rca.confidence_score || rca.confidence || 'n/a')}</div>
+      `;
+
+      anomalyCard.innerHTML = `
+        <div><strong>${escapeHtml(anomaly.alert || 'No anomaly alert yet')}</strong></div>
+        <div>${escapeHtml((anomaly.anomalies && anomaly.anomalies.summary) || 'Anomaly detection uses time-series signals to flag drift and spikes.')}</div>
+        <div class="muted">Detected count: ${escapeHtml(anomaly.anomalies && anomaly.anomalies.detected_count != null ? String(anomaly.anomalies.detected_count) : 'n/a')}</div>
+      `;
+
+      rulCard.innerHTML = `
+        <div><strong>${escapeHtml((rul.prediction && rul.prediction.estimated_rul_days != null) ? `${rul.prediction.estimated_rul_days} days` : 'RUL pending')}</strong></div>
+        <div>${escapeHtml((rul.prediction && rul.prediction.maintenance_hint) || 'RUL prediction estimates remaining useful life and maintenance urgency.')}</div>
+        <div class="muted">Machine: ${escapeHtml((rul.prediction && rul.prediction.machine_id) || 'MACHINE_001')}</div>
+      `;
+
+      vectorCard.innerHTML = `
+        <div><strong>${escapeHtml(vector.query_result && vector.query_result.count != null ? `${vector.query_result.count} vector matches` : 'Vector search pending')}</strong></div>
+        <div>${escapeHtml((vector.query_result && vector.query_result.top_k != null) ? `Top ${vector.query_result.top_k} matches are available for retrieval.` : 'Vector search uses Qdrant-backed embeddings for similarity retrieval.')}</div>
+        <div class="muted">Status: ${escapeHtml(vector.query_result ? 'ready' : 'pending')}</div>
+      `;
+    }
+
+    async function refreshAdvancedDash(questionText = '') {
+      const prompt = (questionText || questionInput.value || 'industrial reliability overview').trim();
+      const defaultIncident = prompt || 'Equipment anomaly detected during operation';
+
+      try {
+        const statusResponse = await fetch('/api/v1/advanced/models/status');
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          renderModelStatus(statusData);
+        } else {
+          renderModelStatus(null);
+        }
+      } catch (error) {
+        renderModelStatus(null);
+      }
+
+      try {
+        const graphResponse = await fetch('/api/v1/advanced/graph-reasoning', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: prompt || 'industrial system overview' })
+        });
+        if (graphResponse.ok) {
+          const graphData = await graphResponse.json();
+          renderGraphView(graphData.reasoning_result || graphData);
+        } else {
+          renderGraphView(null);
+        }
+      } catch (error) {
+        renderGraphView(null);
+      }
+
+      try {
+        const rcaResponse = await fetch('/api/v1/advanced/root-cause-analysis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            incident: defaultIncident,
+            logs: ['Maintenance window completed', 'Pressure spike observed', 'Signal drop after restart'],
+            sensor_data: {
+              temperature: [82, 84, 91, 96, 102],
+              vibration: [1.8, 1.9, 2.4, 2.8, 3.3]
+            }
+          })
+        });
+        if (rcaResponse.ok) {
+          const payload = await rcaResponse.json();
+          renderAnalysisCards(payload);
+        }
+      } catch (error) {
+        // Keep the fallback cards from the default render.
+      }
+
+      try {
+        const anomalyResponse = await fetch('/api/v1/advanced/anomaly-detection', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ time_series: [100, 98, 97, 102, 110, 130, 125], threshold: 2.0 })
+        });
+        if (anomalyResponse.ok) {
+          const payload = await anomalyResponse.json();
+          renderAnalysisCards(payload);
+        }
+      } catch (error) {
+        // Keep the fallback cards from the default render.
+      }
+
+      try {
+        const rulResponse = await fetch('/api/v1/advanced/rul-prediction', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            machine_id: 'MACHINE_001',
+            sensor_data: {
+              temperature: [80, 82, 84, 87, 91, 94],
+              vibration: [2.2, 2.3, 2.5, 2.8, 3.2, 3.8]
+            }
+          })
+        });
+        if (rulResponse.ok) {
+          const payload = await rulResponse.json();
+          renderAnalysisCards(payload);
+        }
+      } catch (error) {
+        // Keep the fallback cards from the default render.
+      }
+
+      try {
+        const vectorResponse = await fetch('/api/v1/advanced/vector-search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query_embedding: [0.1, 0.2, 0.3, 0.4], top_k: 3 })
+        });
+        if (vectorResponse.ok) {
+          const payload = await vectorResponse.json();
+          renderAnalysisCards({ vector_search: payload.query_result || payload });
+        }
+      } catch (error) {
+        // Keep the fallback cards from the default render.
+      }
+    }
+
+    function renderResult(payload) {
+      const reasoning = payload.reasoning || {};
+      latestAssistantText = payload.answer || payload.summary || '';
+      speakBtn.disabled = !latestAssistantText;
+      const references = payload.references || [];
+      const evidence = payload.evidence || [];
+      const agent = payload.agent || 'copilot';
+      const badge = payload.neo4j_connected ? 'Neo4j evidence' : 'No graph evidence';
+      const timeline = buildTimeline(evidence, references);
+      resultPanel.innerHTML = `
+        <div class="message card">
+          <div class="card-head">
+            <div>
+              <h3>${escapeHtml(agent)}</h3>
+              <div class="muted">${escapeHtml(payload.summary || 'No structured summary available.')}</div>
+            </div>
+            <div class="controls">
+              <span class="pill">${escapeHtml(badge)}</span>
+              <span class="pill">${payload.used_web_search ? 'Web search enabled' : 'Web search disabled'}</span>
+              <span class="pill">${(evidence || []).length} evidence snippets</span>
+            </div>
+          </div>
+          <div class="insight-strip" style="margin-bottom:10px;">
+            <div class="insight-pill">
+              <strong>Risk</strong>
+              <span>${escapeHtml(payload.risk_level || 'unknown')}</span>
+            </div>
+            <div class="insight-pill">
+              <strong>Evidence</strong>
+              <span>${(evidence || []).length} snippets</span>
+            </div>
+            <div class="insight-pill">
+              <strong>Confidence</strong>
+              <span>${escapeHtml(payload.confidence ?? 'n/a')}</span>
+            </div>
+            <div class="insight-pill">
+              <strong>Action</strong>
+              <span>${escapeHtml((payload.recommendations || [])[0] || 'Review the evidence and mitigation plan')}</span>
+            </div>
+          </div>
+          <div class="card-body">${formatText(payload.answer || 'No answer')}</div>
+        </div>
+        <div class="message card">
+          <div class="card-head">
+            <div>
+              <h3>Plan / evidence / citations</h3>
+              <div class="muted">Expandable execution view for the chosen agent.</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <details class="subcard" open>
+              <summary>Plan</summary>
+              <div class="subcard-body">
+                <div><strong>Intent:</strong> ${escapeHtml((payload.plan && payload.plan.intent) || 'unknown')}</div>
+                <div><strong>Equipment:</strong> ${escapeHtml((payload.plan && payload.plan.equipment) || 'n/a')}</div>
+                <div><strong>Internet:</strong> ${(((payload.plan && payload.plan.use_internet) || payload.used_web_search) ? 'enabled' : 'disabled')}</div>
+                <div><strong>Summary:</strong> ${formatText(payload.summary || 'No structured summary available.')}</div>
+              </div>
+            </details>
+            <details class="subcard" open>
+              <summary>Reasoning layers</summary>
+              <div class="subcard-body reasoning-layers">
+                <div class="reasoning-layer">
+                  <h4>Chain of thought</h4>
+                  <div class="body">${escapeHtml((reasoning.chain_of_thought || []).join(' • ') || 'The agent traces the likely failure path from signal evidence to the proposed explanation.')}</div>
+                </div>
+                <div class="reasoning-layer">
+                  <h4>Tree of thought</h4>
+                  <div class="body">${escapeHtml((reasoning.tree_of_thought || []).join(' • ') || 'Alternate hypotheses are explored and compared before the final answer is selected.')}</div>
+                </div>
+                <div class="reasoning-layer">
+                  <h4>Graph of thought</h4>
+                  <div class="body">${escapeHtml((reasoning.graph_of_thought || []).join(' • ') || 'Entity and relation links are connected to show the dependency structure behind the answer.')}</div>
+                </div>
+              </div>
+            </details>
+            <details class="subcard" open>
+              <summary>Evidence</summary>
+              <div class="subcard-body">
+                ${(evidence || []).length ? evidence.map((item) => `
+                  <div class="reference">
+                    <div class="controls" style="margin-bottom:6px;">
+                      <span class="badge ${getEvidenceSource(item) === 'web' ? 'badge--web' : 'badge--neo4j'}">${getEvidenceSource(item) === 'web' ? 'Web' : 'Neo4j'}</span>
+                    </div>
+                    <div>${formatText(item)}</div>
+                  </div>
+                `).join('') : '<div class="empty">No evidence was returned.</div>'}
+              </div>
+            </details>
+            <details class="subcard" open>
+              <summary>Citations</summary>
+              <div class="subcard-body">
+                ${(payload.citations || []).length ? (payload.citations || []).map((item) => `
+                  <div class="reference">
+                    <div class="reference-meta">
+                      <strong>${escapeHtml(item.title || 'Citation')}</strong>
+                      <span class="pill">${escapeHtml(item.confidence || 'confidence unknown')}</span>
+                    </div>
+                    <div class="muted">${escapeHtml(item.summary || '')}</div>
+                    <div class="confidence-bar ${String(item.confidence || '').toLowerCase().includes('high') ? 'good' : String(item.confidence || '').toLowerCase().includes('medium') ? 'warn' : 'low'}">
+                      <span style="width:${Math.max(18, Math.min(100, Number(item.confidence_score || item.score || 0) * 100 || 72))}%"></span>
+                    </div>
+                    ${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">Open citation</a>` : ''}
+                  </div>
+                `).join('') : '<div class="empty">No citations were returned.</div>'}
+              </div>
+            </details>
+          </div>
+        </div>
+        <div class="message card">
+          <div class="card-head">
+            <div>
+              <h3>Incident timeline</h3>
+              <div class="muted">A compact sequence of the strongest evidence points.</div>
+            </div>
+          </div>
+          <div class="timeline">
+            ${timeline.length ? timeline.map((step) => `
+              <div class="timeline-item">
+                <strong>${escapeHtml(step.label)}</strong>
+                <div class="muted">${formatText(step.detail)}</div>
+                <div class="controls" style="margin-top:6px;">
+                  <span class="badge ${step.source === 'web' ? 'badge--web' : 'badge--neo4j'}">${step.source === 'web' ? 'Web' : 'Neo4j'}</span>
+                </div>
+              </div>
+            `).join('') : '<div class="empty">No timeline data available yet.</div>'}
+          </div>
+        </div>
+        <div class="message card">
+          <div class="card-head">
+            <div>
+              <h3>Key findings</h3>
+              <div class="muted">Structured highlights from the agent.</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <ul>${(payload.key_findings || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+            <div class="controls">
+              <span class="pill">Confidence: ${escapeHtml(payload.confidence ?? 'n/a')}</span>
+              <span class="pill">Risk: ${escapeHtml(payload.risk_level || 'unknown')}</span>
+            </div>
+          </div>
+        </div>
+        <div class="message card reasoning">
+          <div class="card-head">
+            <div><h3>Reasoning layers</h3></div>
+          </div>
+          <details open>
+            <summary>Chain of thought</summary>
+            <div class="body">${(reasoning.chain_of_thought || []).join('<br/>')}</div>
+          </details>
+          <details>
+            <summary>Tree of thought</summary>
+            <div class="body">${(reasoning.tree_of_thought || []).join('<br/>')}</div>
+          </details>
+          <details>
+            <summary>Graph of thought</summary>
+            <div class="body">${(reasoning.graph_of_thought || []).join('<br/>')}</div>
+          </details>
+        </div>
+        <div class="message card">
+          <div class="card-head">
+            <div><h3>Why this answer?</h3></div>
+          </div>
+          <div class="card-body">
+            <div class="muted">The agent prioritizes the strongest evidence, the most connected entities, and the most relevant maintenance or failure signals.</div>
+            <div class="chip-row">
+              <span class="action-chip">Evidence-backed</span>
+              <span class="action-chip">Graph-grounded</span>
+              <span class="action-chip">Confidence-weighted</span>
+            </div>
+          </div>
+        </div>
+        <div class="message card">
+          <div class="card-head">
+            <div><h3>References</h3></div>
+          </div>
+          <div class="references">
+            ${references.length ? references.map((item) => `
+              <div class="reference" tabindex="0">
+                <div class="popover">${escapeHtml(item.detail || 'Reference detail')}</div>
+                <div class="controls" style="margin-bottom:6px;">
+                  <span class="badge ${item.source_type === 'web' ? 'badge--web' : item.source_type === 'artifact' ? 'badge--artifact' : 'badge--neo4j'}">${item.source_type === 'web' ? 'Web' : item.source_type === 'artifact' ? 'Artifact' : item.source_type === 'claim' ? 'Claim' : 'Neo4j'}</span>
+                </div>
+                <div class="reference-meta">
+                  <strong>${escapeHtml(item.title || 'Reference')}</strong>
+                  <span class="pill">${escapeHtml(item.confidence || item.confidence_level || 'confidence unknown')}</span>
+                </div>
+                <div class="muted">${escapeHtml(item.summary || '')}</div>
+                ${item.image_data ? `<img src="${escapeHtml(item.image_data)}" alt="${escapeHtml(item.title || 'Evidence image')}" style="max-width:100%; border-radius:12px; border:1px solid var(--border); margin-top:6px;" />` : ''}
+                <div class="confidence-bar ${String(item.confidence || item.confidence_level || '').toLowerCase().includes('high') ? 'good' : String(item.confidence || item.confidence_level || '').toLowerCase().includes('medium') ? 'warn' : 'low'}">
+                  <span style="width:${Math.max(18, Math.min(100, Number(item.confidence_score || item.score || 0) * 100 || 72))}%"></span>
+                </div>
+                ${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">Open reference</a>` : ''}
+              </div>
+            `).join('') : '<div class="empty">No references were returned.</div>'}
+          </div>
+        </div>
+        <div class="message card">
+          <div class="card-head">
+            <div><h3>Recommendations</h3></div>
+          </div>
+          <div class="card-body">
+            <ul>${(payload.recommendations || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+          </div>
+        </div>
+      `;
+    }
+
+    function setVoiceStatus(message, state = 'idle') {
+      voiceStatus.textContent = message;
+      voiceStatus.className = `voice-status${state === 'listening' ? ' is-listening' : state === 'speaking' ? ' is-speaking' : ''}`;
+    }
+
+    function speakText(text) {
+      if (!text) return;
+      if (!('speechSynthesis' in window)) {
+        setVoiceStatus('Text-to-speech is not supported in this browser.');
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = navigator.language || 'en-US';
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      setVoiceStatus('Speaking the latest response...', 'speaking');
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+    }
+
+    async function captureVoiceAudio() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Microphone access is not available in this browser.');
+      }
+      mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(mediaStream);
+      voiceChunks = [];
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) voiceChunks.push(event.data);
+      };
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(voiceChunks, { type: 'audio/webm' });
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'voice.webm');
+        formData.append('job_id', document.getElementById('jobSelector').value || '');
+        formData.append('use_web', String(document.getElementById('useWeb').checked));
+        setVoiceStatus('Sending your voice request to the Copilot backend...', 'idle');
+        try {
+          const response = await fetch('/api/v1/voice/assistant', { method: 'POST', body: formData });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.detail || 'Voice request failed');
+          questionInput.value = payload.transcript || '';
+          latestAssistantText = payload.answer || payload.summary || '';
+          speakBtn.disabled = !latestAssistantText;
+          renderResult(payload);
+          setVoiceStatus('Voice assistant finished. You can listen to the answer or ask another question.', 'idle');
+        } catch (error) {
+          resultPanel.innerHTML = `<div class="message"><h3>Voice error</h3><div class="muted">${error.message}</div></div>`;
+          setVoiceStatus(`Voice assistant error: ${error.message}`, 'idle');
+        } finally {
+          if (mediaStream) {
+            mediaStream.getTracks().forEach((track) => track.stop());
+            mediaStream = null;
+          }
+          voiceActive = false;
+          voiceBtn.textContent = '🎤 Voice mode';
+        }
+      };
+      mediaRecorder.start();
+      voiceActive = true;
+      voiceBtn.textContent = '⏹ Stop listening';
+      setVoiceStatus('Listening live… speak now.', 'listening');
+      window.setTimeout(() => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          mediaRecorder.stop();
+        }
+      }, 6000);
+    }
+
+    async function toggleVoiceMode() {
+      if (voiceActive && mediaRecorder) {
+        mediaRecorder.stop();
+        return;
+      }
+      try {
+        await captureVoiceAudio();
+      } catch (error) {
+        setVoiceStatus(`Voice assistant error: ${error.message}`, 'idle');
+      }
+    }
+
+    async function loadJobs() {
+      try {
+        const response = await fetch('/api/v1/jobs');
+        const jobs = await response.json();
+        const selector = document.getElementById('jobSelector');
+        selector.innerHTML = '<option value="">No specific job</option>' + (jobs || []).map((job) => `<option value="${job.job_id}">${(job.uploaded_filename || job.job_id || 'job').replace(/</g, '&lt;')}</option>`).join('');
+      } catch (error) {
+        console.warn('Unable to load jobs', error);
+      }
+    }
+
+    async function runCopilot() {
+      const question = questionInput.value.trim();
+      if (!question) return;
+      setLoading(true);
+      try {
+        const response = await fetch('/api/v1/copilot/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question,
+            job_id: document.getElementById('jobSelector').value || null,
+            use_web: document.getElementById('useWeb').checked,
+          })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.detail || 'Copilot request failed');
+        }
+        renderResult(data);
+        jobContext.textContent = data.job_id ? `Job: ${data.job_id}` : 'No job selected. The chat endpoint can still answer from the graph.';
+        await refreshAdvancedDash(question);
+      } catch (error) {
+        resultPanel.innerHTML = `<div class="message"><h3>Copilot error</h3><div class="muted">${error.message}</div></div>`;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    document.getElementById('sendBtn').addEventListener('click', runCopilot);
+    voiceBtn.addEventListener('click', toggleVoiceMode);
+    speakBtn.addEventListener('click', () => speakText(latestAssistantText));
+    questionInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        runCopilot();
+      }
+    });
+    loadJobs();
+    refreshAdvancedDash();
+    initVoiceRecognition();
+    speakBtn.disabled = true;
+    refreshAdvBtn.addEventListener('click', () => refreshAdvancedDash(questionInput.value));
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      questionInput.value = '';
+      resultPanel.innerHTML = '<div class="empty">No analysis yet.</div>';
+      jobContext.textContent = 'No job selected. The chat endpoint can still answer from the graph.';
+      latestAssistantText = '';
+      speakBtn.disabled = true;
+      setVoiceStatus('Voice ready. Click the mic button and speak naturally.', 'idle');
+    });
+  </script>
+</body>
+</html>
