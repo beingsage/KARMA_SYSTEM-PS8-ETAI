@@ -6,3 +6,14 @@ miniforge.sh
 __pycache__/
 models/
 open-source/
+
+# Generated runtime data and benchmark artifacts
+storage/
+data/jobs/
+logs/
+pipeline_run.log
+stage_*_output.log
+*.log
+
+# Large training checkpoints; keep source notebooks/configuration in Git
+training/*.t7
