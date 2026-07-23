@@ -1,0 +1,114 @@
+openapi: 3.0.0
+info:
+  title: Industrial PDF Graph Backend
+  version: '1.0.0'
+  description: Simplified OpenAPI spec for main document and workflow endpoints.
+paths:
+  /api/v1/process-pdf:
+    post:
+      summary: Upload PDF and run full pipeline
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                file_name:
+                  type: string
+      responses:
+        '200':
+          description: JobResult
+  /api/v1/process-doc:
+    post:
+      summary: Process raw document or text
+      responses:
+        '200':
+          description: JobResult
+  /api/v1/workflows/analyze:
+    post:
+      summary: Unified analyze endpoint
+      responses:
+        '200':
+          description: JobResult
+  /api/v1/sources/ingest:
+    post:
+      summary: Ingest a source for analysis
+      responses:
+        '200':
+          description: JobResult
+  /api/v1/jobs/{job_id}/progress:
+    get:
+      summary: Get job progress
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Progress snapshot
+  /api/v1/jobs/{job_id}:
+    get:
+      summary: Get job payload
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: JobResult
+  /api/v1/jobs:
+    get:
+      summary: List jobs
+      responses:
+        '200':
+          description: Job list
+  /api/v1/workflows/{job_id}/bundle:
+    get:
+      summary: Get workflow bundle
+      responses:
+        '200':
+          description: Workflow bundle
+  /api/v1/workflows/catalog:
+    get:
+      summary: Get API & stage catalog
+      responses:
+        '200':
+          description: Catalog
+  /api/v1/models/status:
+    get:
+      summary: Model status
+      responses:
+        '200':
+          description: Models status
+  /api/v1/ontology/backfill:
+    post:
+      summary: Backfill ontology metadata
+      responses:
+        '200':
+          description: Backfill result
+  /api/v1/admin/neo4j/migrate-ontology:
+    post:
+      summary: Migrate Neo4j ontology
+      responses:
+        '200':
+          description: Migration result
+components:
+  schemas:
+    JobResult:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+        message:
+          type: string
+        text:
+          type: string
